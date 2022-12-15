@@ -34,11 +34,11 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton.icon(
               onPressed: () {
-                Navigator.pushNamed(context, '/route_demo');
+                Navigator.pushNamed(context, '/api_demo');
               },
               icon: Icon(Icons.local_offer_outlined),
               label: Text(
-                'RouteDemo',
+                'API Demo',
                 style: TextStyle(color: Colors.red),
               ),
               style: TextButton.styleFrom(
