@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hws_app/pages/home_page.dart';
-import 'package:hws_app/pages/route_demo.dart';
+import 'package:hws_app/pages/api_demo.dart';
 
 class RouteName {
   static const String home = '/';
-  static const String demo = '/route_demo';
+  static const String demo = '/api_demo';
 
 }
 
@@ -15,7 +15,7 @@ class AppRouter {
       case RouteName.home:
         return CupertinoPageRoute(builder: (context) => const HomePage(title: 'MainPage',) );
       case RouteName.demo:
-        return CupertinoPageRoute(builder: (context) => const RouteDemo(title: 'Demo',));
+        return CupertinoPageRoute(builder: (context) => RouteDemo(title: 'Demo',));
       default:
         return CupertinoPageRoute(
             builder: (_) => Scaffold(
