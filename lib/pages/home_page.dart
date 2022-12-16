@@ -45,6 +45,19 @@ class _HomePageState extends State<HomePage> {
                 foregroundColor: Colors.red,
               ),
             ),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/hive_demo');
+              },
+              icon: Icon(Icons.local_offer_outlined),
+              label: Text(
+                'Hive Demo',
+                style: TextStyle(color: Colors.red),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+            ),
           ],
         ),
       ),

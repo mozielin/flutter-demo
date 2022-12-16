@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
-class RouteDemo extends StatefulWidget {
-  const RouteDemo({super.key, required this.title});
+class ApiDemo extends StatefulWidget {
+  const ApiDemo({super.key, required this.title});
 
   final String title;
 
   @override
-  State<RouteDemo> createState() => _RouteDemoState();
+  State<ApiDemo> createState() => _ApiDemoState();
 }
 
-class _RouteDemoState extends State<RouteDemo> {
+class _ApiDemoState extends State<ApiDemo> {
   final Dio dio = Dio();
   bool _load = false;
   String msg = 'Ready for API requests';
