@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:ionicons/ionicons.dart';
 
 class ApiDemo extends StatefulWidget {
-  const ApiDemo({super.key, required this.title});
-
-  final String title;
+  const ApiDemo({super.key});
 
   @override
   State<ApiDemo> createState() => _ApiDemoState();
@@ -176,11 +175,9 @@ class _ApiDemoState extends State<ApiDemo> {
           )
         : SizedBox(width:70, height: 70 );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
+    return Material(
+      color: Theme.of(context).colorScheme.background,
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -199,10 +196,15 @@ class _ApiDemoState extends State<ApiDemo> {
                     });
                     getData();
                   },
-                  icon: const Icon(Icons.add_link_rounded),
-                  label: const Text(
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
+                  label: Text(
                     'Http GET',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -215,10 +217,15 @@ class _ApiDemoState extends State<ApiDemo> {
                     });
                     postData();
                   },
-                  icon: Icon(Icons.add_link_rounded),
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'Http POST',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -231,10 +238,15 @@ class _ApiDemoState extends State<ApiDemo> {
                     });
                     putData();
                   },
-                  icon: Icon(Icons.add_link_rounded),
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'Http PUT',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -247,10 +259,15 @@ class _ApiDemoState extends State<ApiDemo> {
                     });
                     deleteData();
                   },
-                  icon: Icon(Icons.add_link_rounded),
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'Http DELETE',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -260,10 +277,15 @@ class _ApiDemoState extends State<ApiDemo> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  icon: Icon(Icons.local_offer_outlined),
+                  icon:Icon(Ionicons.backspace_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
-                    'ReturnHome',
-                    style: TextStyle(color: Colors.red),
+                    'Return Home',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -271,6 +293,7 @@ class _ApiDemoState extends State<ApiDemo> {
                 ),
               ],
             ),
+            const SizedBox(height: 36),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
