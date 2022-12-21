@@ -90,6 +90,35 @@ class SecondScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                Card(
+                  elevation: 2,
+                  shadowColor: Theme.of(context).colorScheme.shadow,
+                  color: Theme.of(context).colorScheme.surface,
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
+                  child: ListTile(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/hive_demo');
+                    },
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12))),
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Icon(Ionicons.server_outline, color: Theme.of(context).colorScheme.primary),
+                        Text(
+                          'Test',
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
             const TextDivider(text: 'author_divider_title'),

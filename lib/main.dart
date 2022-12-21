@@ -39,7 +39,7 @@ void main()async {
         path: 'assets/translations',
         supportedLocales: const <Locale>[
           Locale('en'),
-          Locale('de'),
+          Locale('zh'),
         ],
         fallbackLocale: const Locale('en'),
         useFallbackTranslations: true,
