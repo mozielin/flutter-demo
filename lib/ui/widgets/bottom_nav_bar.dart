@@ -44,12 +44,12 @@ class BottomNavBar extends StatelessWidget {
               label: tr('bottom_nav_second'),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Ionicons.information_circle_outline),
+              icon: const Icon(Ionicons.paper_plane_outline),
               label: tr('bottom_nav_api'),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Ionicons.information_circle_outline),
-              label: tr('bottom_nav_demo'),
+              icon: const Icon(Ionicons.server_outline),
+              label: tr('bottom_nav_hive'),
             ),
           ],
         );
