@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hws_app/cubit/bottom_nav_cubit.dart';
+import 'package:ionicons/ionicons.dart';
 
-class RouteDemo extends StatefulWidget {
-  const RouteDemo({super.key, required this.title});
 
-  final String title;
+
+class ApiDemo extends StatefulWidget {
+  const ApiDemo({super.key});
 
   @override
-  State<RouteDemo> createState() => _RouteDemoState();
+  State<ApiDemo> createState() => _ApiDemoState();
 }
 
-class _RouteDemoState extends State<RouteDemo> {
+class _ApiDemoState extends State<ApiDemo> {
   final Dio dio = Dio();
   bool _load = false;
   String msg = 'Ready for API requests';
@@ -176,11 +179,9 @@ class _RouteDemoState extends State<RouteDemo> {
           )
         : SizedBox(width:70, height: 70 );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
+    return Material(
+      color: Theme.of(context).colorScheme.background,
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -199,10 +200,15 @@ class _RouteDemoState extends State<RouteDemo> {
                     });
                     getData();
                   },
-                  icon: const Icon(Icons.add_link_rounded),
-                  label: const Text(
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
+                  label: Text(
                     'Http GET',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -215,10 +221,15 @@ class _RouteDemoState extends State<RouteDemo> {
                     });
                     postData();
                   },
-                  icon: Icon(Icons.add_link_rounded),
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'Http POST',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -231,10 +242,15 @@ class _RouteDemoState extends State<RouteDemo> {
                     });
                     putData();
                   },
-                  icon: Icon(Icons.add_link_rounded),
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'Http PUT',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -247,10 +263,15 @@ class _RouteDemoState extends State<RouteDemo> {
                     });
                     deleteData();
                   },
-                  icon: Icon(Icons.add_link_rounded),
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'Http DELETE',
-                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -258,12 +279,23 @@ class _RouteDemoState extends State<RouteDemo> {
                 ),
                 TextButton.icon(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    //判斷可以跳頁才pop，不然沒有上一頁會掉到黑洞裡
+                    if (Navigator.of(context).canPop()){
+                      Navigator.of(context).pop();
+                    }else {
+                      //不能跳頁用bloc控制screen index state 回到要的頁面
+                      context.read<BottomNavCubit>().updateIndex(1);
+                    }
                   },
-                  icon: Icon(Icons.local_offer_outlined),
+                  icon:Icon(Ionicons.backspace_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
-                    'ReturnHome',
-                    style: TextStyle(color: Colors.red),
+                    'Return Home',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
                   ),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
@@ -271,6 +303,7 @@ class _RouteDemoState extends State<RouteDemo> {
                 ),
               ],
             ),
+            const SizedBox(height: 36),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.

@@ -1,27 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:hws_app/pages/home_page.dart';
+import 'package:hws_app/ui/pages/home_page.dart';
 import 'package:hws_app/router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'models/user.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'dart:io';
+
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'config/theme.dart';
+import 'cubit/theme_cubit.dart';
+import 'ui/screens/skeleton_screen.dart';
+
+void main()async {
+  /// Initialize packages
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+  if (Platform.isAndroid) {
+    await FlutterDisplayMode.setHighRefreshRate();
+  }
+  final Directory tmpDir = await getTemporaryDirectory();
+  Hive.init(tmpDir.toString());
+  final HydratedStorage storage = await HydratedStorage.build(
+    storageDirectory: tmpDir,
+  );
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserAdapter());
+  await Hive.openBox('userBox');
+
+  HydratedBlocOverrides.runZoned(
+        () => runApp(
+      EasyLocalization(
+        path: 'assets/translations',
+        supportedLocales: const <Locale>[
+          Locale('en'),
+          Locale('de'),
+        ],
+        fallbackLocale: const Locale('en'),
+        useFallbackTranslations: true,
+        child: const MyApp(),
+      ),
+    ),
+    storage: storage,
+  );
+  // runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return BlocProvider<ThemeCubit>(
+      create: (BuildContext context) => ThemeCubit(),
+      child: BlocBuilder<ThemeCubit, ThemeModeState>(
+        builder: (BuildContext context, ThemeModeState state) {
+          return MaterialApp(
+            /// Localization is not available for the title.
+            title: 'Flutter Production Boilerplate',
+
+            /// Theme stuff
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            themeMode: state.themeMode,
+
+            /// Localization stuff
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            debugShowCheckedModeBanner: false,
+            home: const SkeletonScreen(),
+            onGenerateRoute: AppRouter.generateRoute,
+            initialRoute: '/',
+          );
+        },
       ),
-      home: const HomePage(title: 'Flutter Demo Home Page'),
-      onGenerateRoute: AppRouter.generateRoute,
-      initialRoute: '/',
     );
   }
 }
+
 
 

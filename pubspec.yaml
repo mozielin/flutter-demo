@@ -37,21 +37,33 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   carousel_slider: any
-  json_serializable: any
-  build_runner: any
   rxdart: any
   dio: any
+  hive: any
+  hive_flutter: any
+  bloc: ^8.1.0
+  flutter_bloc: ^8.0.1
+  hydrated_bloc: ^8.1.0
+  equatable: ^2.0.3
+  path_provider: ^2.0.11
+  flutter_displaymode: ^0.4.0
+  easy_localization: ^3.0.1
+  url_launcher: ^6.1.5
+  ionicons: ^0.2.1
 
 dev_dependencies:
+
   flutter_test:
     sdk: flutter
-
+  hive_generator: any
+  build_runner: any
+  json_serializable: any
+  flutter_lints: ^2.0.1
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -62,7 +74,22 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-  uses-material-design: true
+  uses-material-design: false
+
+  assets:
+    - assets/translations/
+
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Nunito-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Nunito-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Nunito-Light.ttf
+          weight: 300
 
   # To add assets to your application, add an assets section, like this:
   # assets:
