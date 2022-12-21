@@ -9,6 +9,10 @@ class BottomNavCubit extends HydratedCubit<int> {
 
   void getSecondScreen() => emit(1);
 
+  void getApiDemo() => emit(2);
+
+  void getHiveDemo() => emit(3);
+
   @override
   int? fromJson(Map<String, dynamic> json) {
     return json['pageIndex'] as int?;

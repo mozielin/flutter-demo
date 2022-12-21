@@ -90,27 +90,6 @@ class SecondScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                GridItem(
-                  title: 'instagram_card_title',
-                  icon: Ionicons.logo_instagram,
-                  url: Uri.parse('https://www.instagram.com/anfeichtinger'),
-                ),
-                GridItem(
-                  title: 'twitter_card_title',
-                  icon: Ionicons.logo_twitter,
-                  url: Uri.parse('https://twitter.com/_pharrax'),
-                ),
-                GridItem(
-                  title: 'donate_card_title',
-                  icon: Ionicons.heart_outline,
-                  url: Uri.parse(
-                      'https://www.paypal.com/donate?hosted_button_id=EE3W7PS6AHEP8&source=url'),
-                ),
-                GridItem(
-                  title: 'website_card_title',
-                  icon: Ionicons.desktop_outline,
-                  url: Uri.parse('https://feichtinger.dev'),
-                ),
               ],
             ),
             const TextDivider(text: 'author_divider_title'),

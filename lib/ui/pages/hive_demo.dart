@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hws_app/cubit/bottom_nav_cubit.dart';
 import 'package:ionicons/ionicons.dart';
 
 import '../../models/user.dart';
@@ -181,7 +183,13 @@ class _HiveDemoState extends State<HiveDemo> {
                 ),
                 TextButton.icon(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    //判斷可以跳頁才pop，不然沒有上一頁會掉到黑洞裡
+                    if (Navigator.of(context).canPop()){
+                      Navigator.of(context).pop();
+                    }else {
+                      //不能跳頁用bloc控制screen index state 回到要的頁面
+                      context.read<BottomNavCubit>().updateIndex(1);
+                    }
                   },
                   icon:Icon(Ionicons.backspace_outline, color: Theme.of(context).colorScheme.primary),
                   label: Text(
