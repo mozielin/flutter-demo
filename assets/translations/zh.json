@@ -1,0 +1,50 @@
+{
+  "app_name": "華電聯網-超乎想像",
+
+  "bottom_nav_first": "首頁",
+  "bottom_nav_second": "資訊",
+  "bottom_nav_api": "API",
+  "bottom_nav_hive": "資料庫",
+
+  "localization_title": "多語系",
+  "localization_content": "簡單切換多國語系的套件.",
+
+  "linting_title": "程式碼規範",
+  "linting_content": "全球Dart開發者最推薦的程式碼規範.",
+
+  "storage_title": "儲存",
+  "storage_content": "超級快的鍵值資料庫Hive.",
+
+  "dark_mode_title": "暗黑模式",
+  "dark_mode_content": "平滑的切換白天跟黑暗模式.",
+
+  "state_title": "狀態",
+  "state_content": "透過 Cubit & BLOC 來達成強而有力的狀態管理.",
+
+  "display_title": "顯示",
+  "display_content": "支援高刷新率的顯示畫面套件.",
+
+  "language_switch_title": "Use English",
+
+  "github_card_title": "GitHub 資源庫",
+  "website_card_title": "網頁",
+  "twitter_card_title": "推特",
+  "instagram_card_title": "哀居",
+  "donate_card_title": "抖內",
+
+  "demo_divider_title": "展示",
+  "author_divider_title": "編輯",
+  "packages_divider_title": "套件",
+
+  "flutter_bloc": "Flutter bloc",
+  "bloc": "Bloc",
+  "hydrated_bloc": "Hydrated bloc",
+  "equatable": "Equatable",
+  "lints": "Flutter Lints",
+  "path_provider": "Path provider",
+  "flutter_displaymode": "Displaymode",
+  "easy_localization": "Easy localization",
+  "hive": "Hive",
+  "url_launcher": "Url launcher",
+  "ionicons": "Ionicons"
+}
