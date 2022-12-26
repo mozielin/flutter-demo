@@ -1,12 +1,9 @@
-import 'dart:math';
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
+
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hws_app/cubit/bottom_nav_cubit.dart';
 import 'package:ionicons/ionicons.dart';
-import '../../models/user.dart';
 
 class ClockDemo extends StatefulWidget {
   const ClockDemo({super.key});
@@ -85,11 +82,11 @@ class _ClockDemoState extends State<ClockDemo> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
         color: bgColor,
       ),
       child: Padding(
-        padding: EdgeInsets.only(left: 8, right: 8),
+        padding: const EdgeInsets.only(left: 8, right: 8),
         child: Text(
           text,
           style: TextStyle(
@@ -145,38 +142,48 @@ class _ClockDemoState extends State<ClockDemo> {
             children: <Widget>[
               const Padding(padding: EdgeInsets.all(5)),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Ink(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const ShapeDecoration(
-                      color: Colors.white,
-                      shape: CircleBorder(),
-                    ),
-                    child: Icon(Ionicons.construct,
-                        color: Theme.of(context).textTheme.bodySmall!.color),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      (documentNumber != null)
-                          ? Text('$documentNumber')
-                          : Container(),
-                      Text('$caseNo')
-                    ],
-                  ),
-                  const Padding(padding: EdgeInsets.only(left: 20)),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        createDate,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  Expanded(
+                    flex: 1,
+                    child: Ink(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const ShapeDecoration(
+                        color: Colors.white,
+                        shape: CircleBorder(),
                       ),
-                      getStatusLabel(status),
-                    ],
+                      child: Icon(Ionicons.construct,
+                          color: Theme.of(context).textTheme.bodySmall!.color),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          (documentNumber != null)
+                              ? Text('$documentNumber')
+                              : Container(),
+                          Text('$caseNo')
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          createDate,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        getStatusLabel(status),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -317,11 +324,6 @@ class _ClockDemoState extends State<ClockDemo> {
           });
         }
       }
-    } on DioError catch (e) {
-      setState(() {
-        _load = false;
-      });
-      rethrow;
     } catch (e) {
       setState(() {
         _load = false;
@@ -346,10 +348,9 @@ class _ClockDemoState extends State<ClockDemo> {
   @override
   void initState() {
     scrollController.addListener(() {
-      double showoffset =
-          10.0; //Back to top botton will show on scroll offset 10.0
+      double showOffset = 10.0;
 
-      if (scrollController.offset > showoffset) {
+      if (scrollController.offset > showOffset) {
         setState(() {
           showbtn = true;
         });
@@ -466,6 +467,7 @@ class _ClockDemoState extends State<ClockDemo> {
                           borderRadius: BorderRadius.all(Radius.circular(12))),
                       child: Column(
                         children: <Widget>[
+                          Padding(padding: EdgeInsets.only(top: 5)),
                           Text(
                             '進階搜尋',
                             textAlign: TextAlign.start,
@@ -477,8 +479,10 @@ class _ClockDemoState extends State<ClockDemo> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             child: DropdownButtonFormField(
+                              dropdownColor:
+                                  Theme.of(context).colorScheme.surface,
                               key: _statusKey,
                               icon: Icon(
                                 Ionicons.caret_down_outline,
@@ -487,21 +491,101 @@ class _ClockDemoState extends State<ClockDemo> {
                                     .bodySmall!
                                     .color,
                               ),
-                              hint: Text('請選擇狀態'),
+                              hint: Text(
+                                '請選擇狀態',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color),
+                              ),
                               value: null,
                               items: [
-                                DropdownMenuItem(child: Text('草稿'), value: '1'),
                                 DropdownMenuItem(
-                                    child: Text('待主管審核'), value: '2'),
-                                DropdownMenuItem(child: Text('待專案 Owner 審核'), value: '3'),
-                                DropdownMenuItem(child: Text('待業務審核'), value: '4'),
-                                DropdownMenuItem(child: Text('審核完成'), value: '5'),
-                                DropdownMenuItem(child: Text('駁回'), value: '6'),
-                                DropdownMenuItem(child: Text('未轉入'), value: '7'),
-                                DropdownMenuItem(child: Text('完成'), value: '8'),
-                                DropdownMenuItem(child: Text('待轉入系統'), value: '9'),
+                                    value: '1',
+                                    child: Text('草稿',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '2',
+                                    child: Text('待主管審核',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '3',
+                                    child: Text('待專案 Owner 審核',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '4',
+                                    child: Text('待業務審核',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '5',
+                                    child: Text('審核完成',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '6',
+                                    child: Text('駁回',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '7',
+                                    child: Text('未轉入',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '8',
+                                    child: Text('完成',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
+                                DropdownMenuItem(
+                                    value: '9',
+                                    child: Text('待轉入系統',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color,
+                                        ))),
                               ],
-                              onChanged: (String? value) {
+                              onChanged: (value) {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
                                 setState(() {
                                   _status = value!;
                                 });
@@ -567,6 +651,7 @@ class _ClockDemoState extends State<ClockDemo> {
                             _searchController.clear();
                             _status = '';
                             _statusKey.currentState!.reset();
+                            FocusScope.of(context).requestFocus(FocusNode());
                             getClock(true);
                           },
                           icon: const Icon(
