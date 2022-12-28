@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hws_app/ui/pages/home_page.dart';
 import 'package:hws_app/ui/pages/api_demo.dart';
 import 'package:hws_app/ui/pages/hive_demo.dart';
-import 'package:hws_app/ui/pages/clock_demo.dart';
+import 'package:hws_app/ui/pages/clock/list.dart';
 
 class RouteName {
   static const String home = '/';

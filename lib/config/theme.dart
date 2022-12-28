@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 
 /// Colors from Tailwind CSS (v3.0) - June 2022
@@ -194,3 +196,26 @@ final ThemeData darkTheme = lightTheme.copyWith(
     ),
   ),
 );
+
+class MetronicTheme {
+  static const primary = Color(0xFF3699FF);
+  static const success = Color(0xFF1BC5BD);
+  static const info = Color(0xFF8950FC);
+  static const danger = Color(0xFFF64E60);
+  static const warning = Color(0xFFFFA800);
+  static const dark = Color(0xFF212121);
+  static const light_primary = Color(0xFFE1F0FF);
+  static const light_success = Color(0xFFC9F7F5);
+  static const light_info = Color(0xFFEEE5FF);
+  static const light_danger = Color(0xFFFFE2E5);
+  static const light_warning = Color(0xFFFFF4DE);
+  static const light_dark = Color(0xFFD6D6E0);
+
+  const MetronicTheme._();
+
+  static ThemeData define() {
+    return ThemeData(
+        fontFamily: 'Nunito'
+    );
+  }
+}

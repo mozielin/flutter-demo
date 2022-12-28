@@ -3,7 +3,11 @@
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:hws_app/config/theme.dart';
 import 'package:ionicons/ionicons.dart';
+import '../../widgets/clock/card_hole_clipper.dart';
+import '../../widgets/common/status_label.dart';
+import '../../widgets/common/main_appbar.dart';
 
 class ClockDemo extends StatefulWidget {
   const ClockDemo({super.key});
@@ -16,6 +20,8 @@ class _ClockDemoState extends State<ClockDemo> {
   final Dio dio = Dio();
   final TextEditingController _searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
+  var _status = '';
   bool hideAdvanceSearch = true;
   bool showbtn = false;
   bool is_bottom = false;
@@ -24,8 +30,6 @@ class _ClockDemoState extends State<ClockDemo> {
   int skip = 0;
   int take = 20;
   List items = [];
-  final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
-  var _status = '';
 
   getStatusLabel(status) {
     var text = '';
@@ -34,75 +38,60 @@ class _ClockDemoState extends State<ClockDemo> {
 
     switch (status) {
       case 1:
-        text = '草稿';
-        textColor = const Color(0xFF1BC5BD);
-        bgColor = const Color(0xFFC9F7F5);
+        text = tr('clock.status.draft');
+        textColor = MetronicTheme.success;
+        bgColor = MetronicTheme.light_success;
         break;
       case 2:
-        text = '待主管審核';
-        textColor = const Color(0xFF8950FC);
-        bgColor = const Color(0xFFEEE5FF);
+        text = tr('clock.status.verify');
+        textColor = MetronicTheme.info;
+        bgColor = MetronicTheme.light_info;
         break;
       case 3:
-        text = '待專案 Owner 審核';
-        textColor = const Color(0xFF8950FC);
-        bgColor = const Color(0xFFEEE5FF);
+        text = tr("clock.status.verify_owner");
+        textColor = MetronicTheme.info;
+        bgColor = MetronicTheme.light_info;
         break;
       case 4:
-        text = '待業務審核';
-        textColor = const Color(0xFF8950FC);
-        bgColor = const Color(0xFFEEE5FF);
+        text = tr('clock.status.verify_sales');
+        textColor = MetronicTheme.info;
+        bgColor = MetronicTheme.light_info;
         break;
       case 5:
-        text = '審核完成';
-        textColor = const Color(0xFF8950FC);
-        bgColor = const Color(0xFFEEE5FF);
+        text = tr('clock.status.done');
+        textColor = MetronicTheme.primary;
+        bgColor = MetronicTheme.light_primary;
         break;
       case 6:
-        text = '駁回';
-        textColor = const Color(0xFFF64E60);
-        bgColor = const Color(0xFFFFE2E5);
+        text = tr('clock.status.reject');
+        textColor = MetronicTheme.danger;
+        bgColor = MetronicTheme.light_danger;
         break;
       case 7:
-        text = '未轉入';
-        textColor = const Color(0xFFFFA800);
-        bgColor = const Color(0xFFFFF4DE);
+        text = tr('clock.status.not_save_sap');
+        textColor = MetronicTheme.warning;
+        bgColor = MetronicTheme.light_warning;
         break;
       case 8:
-        text = '完成';
-        textColor = const Color(0xFF3699FF);
-        bgColor = const Color(0xFFE1F0FF);
+        text = tr('clock.status.not_save_crm');
+        textColor = MetronicTheme.warning;
+        bgColor = MetronicTheme.light_warning;
         break;
       case 9:
-        text = '待轉入系統';
-        textColor = const Color(0xFF8950FC);
-        bgColor = const Color(0xFFEEE5FF);
+        text = tr('clock.status.not_save_hws');
+        textColor = MetronicTheme.warning;
+        bgColor = MetronicTheme.light_warning;
         break;
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: bgColor,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
+    return StatusLabel(title: text, color: textColor, bg_color: bgColor);
   }
 
   clock_card(data) {
     // 參數帶入
     var clockId = data['id'];
     var documentNumber = data['source_no'];
-    var caseNo = data['sap_wbs'] ?? '無 Case 報工';
+    var caseNo = data['sap_wbs'] ?? tr("clock.card.no_case_number");
     var status = data['status'];
     var createDate =
         DateFormat('MMM.d').format(DateTime.tryParse(data['depart_time'])!);
@@ -158,7 +147,7 @@ class _ClockDemoState extends State<ClockDemo> {
                   Expanded(
                     flex: 3,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.only(left: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -202,7 +191,10 @@ class _ClockDemoState extends State<ClockDemo> {
                 children: <Widget>[
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[const Text('出發時間'), Text(departTime)],
+                    children: <Widget>[
+                      Text(tr("clock.card.depart_time")),
+                      Text(departTime)
+                    ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -231,7 +223,10 @@ class _ClockDemoState extends State<ClockDemo> {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[const Text('到場時間'), Text(startTime)],
+                    children: <Widget>[
+                      Text(tr("clock.card.arrive_time")),
+                      Text(startTime)
+                    ],
                   ),
                 ],
               ),
@@ -241,7 +236,10 @@ class _ClockDemoState extends State<ClockDemo> {
                 children: <Widget>[
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[const Text('開始時間'), Text(startTime)],
+                    children: <Widget>[
+                      Text(tr("clock.card.start_time")),
+                      Text(startTime)
+                    ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -270,7 +268,10 @@ class _ClockDemoState extends State<ClockDemo> {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[const Text('結束時間'), Text(endTime)],
+                    children: <Widget>[
+                      Text(tr("clock.card.end_time")),
+                      Text(endTime)
+                    ],
                   ),
                 ],
               ),
@@ -377,8 +378,8 @@ class _ClockDemoState extends State<ClockDemo> {
       onRefresh: _pullToRefresh,
       child: Scaffold(
         floatingActionButton: AnimatedOpacity(
-          duration: const Duration(milliseconds: 250), //show/hide animation
-          opacity: showbtn ? 1.0 : 0.0, //set obacity to 1 on visible, or hide
+          duration: const Duration(milliseconds: 250),
+          opacity: showbtn ? 1.0 : 0.0,
           child: FloatingActionButton(
             onPressed: () {
               scrollController.animateTo(
@@ -394,61 +395,9 @@ class _ClockDemoState extends State<ClockDemo> {
             ),
           ),
         ),
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          leading: IconButton(
-            icon: Icon(
-              Ionicons.arrow_back_outline,
-              color: Theme.of(context).textTheme.bodySmall!.color,
-            ),
-            tooltip: '上一頁',
-            onPressed: () {
-              //點擊執行換頁
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(
-            '報工列表',
-            style: TextStyle(
-              color: Theme.of(context).textTheme.bodySmall!.color,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Ionicons.notifications_outline,
-                color: Theme.of(context).textTheme.bodySmall!.color,
-              ),
-              tooltip: '通知',
-              onPressed: () {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('通知畫面')));
-              },
-            ),
-            Ink(
-              decoration: const ShapeDecoration(
-                color: Colors.white,
-                shape: CircleBorder(),
-              ),
-              child: SizedBox(
-                  height: 35.0,
-                  width: 35.0,
-                  child: IconButton(
-                    padding: const EdgeInsets.all(4),
-                    icon: Image.asset(
-                      'assets/img/default_user_avatar.png',
-                      fit: BoxFit.cover,
-                    ),
-                    tooltip: '使用者資訊',
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('使用者資訊畫面')));
-                    },
-                  )),
-            ),
-            const Padding(padding: EdgeInsets.only(right: 10)),
-          ],
+        appBar: MainAppBar(
+          title: tr("clock.appbar.list"),
+          appBar: AppBar(),
         ),
         body: Material(
           color: Theme.of(context).colorScheme.background,
@@ -467,9 +416,9 @@ class _ClockDemoState extends State<ClockDemo> {
                           borderRadius: BorderRadius.all(Radius.circular(12))),
                       child: Column(
                         children: <Widget>[
-                          Padding(padding: EdgeInsets.only(top: 5)),
+                          const Padding(padding: EdgeInsets.only(top: 5)),
                           Text(
-                            '進階搜尋',
+                            tr("search.advance_search"),
                             textAlign: TextAlign.start,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -492,7 +441,7 @@ class _ClockDemoState extends State<ClockDemo> {
                                     .color,
                               ),
                               hint: Text(
-                                '請選擇狀態',
+                                tr("search.hint.status"),
                                 style: TextStyle(
                                     color: Theme.of(context)
                                         .textTheme
@@ -502,86 +451,23 @@ class _ClockDemoState extends State<ClockDemo> {
                               value: null,
                               items: [
                                 DropdownMenuItem(
-                                    value: '1',
-                                    child: Text('草稿',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '1', child: getStatusLabel(1)),
                                 DropdownMenuItem(
-                                    value: '2',
-                                    child: Text('待主管審核',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '2', child: getStatusLabel(2)),
                                 DropdownMenuItem(
-                                    value: '3',
-                                    child: Text('待專案 Owner 審核',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '3', child: getStatusLabel(3)),
                                 DropdownMenuItem(
-                                    value: '4',
-                                    child: Text('待業務審核',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '4', child: getStatusLabel(4)),
                                 DropdownMenuItem(
-                                    value: '5',
-                                    child: Text('審核完成',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '5', child: getStatusLabel(5)),
                                 DropdownMenuItem(
-                                    value: '6',
-                                    child: Text('駁回',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '6', child: getStatusLabel(6)),
                                 DropdownMenuItem(
-                                    value: '7',
-                                    child: Text('未轉入',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '7', child: getStatusLabel(7)),
                                 DropdownMenuItem(
-                                    value: '8',
-                                    child: Text('完成',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '8', child: getStatusLabel(8)),
                                 DropdownMenuItem(
-                                    value: '9',
-                                    child: Text('待轉入系統',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color,
-                                        ))),
+                                    value: '9', child: getStatusLabel(9)),
                               ],
                               onChanged: (value) {
                                 FocusScope.of(context)
@@ -617,7 +503,7 @@ class _ClockDemoState extends State<ClockDemo> {
                               filled: true,
                               fillColor: Theme.of(context).colorScheme.surface,
                               border: const OutlineInputBorder(),
-                              labelText: '搜尋',
+                              labelText: tr("search.search"),
                               labelStyle: TextStyle(
                                 color: Theme.of(context)
                                     .textTheme
@@ -644,7 +530,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       Ink(
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: Color(0xFFFFE2E5),
+                          color: MetronicTheme.light_danger,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -656,7 +542,7 @@ class _ClockDemoState extends State<ClockDemo> {
                           },
                           icon: const Icon(
                             Ionicons.trash,
-                            color: Color(0xFFF64E60),
+                            color: MetronicTheme.danger,
                           ),
                         ),
                       ),
@@ -664,7 +550,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       Ink(
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: Color(0xFFC9F7F5),
+                          color: MetronicTheme.light_success,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -672,16 +558,16 @@ class _ClockDemoState extends State<ClockDemo> {
                           },
                           icon: const Icon(
                             Ionicons.search,
-                            color: Color(0xFF1BC5BD),
+                            color: MetronicTheme.success,
                           ),
                         ),
                       ),
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           borderRadius:
-                              const BorderRadius.all(Radius.circular(5)),
-                          color: Colors.grey[400],
+                              BorderRadius.all(Radius.circular(5)),
+                          color: MetronicTheme.light_dark,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -694,7 +580,7 @@ class _ClockDemoState extends State<ClockDemo> {
                           },
                           icon: const Icon(
                             Ionicons.options,
-                            color: Colors.black,
+                            color: MetronicTheme.dark,
                           ),
                         ),
                       ),
@@ -711,12 +597,15 @@ class _ClockDemoState extends State<ClockDemo> {
                   _load
                       ? Text(
                           is_bottom
-                              ? '-------------- 已經達最底部 --------------'
-                              : '-------------- 載入更多資訊 --------------',
+                              ? '-------------- ${tr('list.reached_bottom')} --------------'
+                              : '-------------- ${tr('list.load_more')} --------------',
                           textAlign: TextAlign.center,
                         )
                       : Text(
-                          _loading ? '資料查詢中，請稍候...' : '查詢失敗，請聯繫 55032-資訊部-開發組！',
+                          _loading
+                              ? tr('list.data_query_plz_wait')
+                              : tr(
+                                  'list.query_failed_contact_system_administrator'),
                           textAlign: TextAlign.center,
                         )
                 ],
@@ -726,51 +615,5 @@ class _ClockDemoState extends State<ClockDemo> {
         ),
       ),
     );
-  }
-}
-
-class HoleClipper extends CustomClipper<Path> {
-  final Offset offset;
-  final double holeSize;
-
-  HoleClipper({this.offset = const Offset(0, 0.285), this.holeSize = 20});
-
-  @override
-  Path getClip(Size size) {
-    Path circlePath = Path();
-    circlePath.addRRect(
-      RRect.fromRectAndRadius(
-        Offset.zero & size,
-        const Radius.circular(5),
-      ),
-    );
-
-    double w = size.width;
-    double h = size.height;
-    Offset offsetXY = Offset(offset.dx * w, offset.dy * h);
-    double d = holeSize;
-    _getHold(circlePath, 1, d, offsetXY, size);
-    circlePath.fillType = PathFillType.evenOdd;
-    return circlePath;
-  }
-
-  void _getHold(Path path, int count, double d, Offset offset, size) {
-    // 左耳朵
-    var left = offset.dx - 5;
-    var top = offset.dy;
-    var right = left + d;
-    var bottom = top + d;
-    path.addOval(Rect.fromLTRB(left, top, right, bottom));
-    // 右耳朵
-    var aLeft = offset.dx + size.width - 15;
-    var aTop = offset.dy;
-    var aRight = aLeft + d;
-    var aBottom = aTop + d;
-    path.addOval(Rect.fromLTRB(aLeft, aTop, aRight, aBottom));
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return true;
   }
 }
