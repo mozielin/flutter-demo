@@ -41,7 +41,7 @@ void main()async {
           Locale('en'),
           Locale('zh'),
         ],
-        fallbackLocale: const Locale('en'),
+        fallbackLocale: const Locale('zh'),
         useFallbackTranslations: true,
         child: const MyApp(),
       ),
@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
         builder: (BuildContext context, ThemeModeState state) {
           return MaterialApp(
             /// Localization is not available for the title.
-            title: 'Flutter Production Boilerplate',
+            title: 'Hwacom App',
 
             /// Theme stuff
             theme: lightTheme,
@@ -83,6 +83,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
 
 

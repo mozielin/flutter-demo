@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:hws_app/cubit/bottom_nav_cubit.dart';
 import '../widgets/header.dart';
 import '../widgets/second_screen/grid_item.dart';
 import '../widgets/second_screen/link_card.dart';
@@ -98,16 +100,17 @@ class SecondScreen extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(12))),
                   child: ListTile(
                     onTap: (){
-                      Navigator.pushNamed(context, '/hive_demo');
+                      //context.read<BottomNavCubit>().updateIndex(4);
+                      Navigator.pushNamed(context, '/file_demo');
                     },
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12))),
                     title: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Icon(Ionicons.server_outline, color: Theme.of(context).colorScheme.primary),
+                        Icon(Ionicons.images_outline, color: Theme.of(context).colorScheme.primary),
                         Text(
-                          'Test',
+                          'File Demo',
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context)
