@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/ui/pages/api_demo.dart';
 import 'package:hws_app/ui/pages/hive_demo.dart';
+import 'package:hws_app/ui/pages/file_demo.dart';
 
 import '../../cubit/bottom_nav_cubit.dart';
 import '../widgets/app_bar_gone.dart';

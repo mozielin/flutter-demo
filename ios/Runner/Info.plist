@@ -47,5 +47,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App 需要您的同意, 才能訪問</string>
+	<key>NSCameraUsageDescription</key>
+	<string>App 需要您的同意, 才能訪問</string>
+
 </dict>
 </plist>
