@@ -46,5 +46,51 @@
   "easy_localization": "Easy localization",
   "hive": "Hive",
   "url_launcher": "Url launcher",
-  "ionicons": "Ionicons"
+  "ionicons": "Ionicons",
+
+  "list": {
+    "reached_bottom": "Reached bottom",
+    "load_more": "Load more",
+    "data_query_plz_wait": "Data query plz wait...",
+    "query_failed_contact_system_administrator": "Query failed contact system administrator！"
+  },
+
+  "appbar": {
+    "previous_page": "Previous page",
+    "notification": "Notification",
+    "user_info": "User info"
+
+  },
+
+  "search": {
+    "search": "Search",
+    "advance_search": "Advance search",
+    "hint": {
+      "status": "Select status"
+    }
+  },
+
+  "clock": {
+    "appbar": {
+      "list": "Clock list"
+    },
+    "status": {
+      "draft": "Draft",
+      "verify": "Verify",
+      "verify_owner": "Verify owner",
+      "verify_sales": "Verify sales",
+      "done": "Done",
+      "reject": "Reject",
+      "not_save_sap": "Not save SAP",
+      "not_save_crm": "Not save CRM",
+      "not_save_hws": "Not save HWS"
+    },
+    "card": {
+      "no_case_number": "No case number",
+      "depart_time": "Depart",
+      "arrive_time": "Arrive",
+      "start_time": "Start",
+      "end_time": "End"
+    }
+  }
 }
