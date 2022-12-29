@@ -46,5 +46,51 @@
   "easy_localization": "Easy localization",
   "hive": "Hive",
   "url_launcher": "Url launcher",
-  "ionicons": "Ionicons"
+  "ionicons": "Ionicons",
+
+  "list": {
+    "reached_bottom": "已經達最底部",
+    "load_more": "載入更多資訊",
+    "data_query_plz_wait": "資料查詢中，請稍候...",
+    "query_failed_contact_system_administrator": "查詢失敗，請聯繫系統管理員！"
+  },
+
+  "appbar": {
+    "previous_page": "上一頁",
+    "notification": "通知",
+    "user_info": "使用者資訊"
+
+  },
+
+  "search": {
+    "search": "搜尋",
+    "advance_search": "進階搜尋",
+    "hint": {
+      "status": "請選擇狀態"
+    }
+  },
+
+  "clock": {
+    "appbar": {
+      "list": "報工列表"
+    },
+    "status": {
+      "draft": "草稿",
+      "verify": "待主管審核",
+      "verify_owner": "待專案 Owner 審核",
+      "verify_sales": "待業務審核",
+      "done": "完成",
+      "reject": "駁回",
+      "not_save_sap": "轉入 SAP 失敗",
+      "not_save_crm": "轉入 CRM 失敗",
+      "not_save_hws": "轉入 HWS 失敗"
+    },
+    "card": {
+      "no_case_number": "無 Case 報工",
+      "depart_time": "出發時間",
+      "arrive_time": "到場時間",
+      "start_time": "開始時間",
+      "end_time": "結束時間"
+    }
+  }
 }
