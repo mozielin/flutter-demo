@@ -83,7 +83,7 @@
       "reject": "駁回",
       "not_save_sap": "轉入 SAP 失敗",
       "not_save_crm": "轉入 CRM 失敗",
-      "not_save_hws": "轉入 hws 失敗"
+      "not_save_hws": "轉入 HWS 失敗"
     },
     "card": {
       "no_case_number": "無 Case 報工",

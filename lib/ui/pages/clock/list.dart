@@ -91,27 +91,27 @@ class _ClockDemoState extends State<ClockDemo> {
     // 參數帶入
     var clockId = data['id'];
     var documentNumber = data['source_no'];
-    var caseNo = data['sap_wbs'] ?? tr("clock.card.no_case_number");
+    var caseNo = data['case_no'] ?? tr("clock.card.no_case_number");
     var status = data['status'];
     var createDate =
         DateFormat('MMM.d').format(DateTime.tryParse(data['depart_time'])!);
     var departDatetime = DateTime.tryParse(data['depart_time'])!;
     var startDatetime = DateTime.tryParse(data['start_time'])!;
     var endDatetime = DateTime.tryParse(data['end_time'])!;
+    var traffic_hours = data['traffic_hours'];
+    var worked_hours = data['worked_hours'];
+    var total_hours = data['total_hours'];
 
     // 時間計算
     var departTime = DateFormat('HH:mm').format(departDatetime);
     var startTime = DateFormat('HH:mm').format(startDatetime);
     var endTime = DateFormat('HH:mm').format(endDatetime);
-    var startDiffTime = startDatetime.difference(departDatetime);
-    var startDiffHour = startDiffTime.inHours;
-    var startDiffMin = startDiffTime.inMinutes - startDiffTime.inHours * 60;
-    var endDiffTime = endDatetime.difference(startDatetime);
-    var endDiffHour = endDiffTime.inHours;
-    var endDiffMin = endDiffTime.inMinutes - endDiffTime.inHours * 60;
-    var totalDiffTime = endDatetime.difference(departDatetime);
-    var totalDiffHour = totalDiffTime.inHours;
-    var totalDiffMin = totalDiffTime.inMinutes - totalDiffTime.inHours * 60;
+    var startDiffHour = traffic_hours ~/ 1;
+    var startDiffMin = (traffic_hours % 1 * 60).toStringAsFixed(0);
+    var endDiffHour = worked_hours ~/ 1;
+    var endDiffMin = (worked_hours % 1 * 60).toStringAsFixed(0);
+    var totalDiffHour = total_hours ~/ 1;
+    var totalDiffMin = (total_hours % 1 * 60).toStringAsFixed(0);
 
     return ClipPath(
       clipper: HoleClipper(),
@@ -296,7 +296,7 @@ class _ClockDemoState extends State<ClockDemo> {
 
       if (!is_bottom) {
         Response res = await dio.post(
-          'http://10.0.2.2/api/getClocks',
+          'http://10.0.2.2/api/getClocks', // TODO: URL 放至 env 相關設定
           data: {
             'enumber': 'HW-M54',
             'skip': skip,
@@ -464,8 +464,8 @@ class _ClockDemoState extends State<ClockDemo> {
                                     value: '6', child: getStatusLabel(6)),
                                 DropdownMenuItem(
                                     value: '7', child: getStatusLabel(7)),
-                                DropdownMenuItem(
-                                    value: '8', child: getStatusLabel(8)),
+                                // DropdownMenuItem(
+                                //     value: '8', child: getStatusLabel(8)),
                                 DropdownMenuItem(
                                     value: '9', child: getStatusLabel(9)),
                               ],
