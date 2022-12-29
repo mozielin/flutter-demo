@@ -108,7 +108,7 @@ class SecondScreen extends StatelessWidget {
                     title: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Icon(Ionicons.server_outline, color: Theme.of(context).colorScheme.primary),
+                        Icon(Ionicons.images_outline, color: Theme.of(context).colorScheme.primary),
                         Text(
                           'File Demo',
                           textAlign: TextAlign.center,

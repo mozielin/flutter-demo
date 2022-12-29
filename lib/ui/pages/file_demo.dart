@@ -255,7 +255,7 @@ class _FileDemoState extends State<FileDemo> {
             },
             icon:Icon(Ionicons.camera_outline, color: Theme.of(context).colorScheme.primary),
             label: Text(
-              '拍照',
+              '相機',
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context)
@@ -274,7 +274,7 @@ class _FileDemoState extends State<FileDemo> {
             },
             icon:Icon(Ionicons.image_outline, color: Theme.of(context).colorScheme.primary),
             label: Text(
-              '從相簿',
+              '相簿',
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context)
