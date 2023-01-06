@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/cubit/bottom_nav_cubit.dart';
 import 'package:ionicons/ionicons.dart';
-
-
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class ApiDemo extends StatefulWidget {
   const ApiDemo({super.key});
@@ -193,6 +193,58 @@ class _ApiDemoState extends State<ApiDemo> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                TextButton.icon(
+                  onPressed: () {
+                    String credentials = "username:password";
+                    Codec<String, String> stringToBase64Url = utf8.fuse(base64Url);
+                    String encoded = stringToBase64Url.encode(credentials);      // dXNlcm5hbWU6cGFzc3dvcmQ=
+                    String tzucode = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJId2Fjb21FSVAiLCJpYXQiOjE2NzI4MjU3MTUsImV4cCI6MTY3MjgyNjYxNSwic3ViIjoiaHdhY29tLmNvbSIsImp0aSI6ImY5YmYwN2ExNzNhZmNlOWUzMTdiMDgwOGY4MjFiNGFlIiwiZ29vZ2xlX3Rva2VuIjoiIiwibmFtZSI6IueuoeWtkOS6mCIsImVtYWlsIjoidHp1aHN1YW4ua3VhbkBod2Fjb20uY29tIiwiZW51bWJlciI6IkhXLU82OCIsImF2YXRhciI6IlwvYXZhdGFyXC8xNWI5ZWRiYy00Mzg4LTRkYTAtOWU5YS05YjBkMTQxNzJlYmIucG5nIn0.5gDRwmqGAnXfYO2NS6wchUv02hwuAWNIY53JMYygJJg';
+                    var array = tzucode.split('.');
+                    var remainder = array[1].length % 4;
+                    var addlen = 4 - remainder;
+
+                    for(var i = 0; i < addlen; i++){
+                      array[1] += '=';
+                    }
+                    //print(array[1]);
+                    String decoded = stringToBase64Url.decode(array[1]);
+
+                    //print(decoded);
+                    final parsed = jsonDecode(decoded);
+                    //print(parsed['exp']);
+                    var date = DateTime.fromMillisecondsSinceEpoch(parsed['exp'] * 1000);
+                    //print(date);
+
+                    print(DateTime.now());
+
+                    print(DateTime.fromMillisecondsSinceEpoch(
+                      parsed['exp'] * 1000,
+                      isUtc: false,
+                    ));
+
+                    bool isExpired = DateTime.now().isAfter(
+                      DateTime.fromMillisecondsSinceEpoch(
+                        parsed['exp'] * 1000,
+                        isUtc: false,
+                      ),
+                    );
+
+                    print(isExpired);
+                  },
+                  icon:Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
+                  label: Text(
+                    'Crypto Test',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                ),
                 TextButton.icon(
                   onPressed: () {
                     setState(() {
