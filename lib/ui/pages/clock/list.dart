@@ -1,10 +1,14 @@
-// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, must_be_immutable, camel_case_types, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hws_app/config/theme.dart';
+import 'package:hws_app/main.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:uiblock/uiblock.dart';
 import '../../widgets/clock/card_hole_clipper.dart';
 import '../../widgets/common/status_label.dart';
 import '../../widgets/common/main_appbar.dart';
@@ -20,6 +24,7 @@ class _ClockDemoState extends State<ClockDemo> {
   final Dio dio = Dio();
   final TextEditingController _searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  final ScrollController dialogController = ScrollController();
   final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
   var _status = '';
   bool hideAdvanceSearch = true;
@@ -30,6 +35,7 @@ class _ClockDemoState extends State<ClockDemo> {
   int skip = 0;
   int take = 20;
   List items = [];
+  List images = [];
 
   getStatusLabel(status) {
     var text = '';
@@ -87,21 +93,133 @@ class _ClockDemoState extends State<ClockDemo> {
     return StatusLabel(title: text, color: textColor, bg_color: bgColor);
   }
 
-  clock_card(data) {
+  clock_dialog(data) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                clock_card(null, data),
+              ],
+            ),
+          );
+        });
+  }
+
+  clock_detail(data) {
     // 參數帶入
-    var clockId = data['id'];
+    var clock_context = data['context'];
+    return Column(
+      children: [
+        SizedBox(
+          height: 400,
+          child: ListView(
+            controller: dialogController,
+            children: <Widget>[
+              Text(
+                tr('clock.card.context'),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall!.color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Divider(
+                height: 20,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
+              Text(
+                clock_context,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall!.color,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
+              ),
+              Text(
+                tr('clock.card.file'),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall!.color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Divider(
+                height: 20,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
+              (images.isNotEmpty)
+                  ? ListView.builder(
+                      physics: const ScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: images.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                          shadowColor: Theme.of(context).colorScheme.shadow,
+                          color: Theme.of(context).colorScheme.background,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12))),
+                          child: InkWell(
+                            onTap: () {
+                              NavigatorState nav = Navigator.of(context);
+                              GlobalData.of(context)?.photo_file_base64_title =
+                                  tr('clock.card.file');
+                              GlobalData.of(context)?.photo_file_base64 =
+                                  images[index];
+                              nav.pushNamed('/photo_detail_base64');
+                            },
+                            child: Image.memory(
+                              base64Decode(images[index]),
+                              height: 250,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Text(
+                      tr('alert.no_data'),
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                      ),
+                    ),
+              const Padding(padding: EdgeInsets.all(5)),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  clock_card(index, data) {
+    var weekday = [
+      " ",
+      tr('week.short.mon'),
+      tr('week.short.tue'),
+      tr('week.short.wed'),
+      tr('week.short.thu'),
+      tr('week.short.fri'),
+      tr('week.short.sat'),
+      tr('week.short.sun')
+    ];
+    // 參數帶入
+    var clock_id = data['id'];
     var documentNumber = data['source_no'];
     var caseNo = data['case_no'] ?? tr("clock.card.no_case_number");
     var status = data['status'];
-    var createDate =
-        DateFormat('MMM.d').format(DateTime.tryParse(data['depart_time'])!);
+
     var departDatetime = DateTime.tryParse(data['depart_time'])!;
     var startDatetime = DateTime.tryParse(data['start_time'])!;
     var endDatetime = DateTime.tryParse(data['end_time'])!;
     var traffic_hours = data['traffic_hours'];
     var worked_hours = data['worked_hours'];
     var total_hours = data['total_hours'];
-
+    var createDate =
+        '${DateFormat('M/d').format(departDatetime)}(${weekday[departDatetime.weekday]})';
     // 時間計算
     var departTime = DateFormat('HH:mm').format(departDatetime);
     var startTime = DateFormat('HH:mm').format(startDatetime);
@@ -121,8 +239,11 @@ class _ClockDemoState extends State<ClockDemo> {
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12))),
         child: ListTile(
-          onTap: () {
-            Navigator.pushNamed(context, '/clock/$clockId');
+          onTap: () async {
+            if (index != null) {
+              await getClockImages(clock_id);
+              clock_dialog(items[index]);
+            }
           },
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(12))),
@@ -276,6 +397,7 @@ class _ClockDemoState extends State<ClockDemo> {
                 ],
               ),
               const Padding(padding: EdgeInsets.all(5)),
+              (index == null) ? clock_detail(data) : Container(),
             ],
           ),
         ),
@@ -283,7 +405,7 @@ class _ClockDemoState extends State<ClockDemo> {
     );
   }
 
-  getClock(bool clear) async {
+  getClocks(bool clear) async {
     try {
       if (clear) {
         // 是否清空
@@ -313,7 +435,7 @@ class _ClockDemoState extends State<ClockDemo> {
             }
 
             for (var each in res.data['clocks']) {
-              items.add(clock_card(each));
+              items.add(each);
             }
 
             skip += take;
@@ -339,9 +461,41 @@ class _ClockDemoState extends State<ClockDemo> {
     }
   }
 
+  getClockImages(clock_id) async {
+    try {
+      UIBlock.block(context);
+      setState(() {
+        images = [];
+      });
+
+      Response res = await dio.post(
+        'http://10.0.2.2/api/getClockImages', // TODO: URL 放至 env 相關設定
+        data: {'clock_id': clock_id},
+      );
+
+      if (res.statusCode == 200 && res.data != null) {
+        setState(() {
+          for (var each in res.data['images']) {
+            images.add(each['base64_path'].split('base64,')[1]);
+          }
+        });
+      } else {
+        setState(() {});
+      }
+    } catch (e) {
+      setState(() {});
+      rethrow;
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+    UIBlock.unblock(context);
+  }
+
   Future<void> _pullToRefresh() async {
     setState(() {
-      getClock(true);
+      getClocks(true);
     });
     return;
   }
@@ -364,11 +518,11 @@ class _ClockDemoState extends State<ClockDemo> {
       double maxScroll = scrollController.position.maxScrollExtent;
       double currentScroll = scrollController.position.pixels;
       if (maxScroll - currentScroll <= 0) {
-        getClock(false); // 滑至底部 Load more
+        getClocks(false); // 滑至底部 Load more
       }
     });
 
-    getClock(true);
+    getClocks(true);
     super.initState();
   }
 
@@ -538,7 +692,7 @@ class _ClockDemoState extends State<ClockDemo> {
                             _status = '';
                             _statusKey.currentState!.reset();
                             FocusScope.of(context).requestFocus(FocusNode());
-                            getClock(true);
+                            getClocks(true);
                           },
                           icon: const Icon(
                             Ionicons.trash,
@@ -554,7 +708,7 @@ class _ClockDemoState extends State<ClockDemo> {
                         ),
                         child: IconButton(
                           onPressed: () {
-                            getClock(true);
+                            getClocks(true);
                           },
                           icon: const Icon(
                             Ionicons.search,
@@ -565,8 +719,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
                         decoration: const BoxDecoration(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(5)),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
                           color: MetronicTheme.light_dark,
                         ),
                         child: IconButton(
@@ -591,7 +744,7 @@ class _ClockDemoState extends State<ClockDemo> {
                     shrinkWrap: true,
                     itemCount: items.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return items[index];
+                      return clock_card(index, items[index]);
                     },
                   ),
                   _load

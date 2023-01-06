@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:hws_app/ui/pages/home_page.dart';
 import 'package:hws_app/router.dart';
@@ -16,7 +18,7 @@ import 'config/theme.dart';
 import 'cubit/theme_cubit.dart';
 import 'ui/screens/skeleton_screen.dart';
 
-void main()async {
+void main() async {
   /// Initialize packages
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -34,7 +36,7 @@ void main()async {
   await Hive.openBox('userBox');
 
   HydratedBlocOverrides.runZoned(
-        () => runApp(
+    () => runApp(
       EasyLocalization(
         path: 'assets/translations',
         supportedLocales: const <Locale>[
@@ -60,23 +62,25 @@ class MyApp extends StatelessWidget {
       create: (BuildContext context) => ThemeCubit(),
       child: BlocBuilder<ThemeCubit, ThemeModeState>(
         builder: (BuildContext context, ThemeModeState state) {
-          return MaterialApp(
-            /// Localization is not available for the title.
-            title: 'Hwacom App',
+          return GlobalData(
+            child: MaterialApp(
+              /// Localization is not available for the title.
+              title: 'Hwacom App',
 
-            /// Theme stuff
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: state.themeMode,
+              /// Theme stuff
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: state.themeMode,
 
-            /// Localization stuff
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            debugShowCheckedModeBanner: false,
-            home: const SkeletonScreen(),
-            onGenerateRoute: AppRouter.generateRoute,
-            initialRoute: '/',
+              /// Localization stuff
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              debugShowCheckedModeBanner: false,
+              home: const SkeletonScreen(),
+              onGenerateRoute: AppRouter.generateRoute,
+              initialRoute: '/',
+            ),
           );
         },
       ),
@@ -84,6 +88,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class GlobalData extends InheritedModel<GlobalData> {
+  String? photo_file_base64_title;
+  String? photo_file_base64;
 
+  GlobalData({super.key, required Widget child}) : super(child: child);
 
+  static GlobalData? of(BuildContext context, {String? aspect}) =>
+      InheritedModel.inheritFrom<GlobalData>(context, aspect: aspect);
 
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return true;
+  }
+
+  @override
+  bool updateShouldNotifyDependent(GlobalData oldWidget, Set dependencies) {
+    if (dependencies.contains('photo_file_base64_title') &&
+        oldWidget.photo_file_base64_title != photo_file_base64_title) {
+      return true;
+    }
+    if (dependencies.contains('photo_file_base64') &&
+        oldWidget.photo_file_base64 != photo_file_base64) {
+      return true;
+    }
+    return false;
+  }
+}
