@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:hws_app/main.dart';
+import 'package:hws_app/global_data.dart';
 import 'package:hws_app/ui/widgets/common/main_appbar.dart';
 import 'package:photo_view/photo_view.dart';
 
