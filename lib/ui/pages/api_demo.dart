@@ -190,7 +190,7 @@ class _ApiDemoState extends State<ApiDemo> {
               msg,
               style: Theme.of(context).textTheme.headline4,
             ),
-            Column(
+            Column (
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextButton.icon(

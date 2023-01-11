@@ -92,5 +92,12 @@
       "start_time": "開始時間",
       "end_time": "結束時間"
     }
+  },
+
+  "auth": {
+    "enumber": "工號",
+    "password": "密碼",
+    "login": "登入",
+    "login_failed": "登入失敗"
   }
 }

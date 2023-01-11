@@ -17,8 +17,7 @@ class FirstScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           physics: const BouncingScrollPhysics(),
           children: <Widget>[
-            const Header(text: 'app_name'),
-
+            Header(text: tr('app_name')),
             Card(
               elevation: 2,
               shadowColor: Theme.of(context).colorScheme.shadow,

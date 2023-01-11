@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hws_app/ui/pages/auth/login.dart';
 import 'package:hws_app/ui/pages/home_page.dart';
 import 'package:hws_app/router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'cubit/user_cubit.dart';
 import 'models/user.dart';
 
 import 'dart:io';
@@ -56,30 +58,39 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ThemeCubit>(
-      create: (BuildContext context) => ThemeCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeCubit>(
+          create: (BuildContext context) => ThemeCubit(),
+        ),
+        BlocProvider<UserCubit>(
+          create: (BuildContext context) => UserCubit(),
+        ),
+      ],
       child: BlocBuilder<ThemeCubit, ThemeModeState>(
-        builder: (BuildContext context, ThemeModeState state) {
-          return MaterialApp(
-            /// Localization is not available for the title.
-            title: 'Hwacom App',
-
-            /// Theme stuff
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: state.themeMode,
-
-            /// Localization stuff
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            debugShowCheckedModeBanner: false,
-            home: const SkeletonScreen(),
-            onGenerateRoute: AppRouter.generateRoute,
-            initialRoute: '/',
-          );
-        },
-      ),
+      builder: (BuildContext context, ThemeModeState state) {
+        return BlocBuilder<UserCubit, UserState>(
+          builder: (BuildContext context, UserState user) {
+            return MaterialApp(
+              /// Localization is not available for the title.
+              title: 'Hwacom App',
+              /// Theme stuff
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: state.themeMode,
+              /// Localization stuff
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              debugShowCheckedModeBanner: false,
+              home: const LoginScreen(),
+              onGenerateRoute: AppRouter.generateRoute,
+              initialRoute: '/',
+            );
+          },
+        );
+      },
+    ),
     );
   }
 }
