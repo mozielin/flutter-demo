@@ -2,6 +2,7 @@
   "app_name": "華電聯網-超乎想像",
   "bottom_nav_first": "首頁",
   "bottom_nav_second": "資訊",
+  "bottom_nav_clock": "登錄工時",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "資料庫",
   "localization_title": "多語系",
@@ -79,7 +80,8 @@
   },
   "clock": {
     "appbar": {
-      "list": "報工列表"
+      "list": "報工列表",
+      "create": "登錄工時"
     },
     "status": {
       "draft": "草稿",
@@ -100,6 +102,24 @@
       "end_time": "結束時間",
       "context": "報工內容",
       "file": "附件檔案"
+    },
+    "create_type": {
+      "no_case_title": "無 Case",
+      "no_case_desc": "專案開發/Office/請假"
+    },
+    "create": {
+      "attr": "類型",
+      "internal_order": "Internal Order",
+      "internal_order_labelText": "請輸入Internal Order",
+      "attr_project": "專案開發",
+      "attr_office": "Office",
+      "attr_day_off": "請假",
+      "type": "主類別",
+      "child_type": "子類別",
+      "depart_time": "出發時間",
+      "depart_time_labelText": "EX:2021-01-01 00:00",
+      "start_time": "開始時間",
+      "end_time": "結束時間"
     }
   }
 }

@@ -2,6 +2,7 @@
   "app_name": "Flutter Production Boilerplate",
   "bottom_nav_first": "Home",
   "bottom_nav_second": "Info",
+  "bottom_nav_clock": "Clock",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "Hive",
   "localization_title": "Localization",
@@ -95,6 +96,10 @@
       "arrive_time": "Arrive",
       "start_time": "Start",
       "end_time": "End"
+    },
+    "create_type": {
+      "no_case_title": "No Case",
+      "no_case_desc": "Project Dev/Office/Day Off"
     }
   }
 }

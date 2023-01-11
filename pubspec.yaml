@@ -59,6 +59,7 @@ dependencies:
   crypto: any
   photo_view: any
   uiblock: any
+  flutter_datetime_picker: any
 
 dev_dependencies:
 
