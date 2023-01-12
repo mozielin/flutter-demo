@@ -1,41 +1,30 @@
 {
   "app_name": "Flutter Production Boilerplate",
-
   "bottom_nav_first": "Home",
   "bottom_nav_second": "Info",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "Hive",
-
   "localization_title": "Localization",
   "localization_content": "Simplified translations with the Easy Translations package.",
-
   "linting_title": "Linting",
   "linting_content": "Stricter linting rules with flutter lints recommended by the Dart team.",
-
   "storage_title": "Storage",
   "storage_content": "Blazing fast key-value database written in pure Dart with Hive.",
-
   "dark_mode_title": "Dark Mode",
   "dark_mode_content": "Smooth transition to dark mode by using the inbuilt theming engine.",
-
   "state_title": "State",
   "state_content": "Powerful state management using Cubit & BLOC.",
-
   "display_title": "Display",
   "display_content": "Support for high refresh rate displays with the flutter displaymode package.",
-
   "language_switch_title": "Use 中文",
-
   "github_card_title": "GitHub repository",
   "website_card_title": "Website",
   "twitter_card_title": "Twitter",
   "instagram_card_title": "Instagram",
   "donate_card_title": "Donate",
-
   "demo_divider_title": "Demo",
   "author_divider_title": "Author",
   "packages_divider_title": "Packages",
-
   "flutter_bloc": "Flutter bloc",
   "bloc": "Bloc",
   "hydrated_bloc": "Hydrated bloc",
@@ -47,21 +36,37 @@
   "hive": "Hive",
   "url_launcher": "Url launcher",
   "ionicons": "Ionicons",
-
+  "week": {
+    "short": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "long": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    }
+  },
   "list": {
     "reached_bottom": "Reached bottom",
     "load_more": "Load more",
     "data_query_plz_wait": "Data query plz wait...",
     "query_failed_contact_system_administrator": "Query failed contact system administrator！"
   },
-
   "appbar": {
     "previous_page": "Previous page",
     "notification": "Notification",
     "user_info": "User info"
-
   },
-
   "search": {
     "search": "Search",
     "advance_search": "Advance search",
@@ -69,7 +74,6 @@
       "status": "Select status"
     }
   },
-
   "clock": {
     "appbar": {
       "list": "Clock list"

@@ -28,16 +28,16 @@ class HoleClipper extends CustomClipper<Path> {
   void _getHold(Path path, int count, double d, Offset offset, size) {
     // 左耳朵
     var left = offset.dx - 5;
-    var top = offset.dy;
+    var top = 71; // offset.dy
     var right = left + d;
     var bottom = top + d;
-    path.addOval(Rect.fromLTRB(left, top, right, bottom));
+    path.addOval(Rect.fromLTRB(left, 71, right, bottom));
     // 右耳朵
     var aLeft = offset.dx + size.width - 15;
-    var aTop = offset.dy;
+    var aTop = 71; // offset.dy
     var aRight = aLeft + d;
     var aBottom = aTop + d;
-    path.addOval(Rect.fromLTRB(aLeft, aTop, aRight, aBottom));
+    path.addOval(Rect.fromLTRB(aLeft, 71, aRight, aBottom));
   }
 
   @override

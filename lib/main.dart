@@ -1,6 +1,9 @@
+// ignore_for_file: non_constant_identifier_names, must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:hws_app/ui/pages/auth/login.dart';
 import 'package:hws_app/ui/pages/home_page.dart';
+import 'package:hws_app/global_data.dart';
 import 'package:hws_app/router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'cubit/user_cubit.dart';
@@ -18,7 +21,7 @@ import 'config/theme.dart';
 import 'cubit/theme_cubit.dart';
 import 'ui/screens/skeleton_screen.dart';
 
-void main()async {
+void main() async {
   /// Initialize packages
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -71,7 +74,8 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, ThemeModeState state) {
         return BlocBuilder<UserCubit, UserState>(
           builder: (BuildContext context, UserState user) {
-            return MaterialApp(
+            return GlobalData(
+                child: MaterialApp(
               /// Localization is not available for the title.
               title: 'Hwacom App',
               /// Theme stuff
@@ -86,6 +90,7 @@ class MyApp extends StatelessWidget {
               home: const LoginScreen(),
               onGenerateRoute: AppRouter.generateRoute,
               initialRoute: '/',
+            ),
             );
           },
         );
