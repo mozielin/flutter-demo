@@ -96,5 +96,13 @@
       "start_time": "Start",
       "end_time": "End"
     }
+  },
+
+  "auth": {
+    "enumber": "Work Number",
+    "password": "Password",
+    "login": "Login",
+    "login_failed": "Login Failed",
+    "connection_error": "Connection Error"
   }
 }

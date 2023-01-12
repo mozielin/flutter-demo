@@ -101,5 +101,13 @@
       "context": "報工內容",
       "file": "附件檔案"
     }
+  },
+
+  "auth": {
+    "enumber": "工號",
+    "password": "密碼",
+    "login": "登入",
+    "login_failed": "登入失敗",
+    "connection_error": "連線異常"
   }
 }

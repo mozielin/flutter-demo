@@ -59,6 +59,7 @@ dependencies:
   crypto: any
   photo_view: any
   uiblock: any
+  art_sweetalert: ^0.0.5
 
 dev_dependencies:
 
@@ -68,6 +69,9 @@ dev_dependencies:
   build_runner: any
   json_serializable: any
   flutter_lints: ^2.0.1
+  bloc_test: ^9.1.0
+  mocktail: ^0.3.0
+  very_good_analysis: ^3.1.0
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -83,7 +87,7 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-  uses-material-design: false
+  uses-material-design: true
 
   assets:
     - assets/translations/
