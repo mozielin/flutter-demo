@@ -1,14 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
-
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hws_app/models/user.dart';
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import '../../cubit/user_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AuthService{
   final Dio dio = Dio();
-
   ///登入
   Future<Map<String, dynamic>> login(String account, String password) async {
     try {
@@ -20,7 +16,7 @@ class AuthService{
           'exp': '7400',
         },
         queryParameters: {'apikey': 'YOUR_API_KEY'},
-      );
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200 && response.data != null) {
 
@@ -55,7 +51,33 @@ class AuthService{
       }
 
     } on DioError catch (e) {
+      return e.response!.data;
+      print(e);
       return json.decode(e.response!.data);
+    } on TimeoutException catch (e) {
+      //return {"success":false, "message":"{error:'${e.message}'}"};
+      var errorMsg = tr('auth.connection_error');
+      return {"response_code": 400, "success": false, "data": null, "message": '{"error":"$errorMsg"}'};
+      // if (e.response != null) {
+      //   print(e.response?.data);
+      //   print(e.response?.headers);
+      //   print(e.response?.requestOptions);
+      // } else {
+      //   // Something happened in setting up or sending the request that triggered an Error
+      //   print(e.requestOptions);
+      //   print(e.message);
+      // }
+      //
+      // if(e.type == DioErrorType.connectTimeout){
+      //   print("Connection  Timeout Exception");
+      //   Authenticated['message'] = "{error:'456123'}";
+      //   return Authenticated;
+      //   throw Exception("Connection  Timeout Exception");
+      // }
+      // print("Connection  789 Exception");
+      // Authenticated['message'] = "{error:'789456'}";
+      // return Authenticated;
+      // throw Exception(e.message);
     }
   }
 

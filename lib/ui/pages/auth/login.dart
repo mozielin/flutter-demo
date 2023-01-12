@@ -10,6 +10,7 @@ import 'package:hws_app/ui/widgets/auth/password_field.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:hws_app/service/authenticate/auth.dart';
+import 'package:uiblock/uiblock.dart';
 import '../../../config/theme.dart';
 import '../../../cubit/theme_cubit.dart';
 import '../../../cubit/user_cubit.dart';
@@ -71,22 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   ///Logo放這
-                                  state.themeMode == ThemeMode.dark
-                                      ? Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Ionicons.logo_google, color: Theme.of(context).colorScheme.primary, size: 50),
-                                            const SizedBox(width: 10),
-                                            Icon(Ionicons.logo_google, color: Theme.of(context).colorScheme.primary, size: 30),
-                                            const SizedBox(width: 10),
-                                            Icon(Ionicons.logo_linkedin, color: Theme.of(context).colorScheme.primary, size: 20),
-                                            const SizedBox(width: 10),
-                                            Icon(Ionicons.logo_linkedin, color: Theme.of(context).colorScheme.primary, size: 20),
-                                            const SizedBox(width: 10),
-                                            Icon(Ionicons.logo_twitter, color: Theme.of(context).colorScheme.primary, size: 60),
-                                          ],
-                                      )
-                                      : Image.asset('assets/img/appbar_logo.png'),
+                                  Row(mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        state.themeMode == ThemeMode.dark ? getDarkLogo() : getLightLogo(),
+                                      ],
+                                  ),
                                   const SizedBox(height: 25),
                                   Text(
                                     "Welcome, Stranger",
@@ -128,8 +118,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 LoginButton(
                                   elementsOpacity: _elementsOpacity,
                                   onTap: () async {
+                                    UIBlock.block(context);
                                     var Authenticated = await AuthService().login(accountController.text.toString(), passwordController.text.toString());
+                                    UIBlock.unblock(context);
                                     if(Authenticated['success']){
+                                      print(Authenticated);
                                       BlocProvider.of<UserCubit>(context).setUser(
                                         UserState(
                                           name: Authenticated['user']['name'],
@@ -182,7 +175,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                   },
                                   onAnimatinoEnd: () async {
-                                    print(user.token);
                                     await Future.delayed(
                                         Duration(milliseconds: 500));
                                     setState(() {
@@ -202,5 +194,25 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
     );
+  }
+
+  getDarkLogo() {
+    return Row(
+      children: [
+        Icon(Ionicons.logo_google, color: Theme.of(context).colorScheme.primary, size: 50),
+        const SizedBox(width: 10),
+        Icon(Ionicons.logo_google, color: Theme.of(context).colorScheme.primary, size: 30),
+        const SizedBox(width: 10),
+        Icon(Ionicons.logo_linkedin, color: Theme.of(context).colorScheme.primary, size: 20),
+        const SizedBox(width: 10),
+        Icon(Ionicons.logo_linkedin, color: Theme.of(context).colorScheme.primary, size: 20),
+        const SizedBox(width: 10),
+        Icon(Ionicons.logo_twitter, color: Theme.of(context).colorScheme.primary, size: 60),
+      ]
+    );
+  }
+
+  getLightLogo() {
+    return Image.asset('assets/img/appbar_logo.png');
   }
 }

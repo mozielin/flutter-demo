@@ -107,6 +107,7 @@
     "enumber": "工號",
     "password": "密碼",
     "login": "登入",
-    "login_failed": "登入失敗"
+    "login_failed": "登入失敗",
+    "connection_error": "連線異常"
   }
 }

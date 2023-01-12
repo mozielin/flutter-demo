@@ -102,6 +102,7 @@
     "enumber": "Work Number",
     "password": "Password",
     "login": "Login",
-    "login_failed": "Login Failed"
+    "login_failed": "Login Failed",
+    "connection_error": "Connection Error"
   }
 }
