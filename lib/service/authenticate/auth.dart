@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../cubit/user_cubit.dart';
+
 class AuthService{
   final Dio dio = Dio();
+  //final UserCubit userBloc = UserCubit();
   ///登入
   Future<Map<String, dynamic>> login(String account, String password) async {
     try {
@@ -59,18 +62,12 @@ class AuthService{
   }
 
   ///登出 todo:登出
-  Future<Map<String, dynamic>> logout(String accessToken) async {
+  Future<bool> logout() async {
     try {
-      Response response = await dio.get(
-        'http://10.0.2.2/api/logout',
-        queryParameters: {'apikey': ''},
-        options: Options(
-          headers: {'Authorization': 'Bearer $accessToken'},
-        ),
-      );
-      return response.data;
+      //print(userBloc.state);
+      return true;
     } on DioError catch (e) {
-      return e.response!.data;
+      return true;
     }
   }
 

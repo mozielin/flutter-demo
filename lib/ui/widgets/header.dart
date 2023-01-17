@@ -1,8 +1,13 @@
+import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/cubit/user_cubit.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:uiblock/uiblock.dart';
+
+import '../../service/authenticate/auth.dart';
+import 'auth/logout_button.dart';
 
 class Header extends StatelessWidget {
   const Header({super.key, required this.text});
@@ -28,24 +33,36 @@ class Header extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 2, right: 2, top: 48, bottom: 24),
-                child: TextButton.icon(
-                  onPressed: () {
-                    ///clear hydrated bloc state
-                    BlocProvider.of<UserCubit>(context).clearUser();
+                child: LogoutButton(
+                  onPressed: () async {
+                    ArtDialogResponse response = await ArtSweetAlert.show(
+                        barrierDismissible: false,
+                        context: context,
+                        artDialogArgs: ArtDialogArgs(
+                            denyButtonText: tr('alerts.cancel'),
+                            title: tr('alerts.logout_confirm_title'),
+                            text: tr('alerts.logout_confirm_text'),
+                            confirmButtonText: tr('alerts.confirm'),
+                            type: ArtSweetAlertType.warning
+                        )
+                    );
+
+                    if(response==null) {
+                      return;
+                    }
+
+                    if(response.isTapConfirmButton) {
+                      UIBlock.block(context);
+                      bool logout = await AuthService().logout();
+                      UIBlock.unblock(context);
+                      if(logout){
+                        BlocProvider.of<UserCubit>(context).clearUser();
+                        //Navigator.pushNamed(context, '/login');
+                        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                      }
+                      return;
+                    }
                   },
-                  icon:Icon(Ionicons.log_out_outline, color: Theme.of(context).colorScheme.primary),
-                  label: Text(
-                    '',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
-                  ),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
-                  ),
                 ),
               ),
             ],
