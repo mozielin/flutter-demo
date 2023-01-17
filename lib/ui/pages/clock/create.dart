@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:ionicons/ionicons.dart';
 
+import '../../../config/theme.dart';
 import '../../widgets/common/main_appbar.dart';
+import 'custom_picker.dart';
+import 'package:dio/dio.dart';
 
-enum SingingCharacter { lafayette, jefferson }
+
+enum SingingCharacter { project, office, day_off }
 
 class CreateClock extends StatefulWidget {
   @override
@@ -13,13 +19,19 @@ class CreateClock extends StatefulWidget {
 }
 
 class _CreateClockState extends State<CreateClock> {
-  SingingCharacter? _character = SingingCharacter.lafayette;
+  final Dio dio = Dio();
+  SingingCharacter? _character = SingingCharacter.project;
   final ScrollController scrollController = ScrollController();
-  final  _controller = TextEditingController();
+  final _depart = TextEditingController();
+  final _start = TextEditingController();
+  final _end = TextEditingController();
+  var _typeBoxVisible = 1.0;
+  var _typeBoxSet = true;
   bool showbtn = false;
 
   @override
   void initState() {
+    initTypeSelection();
     scrollController.addListener(() {
       double showOffset = 10.0;
 
@@ -32,9 +44,27 @@ class _CreateClockState extends State<CreateClock> {
           showbtn = false;
         });
       }
-
     });
     super.initState();
+  }
+
+  Future<Response> initTypeSelection() async {
+    print('future work');
+
+    dio.options.headers['Authorization'] = 'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+    Response res = await dio.post(
+      'http://10.0.2.2/api/getClocks', // TODO: URL 放至 env 相關設定
+      // 'https://uathws.hwacom.com//api/getClocks', // TODO: URL 放至 env 相關設定
+      data: {
+        'enumber': 'HW-M54',
+        'skip': 0,
+        'take': 10,
+        'fuzzy_search': 123,
+        'status': 1,
+      },
+    );
+    print(res);
+    return res;
   }
 
   @override
@@ -48,36 +78,32 @@ class _CreateClockState extends State<CreateClock> {
         title: tr("clock.appbar.create"),
         appBar: AppBar(),
       ),
-      body: Material(
+      body:
+      Material(
         color: Theme.of(context).colorScheme.background,
-        child: Card(
+        child: Container(
+          color: Theme.of(context).colorScheme.background,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(25),
             child: ListView(
               controller: scrollController,
               children: <Widget>[
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.attr"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
+                input_title(tr("clock.create.attr"), true),
                 Column(
                   children: <Widget>[
                     ListTile(
                       title: Text(tr("clock.create.attr_project")),
                       leading: Radio<SingingCharacter>(
-                        value: SingingCharacter.lafayette,
+                        fillColor: MaterialStateColor.resolveWith((states) =>
+                            Theme.of(context).colorScheme.inverseSurface),
+                        activeColor:
+                            Theme.of(context).colorScheme.inverseSurface,
+                        value: SingingCharacter.project,
                         groupValue: _character,
                         onChanged: (SingingCharacter? value) {
                           setState(() {
+                            _typeBoxSet = true;
+                            _typeBoxVisible = 1.0;
                             _character = value;
                           });
                         },
@@ -86,10 +112,16 @@ class _CreateClockState extends State<CreateClock> {
                     ListTile(
                       title: Text(tr("clock.create.attr_office")),
                       leading: Radio<SingingCharacter>(
-                        value: SingingCharacter.jefferson,
+                        fillColor: MaterialStateColor.resolveWith((states) =>
+                            Theme.of(context).colorScheme.inverseSurface),
+                        activeColor:
+                            Theme.of(context).colorScheme.inverseSurface,
+                        value: SingingCharacter.office,
                         groupValue: _character,
                         onChanged: (SingingCharacter? value) {
                           setState(() {
+                            _typeBoxSet = true;
+                            _typeBoxVisible = 1.0;
                             _character = value;
                           });
                         },
@@ -98,10 +130,15 @@ class _CreateClockState extends State<CreateClock> {
                     ListTile(
                       title: Text(tr("clock.create.attr_day_off")),
                       leading: Radio<SingingCharacter>(
-                        value: SingingCharacter.jefferson,
+                        fillColor: MaterialStateColor.resolveWith((states) =>
+                            Theme.of(context).colorScheme.inverseSurface),
+                        activeColor:
+                            Theme.of(context).colorScheme.inverseSurface,
+                        value: SingingCharacter.day_off,
                         groupValue: _character,
                         onChanged: (SingingCharacter? value) {
                           setState(() {
+                            _typeBoxVisible = 0.0;
                             _character = value;
                           });
                         },
@@ -109,33 +146,318 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.internal_order"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                input_title(tr("clock.create.internal_order"), false),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 15),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      border: const OutlineInputBorder(),
+                      labelText:
+                      tr("clock.create.internal_order_labelText"),
+                      labelStyle: TextStyle(
+                        color:
+                        Theme.of(context).textTheme.bodySmall!.color,
                       ),
                     ),
-                  ],
-                ), //Internal order
+                  ),
+                ),
+                AnimatedOpacity(
+                  opacity: _typeBoxVisible,
+                  duration: const Duration(seconds: 1),
+                  child:  Visibility(
+                    visible: _typeBoxSet,
+                    child: Padding(padding: const EdgeInsets.only(top: 10), child: input_title(tr("clock.create.type"), true),),
+                  ),
+                  onEnd: (){
+                    if(_typeBoxVisible == 0) {
+                      setState((){
+                        _typeBoxSet = false;
+                      });
+                    }
+                  },
+                ), //主類別title
+                AnimatedOpacity(
+                  opacity: _typeBoxVisible,
+                  duration: const Duration(seconds: 1),
+                  child:  Visibility(
+                    visible: _typeBoxSet,
+                    child: Column(
+                      children: <Widget>[
+                        const Padding(padding: EdgeInsets.only(top: 5)),
+                        DropdownButtonFormField(
+                          dropdownColor: Theme.of(context).colorScheme.surface,
+                          // key: _statusKey,
+                          icon: Icon(
+                            Ionicons.caret_down_outline,
+                            color: Theme.of(context).textTheme.bodySmall!.color,
+                          ),
+                          hint: Text(
+                            tr("search.hint.status"),
+                            style: TextStyle(
+                                color:
+                                Theme.of(context).textTheme.bodySmall!.color),
+                          ),
+                          value: null,
+                          items: [
+                            DropdownMenuItem(value: '1', child: Text('1')),
+                            DropdownMenuItem(value: '2', child: Text('2')),
+                          ],
+                          onChanged: (value) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            // setState(() {
+                            //   _status = value!;
+                            // });
+                          },
+                          decoration: InputDecoration(
+                            contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 15),
+                            filled: true,
+                            fillColor: Theme.of(context).colorScheme.surface,
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                        FutureBuilder<Response>(
+                            future: initTypeSelection(),
+                            builder: (context,AsyncSnapshot snapshot) {
+                              print("snapshot: $snapshot");
+                              return Container();
+                            }),
+                      ],
+                    ),
+                  ),
+                  onEnd: (){
+                    if(_typeBoxVisible == 0) {
+                      setState((){
+                        _typeBoxSet = false;
+                      });
+                    }
+                  },
+                ), //主類別select
+                AnimatedOpacity(
+                  opacity: _typeBoxVisible,
+                  duration: const Duration(seconds: 1),
+                  child:  Visibility(
+                    visible: _typeBoxSet,
+                    child: Padding(padding: const EdgeInsets.only(top: 10), child: input_title(tr("clock.create.child_type"), true),),
+                  ),
+                  onEnd: (){
+                    if(_typeBoxVisible == 0) {
+                      setState((){
+                        _typeBoxSet = false;
+                      });
+                    }
+                  },
+                ), //子類別title
+                AnimatedOpacity(
+                  opacity: _typeBoxVisible,
+                  duration: const Duration(seconds: 1),
+                  child:  Visibility(
+                    visible: _typeBoxSet,
+                    child: Column(
+                      children: <Widget>[
+                         Padding(
+                           padding: EdgeInsets.only(top: 5),
+                           child: DropdownButtonFormField(
+                          dropdownColor: Theme.of(context).colorScheme.surface,
+                          // key: _statusKey,
+                          icon: Icon(
+                            Ionicons.caret_down_outline,
+                            color: Theme.of(context).textTheme.bodySmall!.color,
+                          ),
+                          hint: Text(
+                            tr("search.hint.status"),
+                            style: TextStyle(
+                                color:
+                                Theme.of(context).textTheme.bodySmall!.color),
+                          ),
+                          value: null,
+                          items: [
+                            DropdownMenuItem(value: '1', child: Text('1')),
+                            DropdownMenuItem(value: '2', child: Text('2')),
+                          ],
+                          onChanged: (value) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            // setState(() {
+                            //   _status = value!;
+                            // });
+                          },
+                          decoration: InputDecoration(
+                            contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 15),
+                            filled: true,
+                            fillColor: Theme.of(context).colorScheme.surface,
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onEnd: (){
+                    if(_typeBoxVisible == 0) {
+                      setState((){
+                        _typeBoxSet = false;
+                      });
+                    }
+                  },
+                ), //子類別select
+                const Padding(padding: EdgeInsets.only(top: 10)),
+                input_title(tr("clock.create.depart_time"), true),
+                TextFormField(
+                  controller: _depart,
+                  decoration: InputDecoration(
+                      contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 15),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      border: const OutlineInputBorder(),
+                      labelText: _input,
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          DatePicker.showPicker(
+                              context,
+                              showTitleActions: true,
+                              // minTime: DateTime(2018, 3, 5),
+                              // maxTime: DateTime(2019, 6, 7),
+                              onConfirm: (date) {
+                                _depart.text = DateFormat('yyyy-MM-dd kk:mm').format(date);
+                              },
+                              // currentTime: DateTime.now(),
+                              pickerModel: CustomPicker(
+                                currentTime: DateTime.now(),
+                                minTime: DateTime(2018, 3, 5),
+                                maxTime: DateTime(2019, 6, 7),
+                              ),
+                              locale: LocaleType.zh);
+                        },
+                        icon: Icon(Ionicons.calendar_outline),
+                        // child: Text(
+                        //   'show date time picker (Chinese)',
+                        //   style: TextStyle(color: Colors.blue),
+                        // )
+                      )),
+                ),
+                const Padding(padding: EdgeInsets.only(top: 10)),
+                input_title(tr("clock.create.start_time"), true),
+                TextFormField(
+                  controller: _start,
+                  decoration: InputDecoration(
+                      contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 15),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      border: const OutlineInputBorder(),
+                      labelText: _input,
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          DatePicker.showDateTimePicker(context,
+                              showTitleActions: true,
+                              minTime: DateTime(2018, 3, 5),
+                              maxTime: DateTime(2019, 6, 7),
+                              onConfirm: (date) {
+                                _start.text = DateFormat('yyyy-MM-dd kk:mm').format(date);
+                              },
+                              currentTime: DateTime.now(),
+                              locale: LocaleType.zh);
+                        },
+                        icon: Icon(Ionicons.calendar_outline),
+                      )),
+                ),
+                const Padding(padding: EdgeInsets.only(top: 10)),
+                input_title(tr("clock.create.end_time"), true),
+                TextFormField(
+                  controller: _end,
+                  decoration: InputDecoration(
+                      contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 15),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      border: const OutlineInputBorder(),
+                      labelText: _input,
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          DatePicker.showDateTimePicker(context,
+                              showTitleActions: true,
+                              minTime: DateTime(2018, 3, 5),
+                              maxTime: DateTime(2019, 6, 7),
+                              onConfirm: (date) {
+                                _end.text = DateFormat('yyyy-MM-dd kk:mm').format(date);
+                              },
+                              currentTime: DateTime.now(),
+                              locale: LocaleType.zh);
+                        },
+                        icon: Icon(Ionicons.calendar_outline),
+                      )),
+                ),
+                const Padding(padding: EdgeInsets.only(top: 10)),
+                input_title(tr("clock.create.total_hours"), true),
                 Row(
                   children: [
                     Flexible(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 5, bottom: 5),
                         child: TextFormField(
+                          enabled: false,
                           decoration: InputDecoration(
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 15),
                             filled: true,
                             fillColor: Theme.of(context).colorScheme.surface,
                             border: const OutlineInputBorder(),
-                            labelText:
-                                tr("clock.create.internal_order_labelText"),
+                            labelText: tr("clock.create.hours"),
+                            labelStyle: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall!.color,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    ClipPath(
+                      child: Card(
+                        color: MetronicTheme.light_primary,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5))),
+                        child: IconButton(
+                          onPressed: () {
+                            print('123');
+                          },
+                          icon: Icon(Ionicons.calculator_outline),
+                          color: MetronicTheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Padding(padding: EdgeInsets.only(top: 10)),
+                input_title(tr("clock.create.traffic_hours"), true),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: TextFormField(
+                          enabled: false,
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 15),
+                            filled: true,
+                            fillColor: Theme.of(context).colorScheme.surface,
+                            border: const OutlineInputBorder(),
+                            labelText: tr("clock.create.hours"),
                             labelStyle: TextStyle(
                               color:
                                   Theme.of(context).textTheme.bodySmall!.color,
@@ -145,323 +467,94 @@ class _CreateClockState extends State<CreateClock> {
                       ),
                     ),
                   ],
-                ), //Internal order input
-                const Padding(padding: EdgeInsets.only(top: 5)),
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.type"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    const Padding(padding: EdgeInsets.only(top: 5)),
-                    DropdownButtonFormField(
-                      dropdownColor: Theme.of(context).colorScheme.surface,
-                      // key: _statusKey,
-                      icon: Icon(
-                        Ionicons.caret_down_outline,
-                        color: Theme.of(context).textTheme.bodySmall!.color,
-                      ),
-                      hint: Text(
-                        tr("search.hint.status"),
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.bodySmall!.color),
-                      ),
-                      value: null,
-                      items: [
-                        DropdownMenuItem(value: '1', child: Text('1')),
-                        DropdownMenuItem(value: '2', child: Text('2')),
-                      ],
-                      onChanged: (value) {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        // setState(() {
-                        //   _status = value!;
-                        // });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 15),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surface,
-                        border: const OutlineInputBorder(),
-                      ),
-                    )
-                  ],
                 ),
                 const Padding(padding: EdgeInsets.only(top: 10)),
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.child_type"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    const Padding(padding: EdgeInsets.only(top: 5)),
-                    DropdownButtonFormField(
-                      dropdownColor: Theme.of(context).colorScheme.surface,
-                      // key: _statusKey,
-                      icon: Icon(
-                        Ionicons.caret_down_outline,
-                        color: Theme.of(context).textTheme.bodySmall!.color,
-                      ),
-                      hint: Text(
-                        tr("search.hint.status"),
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.bodySmall!.color),
-                      ),
-                      value: null,
-                      items: [
-                        DropdownMenuItem(value: '1', child: Text('1')),
-                        DropdownMenuItem(value: '2', child: Text('2')),
-                      ],
-                      onChanged: (value) {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        // setState(() {
-                        //   _status = value!;
-                        // });
-                      },
-                      decoration: InputDecoration(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 15),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surface,
-                        border: const OutlineInputBorder(),
-                      ),
-                    )
-                  ],
-                ),
-                const Padding(padding: EdgeInsets.only(top: 10)),
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.depart_time"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Padding(padding: EdgeInsets.only(top: 5)),
-                    TextFormField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 15),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surface,
-                        border: const OutlineInputBorder(),
-                        labelText: _input,
-                        labelStyle: TextStyle(
-                          color:
-                          Theme.of(context).textTheme.bodySmall!.color,
-                        ),
-                        suffixIcon: IconButton(onPressed: () {
-                          DatePicker.showDateTimePicker(context,
-                              showTitleActions: true,
-                              minTime: DateTime(2018, 3, 5),
-                              maxTime: DateTime(2019, 6, 7), onChanged: (date) {
-
-                                print('change $_controller');
-                              }, onConfirm: (date) {
-                                _controller.text = DateFormat('yyyy-MM-dd kk:mm').format(date);
-                                // FocusScope.of(context).requestFocus(FocusNode());
-                                print('confirm $date');
-                              },
-                              currentTime: DateTime.now(),
-                              locale: LocaleType.zh);
-                        },
-                          icon: Icon(Ionicons.calendar_outline),
-                          // child: Text(
-                          //   'show date time picker (Chinese)',
-                          //   style: TextStyle(color: Colors.blue),
-                          // )
-                        )
-                      ),
-                    ),
-                    // InputDatePickerFormField(firstDate: DateTime.now(), lastDate: DateTime.now())
-
-                  ],
-                ),
-                const Padding(padding: EdgeInsets.only(top: 10)),
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.start_time"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Padding(padding: EdgeInsets.only(top: 5)),
-                    TextFormField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                          contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 15),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
-                          border: const OutlineInputBorder(),
-                          labelText: _input,
-                          labelStyle: TextStyle(
-                            color:
-                            Theme.of(context).textTheme.bodySmall!.color,
-                          ),
-                          suffixIcon: IconButton(onPressed: () {
-                            DatePicker.showDateTimePicker(context,
-                                showTitleActions: true,
-                                minTime: DateTime(2018, 3, 5),
-                                maxTime: DateTime(2019, 6, 7), onChanged: (date) {
-
-                                  print('change $_controller');
-                                }, onConfirm: (date) {
-                                  _controller.text = DateFormat('yyyy-MM-dd kk:mm').format(date);
-                                  // FocusScope.of(context).requestFocus(FocusNode());
-                                  print('confirm $date');
-                                },
-                                currentTime: DateTime.now(),
-                                locale: LocaleType.zh);
-                          },
-                            icon: Icon(Ionicons.calendar_outline),
-                            // child: Text(
-                            //   'show date time picker (Chinese)',
-                            //   style: TextStyle(color: Colors.blue),
-                            // )
-                          )
-                      ),
-                    ),
-                    // InputDatePickerFormField(firstDate: DateTime.now(), lastDate: DateTime.now())
-
-                  ],
-                ),
-                const Padding(padding: EdgeInsets.only(top: 10)),
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.end_time"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Padding(padding: EdgeInsets.only(top: 5)),
-                    TextFormField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                          contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 15),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
-                          border: const OutlineInputBorder(),
-                          labelText: _input,
-                          labelStyle: TextStyle(
-                            color:
-                            Theme.of(context).textTheme.bodySmall!.color,
-                          ),
-                          suffixIcon: IconButton(onPressed: () {
-                            DatePicker.showDateTimePicker(context,
-                                showTitleActions: true,
-                                minTime: DateTime(2018, 3, 5),
-                                maxTime: DateTime(2019, 6, 7), onChanged: (date) {
-
-                                  print('change $_controller');
-                                }, onConfirm: (date) {
-                                  _controller.text = DateFormat('yyyy-MM-dd kk:mm').format(date);
-                                  // FocusScope.of(context).requestFocus(FocusNode());
-                                  print('confirm $date');
-                                },
-                                currentTime: DateTime.now(),
-                                locale: LocaleType.zh);
-                          },
-                            icon: Icon(Ionicons.calendar_outline),
-                            // child: Text(
-                            //   'show date time picker (Chinese)',
-                            //   style: TextStyle(color: Colors.blue),
-                            // )
-                          )
-                      ),
-                    ),
-                    // InputDatePickerFormField(firstDate: DateTime.now(), lastDate: DateTime.now())
-
-                  ],
-                ),
-                const Padding(padding: EdgeInsets.only(top: 10)),
-                Row(
-                  children: [
-                    Text(
-                      tr("clock.create.internal_order"),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
-                ), //Internal order
+                input_title(tr("clock.create.work_hours"), true),
                 Row(
                   children: [
                     Flexible(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 5, bottom: 5),
                         child: TextFormField(
+                          enabled: false,
                           decoration: InputDecoration(
                             contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 15),
+                                const EdgeInsets.symmetric(horizontal: 15),
                             filled: true,
                             fillColor: Theme.of(context).colorScheme.surface,
                             border: const OutlineInputBorder(),
-                            labelText:
-                            tr("clock.create.internal_order_labelText"),
+                            labelText: tr("clock.create.hours"),
                             labelStyle: TextStyle(
                               color:
-                              Theme.of(context).textTheme.bodySmall!.color,
+                                  Theme.of(context).textTheme.bodySmall!.color,
                             ),
                           ),
                         ),
                       ),
                     ),
                   ],
-                ), //
+                ),
+                const Padding(padding: EdgeInsets.only(top: 10)),
+                input_title(tr("clock.create.context"), true),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: TextFormField(
+                          maxLines: 5,
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 15),
+                            filled: true,
+                            fillColor: Theme.of(context).colorScheme.surface,
+                            border: const OutlineInputBorder(),
+                            labelText: tr("clock.create.context_labelText"),
+                            labelStyle: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall!.color,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
+    );
+  }
+
+  input_title(String string, require) {
+    var require_span = const Text('');
+    if (require) {
+      require_span = const Text(
+        '*',
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.red,
+        ),
+      );
+    }
+    return Row(
+      children: [
+        Text(
+          string,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        require_span,
+      ],
     );
   }
 }

@@ -119,7 +119,13 @@
       "depart_time": "出發時間",
       "depart_time_labelText": "EX:2021-01-01 00:00",
       "start_time": "開始時間",
-      "end_time": "結束時間"
+      "end_time": "結束時間",
+      "total_hours": "總時數",
+      "traffic_hours": "通勤時數",
+      "work_hours": "工作時數",
+      "hours": "點擊按鈕計算工時",
+      "context": "工作內容",
+      "context_labelText": "請輸入工作內容"
     }
   }
 }
