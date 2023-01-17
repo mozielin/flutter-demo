@@ -17,6 +17,16 @@ class UserCubit extends HydratedCubit<UserState> {
       avatar: userState.avatar,
       token: userState.token));
 
+  void clearUser() => emit(
+      UserState(
+        name: '',
+        email: '',
+        enumber: '',
+        avatar: '',
+        token: ''
+      )
+  );
+
   @override
   UserState? fromJson(Map<String, dynamic> json) {
     return UserState.fromMap(json);
