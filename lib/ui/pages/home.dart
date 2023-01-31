@@ -4,11 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hws_app/config/theme.dart';
-import 'package:hws_app/ui/pages/common/app_card.dart';
-import 'package:hws_app/ui/pages/common/format_thousandths.dart';
+import 'package:hws_app/ui/widgets/common/app_card.dart';
+import 'package:hws_app/ui/widgets/common/progress_bar_card.dart';
 import 'package:hws_app/ui/widgets/second_screen/text_divider.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -194,25 +193,25 @@ class _HomeState extends State<Home> {
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     children: const [
-                      _ProgressBarCard(
+                      ProgressBarCard(
                         barName: 'INCOME',
                         subNumber: 841953,
                         totalNumber: 1000000,
                         barIcon: Ionicons.cash_outline,
                       ),
-                      _ProgressBarCard(
+                      ProgressBarCard(
                         barName: 'SAVINGS',
                         subNumber: 141953,
                         totalNumber: 1000000,
                         barIcon: Ionicons.finger_print_outline,
                       ),
-                      _ProgressBarCard(
+                      ProgressBarCard(
                         barName: 'EXPENSE',
                         subNumber: 541953,
                         totalNumber: 1000000,
                         barIcon: Ionicons.gift_outline,
                       ),
-                      _ProgressBarCard(
+                      ProgressBarCard(
                         barName: 'BILLS',
                         subNumber: 441953,
                         totalNumber: 1000000,
@@ -425,99 +424,4 @@ class _LineChart extends StatelessWidget {
       );
 }
 
-class _ProgressBarCard extends StatelessWidget {
-  const _ProgressBarCard({
-    required this.barName,
-    required this.subNumber,
-    required this.totalNumber,
-    required this.barIcon,
-  });
 
-  final barName;
-  final subNumber;
-  final totalNumber;
-  final barIcon;
-
-  Color getBarColor() {
-    final prenterage = subNumber / totalNumber;
-    Color barColor = MetronicTheme.danger;
-
-    if (prenterage > 0.75) {
-      barColor = MetronicTheme.success;
-    } else if (prenterage > 0.5) {
-      barColor = MetronicTheme.primary;
-    } else if (prenterage > 0.25) {
-      barColor = MetronicTheme.warning;
-    }
-
-    return barColor;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shadowColor: Theme.of(context).colorScheme.shadow,
-      color: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12))),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 15, right: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      '・',
-                      style: TextStyle(color: getBarColor()),
-                    ),
-                    Text(
-                      barName,
-                      style: TextStyle(
-                          color: Theme.of(context).textTheme.bodySmall!.color),
-                    ),
-                  ],
-                ),
-                Icon(
-                  barIcon,
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .color
-                      ?.withOpacity(0.3),
-                  size: 40,
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 5,
-              left: 15,
-              right: 15,
-            ),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                '\$ ${FormatThousandths(subNumber)}',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-              ),
-            ),
-          ),
-          LinearPercentIndicator(
-            animation: true,
-            lineHeight: 6.0,
-            percent: subNumber / totalNumber,
-            barRadius: const Radius.circular(16),
-            progressColor: getBarColor(),
-          )
-        ],
-      ),
-    );
-  }
-}

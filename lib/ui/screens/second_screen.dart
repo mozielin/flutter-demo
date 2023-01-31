@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/cubit/user_cubit.dart';
-import 'package:hws_app/ui/pages/common/app_card.dart';
+import 'package:hws_app/ui/widgets/common/app_card.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:hws_app/cubit/bottom_nav_cubit.dart';
 import '../widgets/header.dart';
