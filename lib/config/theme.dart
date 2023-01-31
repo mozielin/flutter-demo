@@ -63,6 +63,7 @@ final ColorScheme darkColorScheme = ColorScheme.dark(
 );
 
 final ThemeData lightTheme = ThemeData(
+  primaryColor: Colors.white,
   colorScheme: lightColorScheme,
   fontFamily: 'Nunito',
   toggleableActiveColor: primarySwatch.shade500,

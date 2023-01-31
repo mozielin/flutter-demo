@@ -115,6 +115,9 @@
     "cancel": "取消",
     "confirm": "確認",
     "logout_confirm_title": "確定要登出目前帳號嗎?",
-    "logout_confirm_text": "登出後將清空使用者資訊!"
+    "logout_confirm_text": "登出後將清空使用者資訊",
+    "token_expired_title": "登入狀態逾期",
+    "token_expired_text": "請重新輸入帳號密碼驗證",
+    "return_login": "返回登入"
   }
 }
