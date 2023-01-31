@@ -6,6 +6,7 @@ import 'package:hws_app/ui/pages/home.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hws_app/ui/widgets/auth/cutscene_screen.dart';
 import 'cubit/user_cubit.dart';
 import 'models/user.dart';
 
@@ -76,21 +77,21 @@ class MyApp extends StatelessWidget {
           builder: (BuildContext context, UserState user) {
             return GlobalData(
                 child: MaterialApp(
-              /// Localization is not available for the title.
-              title: 'Hwacom App',
-              /// Theme stuff
-              theme: lightTheme,
-              darkTheme: darkTheme,
-              themeMode: state.themeMode,
-              /// Localization stuff
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
-              debugShowCheckedModeBanner: false,
-              home: const LoginScreen(),
-              onGenerateRoute: AppRouter.generateRoute,
-              initialRoute: '/',
-            ),
+                  /// Localization is not available for the title.
+                  title: 'Hwacom App',
+                  /// Theme stuff
+                  theme: lightTheme,
+                  darkTheme: darkTheme,
+                  themeMode: state.themeMode,
+                  /// Localization stuff
+                  localizationsDelegates: context.localizationDelegates,
+                  supportedLocales: context.supportedLocales,
+                  locale: context.locale,
+                  debugShowCheckedModeBanner: false,
+                  home: const LoginScreen(),
+                  onGenerateRoute: AppRouter.generateRoute,
+                  initialRoute: '/',
+              ),
             );
           },
         );
