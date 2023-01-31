@@ -67,7 +67,7 @@ class AlertStyles {
             .titleLarge!
             .apply(fontWeightDelta: 2, fontSizeDelta: -2),
       ),
-      onPressed: () => Navigator.pop(context),
+      onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false),
     );
   }
 

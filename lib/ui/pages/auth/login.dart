@@ -174,9 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     token: Authenticated['user']['token'],
                                   ),
                                 );
-                                setState(() {
-                                  _elementsOpacity = 0;
-                                });
+                                Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+
                               } else {
                                 ///錯誤訊息
                                 print(Authenticated);

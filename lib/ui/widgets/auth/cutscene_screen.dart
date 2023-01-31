@@ -78,9 +78,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
                             AlertStyles().getReturnLoginButton(context),
                           ],
                         ).show();
-
                         BlocProvider.of<UserCubit>(context).clearUser();
-                        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                       }
                     }).onError((error, stackTrace) {
                       print(error);
