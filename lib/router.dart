@@ -3,7 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hws_app/ui/pages/common/photo_detail_base64.dart';
-import 'package:hws_app/ui/pages/home_page.dart';
+import 'package:hws_app/ui/pages/home.dart';
 import 'package:hws_app/ui/pages/api_demo.dart';
 import 'package:hws_app/ui/pages/hive_demo.dart';
 import 'package:hws_app/ui/pages/clock/list.dart';
@@ -15,7 +15,7 @@ class RouteName {
   static const String home = '/home';
   static const String demo = '/api_demo';
   static const String hive = '/hive_demo';
-  static const String clock = '/clock_demo';
+  static const String clock = '/clock_list';
   static const String file = '/file_demo';
   static const String photo_detail_base64 = '/photo_detail_base64';
   static const String login = '/login';

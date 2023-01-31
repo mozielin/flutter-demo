@@ -60,6 +60,8 @@ dependencies:
   photo_view: any
   uiblock: any
   art_sweetalert: ^0.0.5
+  fl_chart: any
+  percent_indicator: any
 
 dev_dependencies:
 

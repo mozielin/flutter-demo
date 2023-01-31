@@ -36,20 +36,20 @@ class BottomNavBar extends StatelessWidget {
           unselectedItemColor: Theme.of(context).textTheme.bodySmall!.color,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: const Icon(Ionicons.home_outline),
+              icon: const Icon(Ionicons.bar_chart_outline),
               label: tr('bottom_nav_first'),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Ionicons.information_circle_outline),
-              label: tr('bottom_nav_second'),
+              icon: const Icon(Ionicons.apps_outline),
+              label: tr('bottom_nav_app'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Ionicons.paper_plane_outline),
               label: tr('bottom_nav_api'),
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Ionicons.server_outline),
-              label: tr('bottom_nav_hive'),
+              icon: const Icon(Ionicons.settings_outline),
+              label: tr('bottom_setting'),
             ),
           ],
         );
