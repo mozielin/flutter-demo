@@ -4,6 +4,9 @@
   "bottom_nav_second": "Info",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "Hive",
+  "bottom_nav_app": "apps",
+  "bottom_setting": "setting",
+  "analyze": "analyze",
   "localization_title": "Localization",
   "localization_content": "Simplified translations with the Easy Translations package.",
   "linting_title": "Linting",
@@ -72,6 +75,11 @@
     "advance_search": "Advance search",
     "hint": {
       "status": "Select status"
+    }
+  },
+  "home": {
+    "appbar": {
+      "title": "Home"
     }
   },
   "clock": {
