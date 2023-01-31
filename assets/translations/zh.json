@@ -4,6 +4,9 @@
   "bottom_nav_second": "資訊",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "資料庫",
+  "bottom_nav_app": "功能",
+  "bottom_setting": "設定",
+  "analyze": "分析",
   "localization_title": "多語系",
   "localization_content": "簡單切換多國語系的套件.",
   "linting_title": "程式碼規範",
@@ -75,6 +78,11 @@
     "advance_search": "進階搜尋",
     "hint": {
       "status": "請選擇狀態"
+    }
+  },
+  "home": {
+    "appbar": {
+      "title": "首頁"
     }
   },
   "clock": {

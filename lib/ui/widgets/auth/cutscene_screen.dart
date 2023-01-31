@@ -1,5 +1,13 @@
 //import 'package:hws_app/ui/widgets/auth/messages_list.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+import '../../../cubit/user_cubit.dart';
+import '../../../service/authenticate/auth.dart';
+import '../alert/icons/error_icon.dart';
+import '../alert/styles.dart';
 
 class CutsceneScreen extends StatefulWidget {
   const CutsceneScreen({super.key});
@@ -12,7 +20,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
   double loadingBallSize = 1;
   AlignmentGeometry _alignment = Alignment.center;
   bool stopScaleAnimtion = false;
-  bool showMessages = false;
+  bool showMessages = true;
 
   @override
   void initState() {
@@ -46,10 +54,40 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
                 });
               } else {
                 Future.delayed(const Duration(milliseconds: 1), () {
-                  // setState(() {
-                  //   showMessages = true;
-                  // });
-                  Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                  //透過Provider取得UserCubit狀態
+                  var user = BlocProvider
+                      .of<UserCubit>(context)
+                      .state;
+                  if (user.token != '') {
+                    AuthService().verifyToken(user.token)
+                        .then((res) {
+                      if (res['success']) {
+                        var token = res['token'];
+                        BlocProvider.of<UserCubit>(context).refreshToken(user, token);
+                        print("Token refresh : $token");
+                        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                      } else {
+                        ///Alert token expired return to login
+                        Alert(
+                          context: context,
+                          style: AlertStyles().dangerStyle(context),
+                          image: const ErrorIcon(),
+                          title: tr('alerts.token_expired_title'),
+                          desc: tr('alerts.token_expired_text'),
+                          buttons: [
+                            AlertStyles().getReturnLoginButton(context),
+                          ],
+                        ).show();
+
+                        BlocProvider.of<UserCubit>(context).clearUser();
+                        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                      }
+                    }).onError((error, stackTrace) {
+                      print(error);
+                    });
+                  } else {
+                    debugPrint('Token empty');
+                  }
                 });
               }
             },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/cubit/user_cubit.dart';
+import 'package:hws_app/ui/widgets/common/app_card.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:hws_app/cubit/bottom_nav_cubit.dart';
 import '../widgets/header.dart';
@@ -37,123 +38,10 @@ class SecondScreen extends StatelessWidget {
                   shrinkWrap: true,
                   padding: EdgeInsets.zero,
                   children: [
-                    Card(
-                      elevation: 2,
-                      shadowColor: Theme.of(context).colorScheme.shadow,
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: ListTile(
-                        onTap: (){
-                          Navigator.pushNamed(context, '/api_demo');
-                        },
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12))),
-                        title: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(Ionicons.paper_plane_outline, color: Theme.of(context).colorScheme.primary),
-                            Text(
-                              'API Demo',
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .apply(fontWeightDelta: 2, fontSizeDelta: -2),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Card(
-                      elevation: 2,
-                      shadowColor: Theme.of(context).colorScheme.shadow,
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: ListTile(
-                        onTap: (){
-                          Navigator.pushNamed(context, '/hive_demo');
-                        },
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12))),
-                        title: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(Ionicons.server_outline, color: Theme.of(context).colorScheme.primary),
-                            Text(
-                              'Hive Demo',
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .apply(fontWeightDelta: 2, fontSizeDelta: -2),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Card(
-                      elevation: 2,
-                      shadowColor: Theme.of(context).colorScheme.shadow,
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: ListTile(
-                        onTap: (){
-                          //context.read<BottomNavCubit>().updateIndex(4);
-                          Navigator.pushNamed(context, '/file_demo');
-                        },
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12))),
-                        title: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(Ionicons.images_outline, color: Theme.of(context).colorScheme.primary),
-                            Text(
-                              'File Demo',
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .apply(fontWeightDelta: 2, fontSizeDelta: -2),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Card(
-                      elevation: 2,
-                      shadowColor: Theme.of(context).colorScheme.shadow,
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
-                      child: ListTile(
-                        onTap: (){
-                          Navigator.pushNamed(context, '/clock_demo');
-                        },
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12))),
-                        title: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(Ionicons.time_outline, color: Theme.of(context).colorScheme.primary),
-                            Text(
-                              'Clock Demo',
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .apply(fontWeightDelta: 2, fontSizeDelta: -2),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    AppCard(appPath: 'clock_list'),
+                    AppCard(appPath: 'api_demo'),
+                    AppCard(appPath: 'hive_demo'),
+                    AppCard(appPath: 'file_demo'),
                   ],
                 ),
                 const TextDivider(text: 'author_divider_title'),

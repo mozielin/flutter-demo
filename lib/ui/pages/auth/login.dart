@@ -44,34 +44,36 @@ class _LoginScreenState extends State<LoginScreen> {
         .of<UserCubit>(context)
         .state;
     if (user.token != '') {
-      //var authenticated = AuthService().verifyToken(user.token);
-      AuthService().verifyToken(user.token)
-          .then((res) {
-        if (res['success']) {
-          var token = res['token'];
-          BlocProvider.of<UserCubit>(context).refreshToken(user, token);
-          print("Token refresh : $token");
-          setState(() {
-            _elementsOpacity = 0;
-            loadingBallAppear = true;
-          });
-        } else {
-          BlocProvider.of<UserCubit>(context).clearUser();
-          ///Alert token expired return to login
-          Alert(
-            context: context,
-            style: AlertStyles().dangerStyle(context),
-            image: const ErrorIcon(),
-            title: tr('alerts.token_expired_title'),
-            desc: tr('alerts.token_expired_text'),
-            buttons: [
-              AlertStyles().getReturnLoginButton(context),
-            ],
-          ).show();
-        }
-      }).onError((error, stackTrace) {
-        print(error);
+      setState(() {
+        loadingBallAppear = true;
       });
+      // AuthService().verifyToken(user.token)
+      //     .then((res) {
+      //   if (res['success']) {
+      //     setState(() {
+      //       _elementsOpacity = 0;
+      //     });
+      //     var token = res['token'];
+      //     BlocProvider.of<UserCubit>(context).refreshToken(user, token);
+      //     print("Token refresh : $token");
+      //   } else {
+      //     ///Alert token expired return to login
+      //     Alert(
+      //       context: context,
+      //       style: AlertStyles().dangerStyle(context),
+      //       image: const ErrorIcon(),
+      //       title: tr('alerts.token_expired_title'),
+      //       desc: tr('alerts.token_expired_text'),
+      //       buttons: [
+      //         AlertStyles().getReturnLoginButton(context),
+      //       ],
+      //     ).show();
+      //
+      //     BlocProvider.of<UserCubit>(context).clearUser();
+      //   }
+      // }).onError((error, stackTrace) {
+      //   print(error);
+      // });
     } else {
       debugPrint('Token empty');
     }

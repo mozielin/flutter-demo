@@ -58,7 +58,9 @@ dependencies:
   crypto: any
   photo_view: any
   uiblock: any
-  art_sweetalert: ^0.0.5
+  rflutter_alert: ^2.0.4
+  fl_chart: any
+  percent_indicator: any
   flutter_launcher_icons: ^0.11.0
 
 dev_dependencies:
@@ -72,7 +74,6 @@ dev_dependencies:
   bloc_test: ^9.1.0
   mocktail: ^0.3.0
   very_good_analysis: ^3.1.0
-  rflutter_alert: ^2.0.4
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
