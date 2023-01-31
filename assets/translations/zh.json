@@ -117,5 +117,12 @@
     "login": "登入",
     "login_failed": "登入失敗",
     "connection_error": "連線異常"
+  },
+
+  "alerts": {
+    "cancel": "取消",
+    "confirm": "確認",
+    "logout_confirm_title": "確定要登出目前帳號嗎?",
+    "logout_confirm_text": "登出後將清空使用者資訊!"
   }
 }

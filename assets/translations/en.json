@@ -1,5 +1,5 @@
 {
-  "app_name": "Flutter Production Boilerplate",
+  "app_name": "Hwacom Mobile",
   "bottom_nav_first": "Home",
   "bottom_nav_second": "Info",
   "bottom_nav_api": "API",
@@ -112,5 +112,12 @@
     "login": "Login",
     "login_failed": "Login Failed",
     "connection_error": "Connection Error"
+  },
+
+  "alerts": {
+    "cancel": "Cancel",
+    "confirm": "Yes",
+    "logout_confirm_title": "Are you sure?",
+    "logout_confirm_text": "You won't be able to revert this!"
   }
 }
