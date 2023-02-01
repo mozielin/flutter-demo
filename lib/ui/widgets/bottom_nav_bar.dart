@@ -34,6 +34,7 @@ class BottomNavBar extends StatelessWidget {
             if (index != 2) {
               context.read<BottomNavCubit>().updateIndex(index);
             } else {
+              //todo:子亘搬到別的地方
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
