@@ -5,6 +5,7 @@ import 'package:ionicons/ionicons.dart';
 
 import '../../config/theme.dart';
 import '../../cubit/bottom_nav_cubit.dart';
+import '../../cubit/theme_cubit.dart';
 import 'clock/card_hole_clipper.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -15,6 +16,7 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ScrollController dialogController = ScrollController();
+    final themeMode = BlocProvider.of<ThemeCubit>(context).state.themeMode;
     return Card(
       margin: const EdgeInsets.only(top: 1, right: 4, left: 4),
       elevation: 4,
@@ -93,7 +95,7 @@ class BottomNavBar extends StatelessWidget {
                                         children: [
                                           Card(
                                             shadowColor: Theme.of(context).colorScheme.shadow,
-                                            color: MetronicTheme.light_success,
+                                            color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.background : MetronicTheme.light_success,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(Radius.circular(12))),
                                             child: ListTile(
@@ -130,7 +132,7 @@ class BottomNavBar extends StatelessWidget {
                                           Card(
                                             // elevation: 2,
                                             shadowColor: Theme.of(context).colorScheme.shadow,
-                                            color: MetronicTheme.light_primary,
+                                            color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.background : MetronicTheme.light_primary,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(Radius.circular(12))),
                                             child: ListTile(
@@ -158,7 +160,7 @@ class BottomNavBar extends StatelessWidget {
                                           ),
                                           Card(
                                             shadowColor: Theme.of(context).colorScheme.shadow,
-                                            color: MetronicTheme.light_warning,
+                                            color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.background : MetronicTheme.light_warning,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(Radius.circular(12))),
                                             child: ListTile(
@@ -187,7 +189,7 @@ class BottomNavBar extends StatelessWidget {
                                           ),
                                           Card(
                                             shadowColor: Theme.of(context).colorScheme.shadow,
-                                            color: MetronicTheme.light_info,
+                                            color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.background : MetronicTheme.light_info,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(Radius.circular(12))),
                                             child: ListTile(
@@ -290,10 +292,10 @@ class BottomNavBar extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            backgroundColor: MetronicTheme.light_dark,
-                            child: const Icon(
+                            backgroundColor: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.primary : MetronicTheme.light_dark,
+                            child: Icon(
                               Ionicons.close_outline,
-                              color: MetronicTheme.dark,
+                              color: themeMode == ThemeMode.dark ? Theme.of(context).textTheme.titleLarge!.color : MetronicTheme.dark,
                             ),
                           ),
                         ],

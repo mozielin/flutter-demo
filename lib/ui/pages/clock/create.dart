@@ -1,15 +1,20 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../../../config/theme.dart';
+import '../../../cubit/theme_cubit.dart';
+import '../../widgets/alert/icons/error_icon.dart';
+import '../../widgets/alert/styles.dart';
 import '../../widgets/clock/clock_child_type.dart';
 import '../../widgets/clock/clock_type.dart';
 import '../../widgets/common/main_appbar.dart';
-import 'custom_picker.dart';
 import 'package:dio/dio.dart';
 
 enum SingingCharacter { project, office, day_off }
@@ -34,9 +39,16 @@ class _CreateClockState extends State<CreateClock> {
   var _typeBoxVisible = 1.0;
   var _typeBoxSet = true;
   bool showbtn = false;
-  var type_id = 6;
+  var attr_id = 6;
   var parent_id;
   var type_init_value = true;
+  var child_id;
+  late Map errorText = {
+    'clock_context': null,
+    'start_time': null,
+    'end_time': null,
+    'clock_type': null,
+  };
 
   @override
   void initState() {
@@ -81,6 +93,7 @@ class _CreateClockState extends State<CreateClock> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = BlocProvider.of<ThemeCubit>(context).state.themeMode;
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
     final type = arguments['type'];
@@ -116,7 +129,7 @@ class _CreateClockState extends State<CreateClock> {
                             _typeBoxSet = true;
                             _typeBoxVisible = 1.0;
                             _character = value;
-                            type_id = 6;
+                            attr_id = 6;
                             type_init_value = false;
                           });
                         },
@@ -136,7 +149,7 @@ class _CreateClockState extends State<CreateClock> {
                             _typeBoxSet = true;
                             _typeBoxVisible = 1.0;
                             _character = value;
-                            type_id = 7;
+                            attr_id = 7;
                             type_init_value = false;
                           });
                         },
@@ -208,7 +221,7 @@ class _CreateClockState extends State<CreateClock> {
                         const Padding(padding: EdgeInsets.only(top: 5)),
                         ClockType(
                           allType: allType,
-                          type_id: type_id,
+                          attr_id: attr_id,
                           callback: callback,
                           type_init_value: type_init_value,
                         ),
@@ -254,8 +267,9 @@ class _CreateClockState extends State<CreateClock> {
                           padding: EdgeInsets.only(top: 5),
                           child: ClockChildType(
                             allType: allType,
-                            type_id: type_id,
+                            attr_id: attr_id,
                             parent_id: parent_id,
+                            child_call_back: child_call_back,
                           ),
                         ),
                       ],
@@ -274,88 +288,52 @@ class _CreateClockState extends State<CreateClock> {
                 input_title(tr("clock.create.depart_time"), true),
                 TextFormField(
                   controller: _depart,
+                  // inputFormatters: [],
                   decoration: InputDecoration(
-                      contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 15),
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.surface,
-                      border: const OutlineInputBorder(),
-                      labelText: _input,
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).textTheme.bodySmall!.color,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          DatePicker.showDateTimePicker(context,
-                              showTitleActions: true,
-                              minTime: DateTime(2018, 3, 5),
-                              maxTime: DateTime(2019, 6, 7), onConfirm: (date) {
-                                _depart.text =
-                                    DateFormat('yyyy-MM-dd kk:mm').format(date);
-                              },
-                              currentTime: DateTime.now(),
-                              locale: LocaleType.zh);
-                        },
-                        icon: Icon(Ionicons.calendar_outline),
-                      )),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    border: const OutlineInputBorder(),
+                    labelText: _input,
+                    labelStyle: TextStyle(
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                    ),
+                    suffixIcon: date_picker(_depart),
+                  ),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 10)),
                 input_title(tr("clock.create.start_time"), true),
                 TextFormField(
                   controller: _start,
                   decoration: InputDecoration(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 15),
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.surface,
-                      border: const OutlineInputBorder(),
-                      labelText: _input,
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).textTheme.bodySmall!.color,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          DatePicker.showDateTimePicker(context,
-                              showTitleActions: true,
-                              minTime: DateTime(2018, 3, 5),
-                              maxTime: DateTime(2019, 6, 7), onConfirm: (date) {
-                            _start.text =
-                                DateFormat('yyyy-MM-dd kk:mm').format(date);
-                          },
-                              currentTime: DateTime.now(),
-                              locale: LocaleType.zh);
-                        },
-                        icon: Icon(Ionicons.calendar_outline),
-                      )),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    border: const OutlineInputBorder(),
+                    labelText: _input,
+                    labelStyle: TextStyle(
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                    ),
+                    suffixIcon: date_picker(_start),
+                    errorText: errorText['start_time'],
+                  ),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 10)),
                 input_title(tr("clock.create.end_time"), true),
                 TextFormField(
                   controller: _end,
                   decoration: InputDecoration(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 15),
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.surface,
-                      border: const OutlineInputBorder(),
-                      labelText: _input,
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).textTheme.bodySmall!.color,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          DatePicker.showDateTimePicker(context,
-                              showTitleActions: true,
-                              minTime: DateTime(2018, 3, 5),
-                              maxTime: DateTime(2019, 6, 7), onConfirm: (date) {
-                            _end.text =
-                                DateFormat('yyyy-MM-dd kk:mm').format(date);
-                          },
-                              currentTime: DateTime.now(),
-                              locale: LocaleType.zh);
-                        },
-                        icon: Icon(Ionicons.calendar_outline),
-                      )),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surface,
+                    border: const OutlineInputBorder(),
+                    labelText: _input,
+                    labelStyle: TextStyle(
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                    ),
+                    suffixIcon: date_picker(_end),
+                    errorText: errorText['end_time'],
+                  ),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 10)),
                 input_title(tr("clock.create.total_hours"), true),
@@ -384,16 +362,19 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                     ClipPath(
                       child: Card(
-                        color: MetronicTheme.light_primary,
+                        color: themeMode == ThemeMode.dark
+                            ? Theme.of(context).colorScheme.surface
+                            : MetronicTheme.light_primary,
                         shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(5))),
                         child: IconButton(
                           onPressed: () {
                             countHours();
-                            print('123');
                           },
                           icon: Icon(Ionicons.calculator_outline),
-                          color: MetronicTheme.primary,
+                          color: themeMode == ThemeMode.dark
+                              ? Theme.of(context).textTheme.titleLarge!.color
+                              : MetronicTheme.primary,
                         ),
                       ),
                     ),
@@ -474,6 +455,7 @@ class _CreateClockState extends State<CreateClock> {
                               color:
                                   Theme.of(context).textTheme.bodySmall!.color,
                             ),
+                            errorText: errorText['clock_context'] ?? null,
                           ),
                         ),
                       ),
@@ -490,18 +472,29 @@ class _CreateClockState extends State<CreateClock> {
                           Navigator.of(context).pop();
                         },
                         icon: Icon(Ionicons.arrow_back,
-                            color:MetronicTheme.dark),
-                        label: const Text(
+                            color: themeMode == ThemeMode.dark
+                                ? Theme.of(context).textTheme.titleLarge!.color
+                                : MetronicTheme.dark),
+                        label: Text(
                           '返回',
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              color: MetronicTheme.dark,
+                              color: themeMode == ThemeMode.dark
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .color
+                                  : MetronicTheme.dark,
                               fontWeight: FontWeight.bold),
                         ),
                         style: TextButton.styleFrom(
+                          padding: EdgeInsets.only(
+                              left: 10, right: 15, top: 10, bottom: 10),
                           foregroundColor: Colors.red,
-                          backgroundColor: MetronicTheme.light_dark,
+                          backgroundColor: themeMode == ThemeMode.dark
+                              ? Theme.of(context).colorScheme.surface
+                              : MetronicTheme.light_dark,
                           shape: const RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(5))),
@@ -511,19 +504,30 @@ class _CreateClockState extends State<CreateClock> {
                         onPressed: () {
                           subimt_clock();
                         },
-                        icon:
-                            Icon(Ionicons.pencil, color: MetronicTheme.success),
-                        label: const Text(
+                        icon: Icon(Ionicons.pencil,
+                            color: themeMode == ThemeMode.dark
+                                ? Theme.of(context).textTheme.titleLarge!.color
+                                : MetronicTheme.success),
+                        label: Text(
                           '儲存草稿',
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              color: MetronicTheme.success,
+                              color: themeMode == ThemeMode.dark
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .color
+                                  : MetronicTheme.success,
                               fontWeight: FontWeight.bold),
                         ),
                         style: TextButton.styleFrom(
+                          padding: EdgeInsets.only(
+                              left: 10, right: 15, top: 10, bottom: 10),
                           foregroundColor: Colors.red,
-                          backgroundColor: MetronicTheme.light_success,
+                          backgroundColor: themeMode == ThemeMode.dark
+                              ? Theme.of(context).colorScheme.surface
+                              : MetronicTheme.light_success,
                           shape: const RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(5))),
@@ -531,19 +535,30 @@ class _CreateClockState extends State<CreateClock> {
                       ),
                       TextButton.icon(
                         onPressed: () {},
-                        icon: const Icon(Ionicons.checkmark_circle,
-                            color: MetronicTheme.info),
-                        label: const Text(
+                        icon: Icon(Ionicons.checkmark_circle,
+                            color: themeMode == ThemeMode.dark
+                                ? Theme.of(context).textTheme.titleLarge!.color
+                                : MetronicTheme.info),
+                        label: Text(
                           '送審',
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              color: MetronicTheme.info,
+                              color: themeMode == ThemeMode.dark
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .color
+                                  : MetronicTheme.info,
                               fontWeight: FontWeight.bold),
                         ),
                         style: TextButton.styleFrom(
+                          padding: EdgeInsets.only(
+                              left: 10, right: 15, top: 10, bottom: 10),
                           foregroundColor: Colors.red,
-                          backgroundColor: MetronicTheme.light_info,
+                          backgroundColor: themeMode == ThemeMode.dark
+                              ? Theme.of(context).colorScheme.surface
+                              : MetronicTheme.light_info,
                           shape: const RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(5))),
@@ -590,46 +605,188 @@ class _CreateClockState extends State<CreateClock> {
     );
   }
 
-  callback(newAbc) {
+  callback(id) {
     setState(() {
-      parent_id = newAbc;
+      parent_id = id;
       type_init_value = true;
     });
   }
 
-  countHours() async {
-    dio.options.headers['Authorization'] =
-        'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
-    Response res = await dio.post(
-      'http://10.0.2.2/api/countHoursAPI', // TODO: URL 放至 env 相關設定
-      data: {
-        'start_time': '2023-01-01 15:00:00', //_start.text
-        'end_time': '2023-01-01 16:00:00', //_end.text
-      },
-    );
+  child_call_back(id) {
+    setState(() {
+      child_id = id;
+    });
+  }
 
-    if (res.statusCode == 200 && res.data != null) {
-      _departHour.text = res.data['hours']['trafficHours'] + '小時';
-      _totalHours.text = res.data['hours']['totalHours'] + '小時';
-      _worksHours.text = res.data['hours']['worksHours'] + '小時';
+  countHours() async {
+    try {
+      setState(() {
+        errorText['start_time'] = null;
+        errorText['end_time'] = null;
+      });
+      dio.options.headers['Authorization'] =
+          'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+      Response res = await dio.post(
+        'http://10.0.2.2:81/api/countHoursAPI', // TODO: URL 放至 env 相關設定
+        data: {
+          'depart_time': _depart.text,
+          'start_time': _start.text,
+          'end_time': _end.text,
+        },
+      ).timeout(const Duration(seconds: 5));
+      if (res.statusCode == 200 && res.data != null) {
+        _departHour.text =
+            res.data['data']['trafficHours'] + tr('clock.create.h');
+        _totalHours.text =
+            res.data['data']['totalHours'] + tr('clock.create.h');
+        _worksHours.text =
+            res.data['data']['worksHours'] + tr('clock.create.h');
+      }
+    } on DioError catch (e) {
+      _departHour.text = '';
+      _totalHours.text = '';
+      _worksHours.text = '';
+
+      var message = e.response!.data['message'];
+      var error = json.decode(message);
+
+      if (error['error'] != null) {
+        Alert(
+          context: context,
+          style: AlertStyles().dangerStyle(context),
+          image: const ErrorIcon(),
+          title: tr('alerts.confirm_error'),
+          desc: "${error['error']}",
+          buttons: [
+            AlertStyles().getCancelButton(context),
+          ],
+        ).show();
+      } else {
+        setState(() {
+          error.forEach((k, v) {
+            errorText['${k}'] = '此欄位必塡';
+          });
+        });
+      }
     }
-    //todo:驗證失敗
   }
 
   subimt_clock() async {
-    dio.options.headers['Authorization'] =
-    'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
-    Response res = await dio.post(
-      'http://10.0.2.2/api/storeClockAPI', // TODO: URL 放至 env 相關設定
-      data: {
-        'context': clock_context.text,
-        'type': parent_id,
-        'clock_type': parent_id,
-        'departTime': _depart.text,
-        'startTime': _start.text, //_start.text
-        'endTime': _end.text, //_end.text
-        'total_hours': _totalHours.text,
+    bool check = true;
+    setState(() {
+      errorText.forEach((k, v) {
+        errorText[k] = null;
+      });
+
+      if (clock_context.text.isEmpty) {
+        errorText['clock_context'] = '此欄位必塡';
+        check = false;
+      }
+
+      if (_start.text.isEmpty) {
+        errorText['start_time'] = '此欄位必塡';
+        check = false;
+      }
+
+      if (_end.text.isEmpty) {
+        errorText['end_time'] = '此欄位必塡';
+        check = false;
+      }
+
+      if (_totalHours.text.isEmpty) {
+        error_alert('請先計算工時！');
+        check = false;
+      }
+    });
+
+    if (check) {
+      try {
+        print('store');
+        dio.options.headers['Authorization'] =
+            'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+        Response res = await dio.post(
+          'http://10.0.2.2:81/api/storeClockAPI', // TODO: URL 放至 env 相關設定
+          data: {
+            'context': clock_context.text,
+            'type': child_id,
+            'clock_type': parent_id,
+            'departTime': _depart.text,
+            'startTime': _start.text, //_start.text
+            'endTime': _end.text, //_end.text
+            'total_hours': _totalHours.text,
+            'clock_attribute': attr_id,
+          },
+        );
+      } on DioError catch (e) {
+        print('error');
+        print(e.response);
+        var message = e.response!.data['message'];
+        var error = json.decode(message);
+
+        if (error['error'] != null) {
+          error_alert("${error['error']}");
+        } else {
+          if (error['clock_type'] != null) {
+            error_alert("請選擇主類別！");
+          } else {
+            setState(() {
+              error.forEach((k, v) {
+                errorText['${k}'] = '此欄位必塡';
+              });
+            });
+          }
+        }
+      }
+    }
+  }
+
+  error_alert(msg) {
+    return Alert(
+      context: context,
+      style: AlertStyles().dangerStyle(context),
+      image: const ErrorIcon(),
+      title: tr('alerts.confirm_error'),
+      desc: msg,
+      buttons: [
+        AlertStyles().getCancelButton(context),
+      ],
+    ).show();
+  }
+
+  date_picker(controller) {
+    return IconButton(
+      onPressed: () {
+        DatePicker.showDateTimePicker(
+          context,
+          showTitleActions: true,
+          minTime: DateTime(2018, 3, 5),
+          maxTime: DateTime(2019, 6, 7),
+          onConfirm: (date) {
+            var seconds = int.parse(DateFormat('mm').format(date));
+            if (seconds < 15) {
+              controller.text = DateFormat('yyyy-MM-dd kk:00').format(date);
+            } else if (seconds >= 15 && seconds < 45) {
+              controller.text = DateFormat('yyyy-MM-dd kk:30').format(date);
+            } else {
+              var new_date = date.add(Duration(hours: 1));
+              //跨天
+              if (int.parse(DateFormat('kk').format(new_date)) == 24) {
+                controller.text =
+                    DateFormat('yyyy-MM-dd 00:00').format(new_date);
+              } else {
+                controller.text =
+                    DateFormat('yyyy-MM-dd kk:00').format(new_date);
+              }
+            }
+          },
+          currentTime: DateTime.now(),
+          locale: LocaleType.zh,
+        );
       },
+      icon: Icon(
+        Ionicons.calendar_outline,
+        color: Theme.of(context).textTheme.titleLarge!.color,
+      ),
     );
   }
 }

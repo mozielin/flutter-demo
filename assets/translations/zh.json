@@ -133,7 +133,8 @@
       "work_hours": "工作時數",
       "hours": "點擊按鈕計算工時",
       "context": "工作內容",
-      "context_labelText": "請輸入工作內容"
+      "context_labelText": "請輸入工作內容",
+      "h": "小時"
     }
   },
 
@@ -152,6 +153,7 @@
     "logout_confirm_text": "登出後將清空使用者資訊",
     "token_expired_title": "登入狀態逾期",
     "token_expired_text": "請重新輸入帳號密碼驗證",
-    "return_login": "返回登入"
+    "return_login": "返回登入",
+    "confirm_error": "發生錯誤！"
   }
 }

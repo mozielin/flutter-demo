@@ -126,6 +126,7 @@
     "logout_confirm_text": "You won't be able to revert this",
     "token_expired_title": "Authenticate Failed",
     "token_expired_text": "Your login state has been expired",
-    "return_login": "Return to login"
+    "return_login": "Return to login",
+    "confirm_error": "Something Error！"
   }
 }

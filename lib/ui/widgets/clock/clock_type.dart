@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
 class ClockType extends StatefulWidget {
-  const ClockType({Key? key, required this.allType, required this.type_id,  this.callback, this.type_init_value})
+  const ClockType({Key? key, required this.allType, required this.attr_id,  this.callback, this.type_init_value})
       : super(key: key);
   final allType;
-  final type_id;
+  final attr_id;
   final callback;
   final type_init_value;
 
@@ -20,9 +20,7 @@ class _ClockTypeState extends State<ClockType> {
   // final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
   List<DropdownMenuItem> getDynamicMenu(attr_id) {
     List<DropdownMenuItem> dynamicMenus = [];
-    print('dynamicMenus');
-    print(selected);
-    if (widget.allType.isNotEmpty && widget.type_id != null && attr_id != null) {
+    if (widget.allType.isNotEmpty && widget.attr_id != null && attr_id != null) {
       widget.allType['$attr_id']['child'].forEach((k, v) {
         // print('type_init_value');
         // print(widget.type_init_value);
@@ -34,8 +32,6 @@ class _ClockTypeState extends State<ClockType> {
         // }
       });
     }
-    print('add');
-    print(dynamicMenus);
     return dynamicMenus;
   }
 
@@ -63,7 +59,7 @@ class _ClockTypeState extends State<ClockType> {
         style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
       ),
       // value: selected == 0 ? null : selected,
-      items: getDynamicMenu(widget.type_id),
+      items: getDynamicMenu(widget.attr_id),
       onChanged: (value){
         print('onChanged');
         setState(() {

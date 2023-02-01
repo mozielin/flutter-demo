@@ -10,12 +10,14 @@ class ClockChildType extends StatefulWidget {
   const ClockChildType(
       {Key? key,
       required this.allType,
-      required this.type_id,
+      required this.attr_id,
+      required this.child_call_back,
       required this.parent_id})
       : super(key: key);
   final allType;
-  final type_id;
+  final attr_id;
   final parent_id;
+  final child_call_back;
 
   @override
   State<ClockChildType> createState() => _ClockChildTypeState();
@@ -28,11 +30,12 @@ class _ClockChildTypeState extends State<ClockChildType> {
     if (parent_id != null) {
       widget.allType['$attr_id']['child'].forEach((k, v) {
         if (k == parent_id && v['child'] != null) {
-            print('child');
-            // _statusKey.currentState!.reset();
-            v['child'].forEach((kk, vv){
-              dynamicMenus.add(DropdownMenuItem(value: '$kk', child: Text('$vv')));
-            });
+          print('child');
+          // _statusKey.currentState!.reset();
+          v['child'].forEach((kk, vv) {
+            dynamicMenus
+                .add(DropdownMenuItem(value: '$kk', child: Text('$vv')));
+          });
         }
       });
     }
@@ -53,9 +56,9 @@ class _ClockChildTypeState extends State<ClockChildType> {
         style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
       ),
       value: null,
-      items: getDynamicChildType(widget.type_id, widget.parent_id),
+      items: getDynamicChildType(widget.attr_id, widget.parent_id),
       onChanged: (value) {
-        print('child_change');
+        widget.child_call_back(value);
         // FocusScope.of(context).requestFocus(FocusNode());
         // setState(() {
         // });
