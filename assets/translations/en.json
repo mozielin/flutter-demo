@@ -1,10 +1,13 @@
 {
-  "app_name": "Flutter Production Boilerplate",
+  "app_name": "Hwacom Mobile",
   "bottom_nav_first": "Home",
   "bottom_nav_second": "Info",
   "bottom_nav_clock": "Clock",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "Hive",
+  "bottom_nav_app": "apps",
+  "bottom_setting": "setting",
+  "analyze": "analyze",
   "localization_title": "Localization",
   "localization_content": "Simplified translations with the Easy Translations package.",
   "linting_title": "Linting",
@@ -75,6 +78,11 @@
       "status": "Select status"
     }
   },
+  "home": {
+    "appbar": {
+      "title": "Home"
+    }
+  },
   "clock": {
     "appbar": {
       "list": "Clock list"
@@ -101,5 +109,23 @@
       "no_case_title": "No Case",
       "no_case_desc": "Project Dev/Office/Day Off"
     }
+  },
+
+  "auth": {
+    "enumber": "Work Number",
+    "password": "Password",
+    "login": "Login",
+    "login_failed": "Login Failed",
+    "connection_error": "Connection Error"
+  },
+
+  "alerts": {
+    "cancel": "Cancel",
+    "confirm": "Yes",
+    "logout_confirm_title": "Are you sure?",
+    "logout_confirm_text": "You won't be able to revert this",
+    "token_expired_title": "Authenticate Failed",
+    "token_expired_text": "Your login state has been expired",
+    "return_login": "Return to login"
   }
 }

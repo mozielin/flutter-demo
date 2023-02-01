@@ -5,6 +5,9 @@
   "bottom_nav_clock": "登錄工時",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "資料庫",
+  "bottom_nav_app": "功能",
+  "bottom_setting": "設定",
+  "analyze": "分析",
   "localization_title": "多語系",
   "localization_content": "簡單切換多國語系的套件.",
   "linting_title": "程式碼規範",
@@ -78,6 +81,11 @@
       "status": "請選擇狀態"
     }
   },
+  "home": {
+    "appbar": {
+      "title": "首頁"
+    }
+  },
   "clock": {
     "appbar": {
       "list": "報工列表",
@@ -127,5 +135,23 @@
       "context": "工作內容",
       "context_labelText": "請輸入工作內容"
     }
+  },
+
+  "auth": {
+    "enumber": "工號",
+    "password": "密碼",
+    "login": "登入",
+    "login_failed": "登入失敗",
+    "connection_error": "連線異常"
+  },
+
+  "alerts": {
+    "cancel": "取消",
+    "confirm": "確認",
+    "logout_confirm_title": "確定要登出目前帳號嗎?",
+    "logout_confirm_text": "登出後將清空使用者資訊",
+    "token_expired_title": "登入狀態逾期",
+    "token_expired_text": "請重新輸入帳號密碼驗證",
+    "return_login": "返回登入"
   }
 }

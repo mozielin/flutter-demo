@@ -1,9 +1,13 @@
 // ignore_for_file: non_constant_identifier_names, must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:hws_app/ui/pages/auth/login.dart';
+import 'package:hws_app/ui/pages/home.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hws_app/ui/widgets/auth/cutscene_screen.dart';
+import 'cubit/user_cubit.dart';
 import 'models/user.dart';
 
 import 'dart:io';
@@ -36,7 +40,7 @@ void main() async {
   await Hive.openBox('userBox');
 
   HydratedBlocOverrides.runZoned(
-    () => runApp(
+        () => runApp(
       EasyLocalization(
         path: 'assets/translations',
         supportedLocales: const <Locale>[
@@ -58,32 +62,45 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ThemeCubit>(
-      create: (BuildContext context) => ThemeCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeCubit>(
+          create: (BuildContext context) => ThemeCubit(),
+        ),
+        BlocProvider<UserCubit>(
+          create: (BuildContext context) => UserCubit(),
+        ),
+      ],
       child: BlocBuilder<ThemeCubit, ThemeModeState>(
-        builder: (BuildContext context, ThemeModeState state) {
-          return GlobalData(
-            child: MaterialApp(
-              /// Localization is not available for the title.
-              title: 'Hwacom App',
-
-              /// Theme stuff
-              theme: lightTheme,
-              darkTheme: darkTheme,
-              themeMode: state.themeMode,
-
-              /// Localization stuff
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
-              debugShowCheckedModeBanner: false,
-              home: const SkeletonScreen(),
-              onGenerateRoute: AppRouter.generateRoute,
-              initialRoute: '/',
-            ),
-          );
-        },
-      ),
+      builder: (BuildContext context, ThemeModeState state) {
+        return BlocBuilder<UserCubit, UserState>(
+          builder: (BuildContext context, UserState user) {
+            return GlobalData(
+                child: MaterialApp(
+                  /// Localization is not available for the title.
+                  title: 'Hwacom App',
+                  /// Theme stuff
+                  theme: lightTheme,
+                  darkTheme: darkTheme,
+                  themeMode: state.themeMode,
+                  /// Localization stuff
+                  localizationsDelegates: context.localizationDelegates,
+                  supportedLocales: context.supportedLocales,
+                  locale: context.locale,
+                  debugShowCheckedModeBanner: false,
+                  home: const LoginScreen(),
+                  onGenerateRoute: AppRouter.generateRoute,
+                  initialRoute: '/',
+              ),
+            );
+          },
+        );
+      },
+    ),
     );
   }
 }
+
+
+
+

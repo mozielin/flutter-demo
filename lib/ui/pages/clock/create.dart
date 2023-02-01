@@ -68,7 +68,7 @@ class _CreateClockState extends State<CreateClock> {
     dio.options.headers['Authorization'] =
         'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
     Response res = await dio.post(
-      'http://10.0.2.2/api/getClockTypeAPI', // TODO: URL 放至 env 相關設定
+      'http://10.0.2.2:81/api/getClockTypeAPI', // TODO: URL 放至 env 相關設定
       // 'https://uathws.hwacom.com//api/getClocks', // TODO: URL 放至 env 相關設定
       data: {
         'case_no': 'no_case',

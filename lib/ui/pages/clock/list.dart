@@ -454,9 +454,10 @@ class _ClockDemoState extends State<ClockDemo> {
       }
 
       if (!is_bottom) {
-        dio.options.headers['Authorization'] = 'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+        dio.options.headers['Authorization'] =
+            'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
         Response res = await dio.post(
-          'http://10.0.2.2/api/getClocks', // TODO: URL 放至 env 相關設定
+          'http://10.0.2.2:81/api/getClocks', // TODO: URL 放至 env 相關設定
           data: {
             'enumber': 'HW-M54',
             'skip': skip,
@@ -464,7 +465,7 @@ class _ClockDemoState extends State<ClockDemo> {
             'fuzzy_search': _searchController.text,
             'status': _status,
           },
-        );
+        ).timeout(const Duration(seconds: 5));
 
         if (res.statusCode == 200 && res.data != null) {
           setState(() {
@@ -506,11 +507,12 @@ class _ClockDemoState extends State<ClockDemo> {
         images = [];
       });
 
-      dio.options.headers['Authorization'] = 'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+      dio.options.headers['Authorization'] =
+          'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
       Response res = await dio.post(
-        'http://10.0.2.2/api/getClockImages', // TODO: URL 放至 env 相關設定
+        'http://10.0.2.2:81/api/getClockImages', // TODO: URL 放至 env 相關設定
         data: {'clock_id': clock_id},
-      );
+      ).timeout(const Duration(seconds: 5));
 
       if (res.statusCode == 200 && res.data != null) {
         setState(() {

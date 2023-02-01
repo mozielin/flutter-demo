@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/ui/pages/api_demo.dart';
-import 'package:hws_app/ui/pages/hive_demo.dart';
-import 'package:hws_app/ui/pages/file_demo.dart';
-
 import '../../cubit/bottom_nav_cubit.dart';
+import '../pages/hive_demo.dart';
+import '../pages/home.dart';
 import '../widgets/app_bar_gone.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'first_screen.dart';
@@ -16,10 +15,11 @@ class SkeletonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const List<Widget> pageNavigation = <Widget>[
-      FirstScreen(),
+      Home(),
       SecondScreen(),
-      ApiDemo(),
       HiveDemo(),
+      ApiDemo(),
+      FirstScreen(),
     ];
 
     return BlocProvider<BottomNavCubit>(
