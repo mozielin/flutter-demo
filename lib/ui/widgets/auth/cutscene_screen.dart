@@ -2,6 +2,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../../../cubit/user_cubit.dart';
@@ -22,15 +23,69 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
   bool stopScaleAnimtion = false;
   bool showMessages = true;
 
+  String release = "";
+
+  basicStatusCheck(NewVersionPlus newVersion) async {
+    final version = await newVersion.getVersionStatus();
+    if (version != null) {
+      release = version.releaseNotes ?? "";
+      setState(() {});
+    }
+    newVersion.showAlertIfNecessary(
+      context: context,
+      launchModeVersion: LaunchModeVersion.external,
+    );
+  }
+
+  advancedStatusCheck(NewVersionPlus newVersion) async {
+    //TODO:要求更新客製訊息
+    final status = await newVersion.getVersionStatus();
+    if (status != null) {
+      debugPrint(status.releaseNotes);
+      debugPrint(status.appStoreLink);
+      debugPrint(status.localVersion);
+      debugPrint(status.storeVersion);
+      debugPrint(status.canUpdate.toString());
+      newVersion.showUpdateDialog(
+        context: context,
+        versionStatus: status,
+        dialogTitle: 'Custom Title',
+        dialogText: 'Custom Text',
+      );
+    }
+  }
+
   @override
   void initState() {
-    super.initState();
+    // Instantiate NewVersion manager object (Using GCP Console app as example)
+    //TODO:更換APPID
+    final newVersion = NewVersionPlus(
+        iOSId: 'com.google.Vespa',
+        androidId: 'com.disney.disneyplus',
+        androidPlayStoreCountry: "es_ES" //support country code
+    );
+
+    // You can let the plugin handle fetching the status and showing a dialog,
+    // or you can fetch the status and display your own dialog, or no dialog.
+
+    const simpleBehavior = true;
+
+    if (simpleBehavior) {
+      basicStatusCheck(newVersion);
+    }
+    // else {
+    //   advancedStatusCheck(newVersion);
+    // }
+
+
     Future.delayed(Duration(milliseconds: 2000), () {
       setState(() {
         _alignment = Alignment.topRight;
         stopScaleAnimtion = true;
       });
     });
+
+    super.initState();
   }
 
   @override
@@ -44,6 +99,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
             duration: Duration(milliseconds: 500),
             tween: Tween(begin: 0, end: loadingBallSize),
             onEnd: () {
+              print(Text(release));
               if (!stopScaleAnimtion) {
                 setState(() {
                   if (loadingBallSize == 1) {
