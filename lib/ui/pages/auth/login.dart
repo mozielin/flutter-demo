@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 .of(context)
                 .colorScheme
                 .background,
-            resizeToAvoidBottomInset: true,
+            resizeToAvoidBottomInset: false,
             body: SafeArea(
               bottom: false,
               child: loadingBallAppear
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 70),
+                    SizedBox(height: 30),
                     TweenAnimationBuilder<double>(
                       duration: Duration(milliseconds: 300),
                       tween: Tween(begin: 1, end: _elementsOpacity),
@@ -114,11 +114,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: Container(
-                                      child: state.themeMode == ThemeMode.dark ? getDarkLogo() : getLightLogo(),
+                                      child: Theme.of(context).brightness == Brightness.dark ? getDarkLogo() : getLightLogo(),
                                   )
                                 ),
                                 Text(
-                                  "Welcome, Stranger",
+                                  "Welcome to Hwapp",
                                   style: Theme
                                       .of(context)
                                       .textTheme
