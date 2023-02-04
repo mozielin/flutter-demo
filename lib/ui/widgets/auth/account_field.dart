@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ionicons/ionicons.dart';
 
 class AccountField extends StatefulWidget {
@@ -117,6 +118,9 @@ class _AccountFieldState extends State<AccountField>
                       });
                     }
                   },
+                  inputFormatters: [
+                    _UpperCaseTextFormatter(),
+                  ],
                 ),
               )),
         ),
@@ -131,5 +135,15 @@ class _AccountFieldState extends State<AccountField>
     // return RegExp(
     //         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
     //     .hasMatch(account);
+  }
+}
+
+class _UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
   }
 }
