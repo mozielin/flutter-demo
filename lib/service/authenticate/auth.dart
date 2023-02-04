@@ -12,7 +12,7 @@ class AuthService{
   Future<Map<String, dynamic>> login(String account, String password) async {
     try {
       Response response = await dio.post(// TODO: URL 放至 env 相關設定
-        'http://10.0.2.2/api/jwt/login',
+        'http://192.168.12.68/api/jwt/login',
         data: {
           'enumber': account,
           'password': password,
@@ -76,7 +76,7 @@ class AuthService{
     try {
       dio.options.headers['Authorization'] = 'Bearer $token';
       Response response = await dio.post(// TODO: URL 放至 env 相關設定
-        'http://10.0.2.2/api/refresh/token'
+        'http://192.168.12.68/api/refresh/token'
       ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200 && response.data != null) {
