@@ -74,17 +74,22 @@ class _CreateClockState extends State<CreateClock> {
 
   //todo:(更換來源)離線報工時
   Future initTypeSelection() async {
-    dio.options.headers['Authorization'] = 'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
-    api.Response res = await dio.post(
-      'http://192.168.12.68:443/api/getClockTypeAPI', // TODO: URL 放至 env 相關設定
-      // 'https://uathws.hwacom.com//api/getClocks', // TODO: URL 放至 env 相關設定
-      data: {
-        'case_no': 'no_case',
-        'attr': 6,
-      },
-    );
-    Map<String, dynamic> data = res.data;
-    return data;
+    try{
+      dio.options.headers['Authorization'] = 'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
+      api.Response res = await dio.post(
+        'http://192.168.12.68:443/api/getClockTypeAPI', // TODO: URL 放至 env 相關設定
+        // 'https://uathws.hwacom.com//api/getClocks', // TODO: URL 放至 env 相關設定
+        data: {
+          'case_no': 'no_case',
+          'attr': 6,
+          'has_case': 2 //無Case
+        },
+      );
+      Map<String, dynamic> data = res.data;
+      return data;
+    }on api.DioError catch (e) {
+      error_alert(tr('auth.connection_error'));
+    }
   }
 
   @override
@@ -756,31 +761,31 @@ class _CreateClockState extends State<CreateClock> {
   //登錄工時
   subimt_clock(draft, token) async {
     bool check = true;
-    // setState(() {
-    //   errorText.forEach((k, v) {
-    //     errorText[k] = null;
-    //   });
-    //
-    //   if (_clock_context.text.isEmpty) {
-    //     errorText['clock_context'] = '此欄位必塡';
-    //     check = false;
-    //   }
-    //
-    //   if (_start.text.isEmpty) {
-    //     errorText['startTime'] = '此欄位必塡';
-    //     check = false;
-    //   }
-    //
-    //   if (_end.text.isEmpty) {
-    //     errorText['endTime'] = '此欄位必塡';
-    //     check = false;
-    //   }
-    //
-    //   if (_totalHours.text.isEmpty) {
-    //     error_alert('請先計算工時！');
-    //     check = false;
-    //   }
-    // });
+    setState(() {
+      errorText.forEach((k, v) {
+        errorText[k] = null;
+      });
+
+      if (_clock_context.text.isEmpty) {
+        errorText['clock_context'] = '此欄位必塡';
+        check = false;
+      }
+
+      if (_start.text.isEmpty) {
+        errorText['startTime'] = '此欄位必塡';
+        check = false;
+      }
+
+      if (_end.text.isEmpty) {
+        errorText['endTime'] = '此欄位必塡';
+        check = false;
+      }
+
+      if (_totalHours.text.isEmpty) {
+        error_alert('請先計算工時！');
+        check = false;
+      }
+    });
 
     if (check) {
       try {
@@ -907,9 +912,7 @@ class _CreateClockState extends State<CreateClock> {
     
     // Step 2: 判斷是否有選擇到圖片
     if (image == null) return;
-
-print('name');
-print(image.path.split("image_picker").last);
+    
     // Step 3: 取得檔案目錄.
     final dir = await getTemporaryDirectory();
     // Step 4: 複製檔案到儲存目錄;
