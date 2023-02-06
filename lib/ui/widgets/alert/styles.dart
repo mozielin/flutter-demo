@@ -5,6 +5,32 @@ import 'package:hws_app/config/theme.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class AlertStyles {
+  AlertStyle blockStyle(context) {
+    return AlertStyle(
+      isCloseButton: false,
+      isOverlayTapDismiss: false,
+      descStyle: const TextStyle(fontSize: 15),
+      descTextAlign: TextAlign.center,
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        side: const BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      titleStyle: const TextStyle(
+        color: MetronicTheme.danger,
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+      ),
+      alertAlignment: Alignment.center,
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .background,
+      overlayColor: Colors.black54,
+    );
+  }
+
   AlertStyle dangerStyle(context) {
     return AlertStyle(
       isCloseButton: true,
@@ -30,6 +56,7 @@ class AlertStyles {
       overlayColor: Colors.black54,
     );
   }
+
   AlertStyle warningStyle(context) {
     return AlertStyle(
       isCloseButton: true,

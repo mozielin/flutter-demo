@@ -1,10 +1,7 @@
-// ignore_for_file: constant_identifier_names
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hws_app/ui/pages/clock/create.dart';
 import 'package:hws_app/ui/pages/common/photo_detail_base64.dart';
-import 'package:hws_app/ui/pages/home.dart';
 import 'package:hws_app/ui/pages/api_demo.dart';
 import 'package:hws_app/ui/pages/hive_demo.dart';
 import 'package:hws_app/ui/pages/clock/list.dart';
