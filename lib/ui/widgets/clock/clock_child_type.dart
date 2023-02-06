@@ -7,31 +7,37 @@ import 'package:get/get.dart';
 import 'package:ionicons/ionicons.dart';
 
 class ClockChildType extends StatefulWidget {
-  const ClockChildType(
-      {Key? key,
-      required this.allType,
-      required this.attr_id,
-      required this.child_call_back,
-      required this.parent_id})
-      : super(key: key);
+  const ClockChildType({
+    Key? key,
+    required this.allType,
+    required this.attr_id,
+    required this.child_call_back,
+    required this.parent_id,
+    required this.reset_child,
+  }) : super(key: key);
   final allType;
   final attr_id;
   final parent_id;
   final child_call_back;
+  final reset_child;
 
   @override
   State<ClockChildType> createState() => _ClockChildTypeState();
 }
 
 class _ClockChildTypeState extends State<ClockChildType> {
-  // late final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
+  late final GlobalKey<FormFieldState> _statusKeyChild =
+      GlobalKey<FormFieldState>();
+  var selected;
+
   List<DropdownMenuItem> getDynamicChildType(attr_id, parent_id) {
     List<DropdownMenuItem> dynamicMenus = [];
     if (parent_id != null) {
       widget.allType['$attr_id']['child'].forEach((k, v) {
         if (k == parent_id && v['child'] != null) {
-          print('child');
-          // _statusKey.currentState!.reset();
+          if (_statusKeyChild.currentState != null && widget.reset_child == true) {
+            _statusKeyChild.currentState!.reset();
+          }
           v['child'].forEach((kk, vv) {
             dynamicMenus
                 .add(DropdownMenuItem(value: '$kk', child: Text('$vv')));
@@ -46,22 +52,19 @@ class _ClockChildTypeState extends State<ClockChildType> {
   Widget build(BuildContext context) {
     return DropdownButtonFormField(
       dropdownColor: Theme.of(context).colorScheme.surface,
-      // key: _statusKey,
+      key: _statusKeyChild,
       icon: Icon(
         Ionicons.caret_down_outline,
         color: Theme.of(context).textTheme.bodySmall!.color,
       ),
       hint: Text(
-        tr("search.hint.status"),
+        tr("search.hint.sub_type"),
         style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
       ),
       value: null,
       items: getDynamicChildType(widget.attr_id, widget.parent_id),
       onChanged: (value) {
         widget.child_call_back(value);
-        // FocusScope.of(context).requestFocus(FocusNode());
-        // setState(() {
-        // });
       },
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 15),

@@ -78,7 +78,9 @@
     "search": "搜尋",
     "advance_search": "進階搜尋",
     "hint": {
-      "status": "請選擇狀態"
+      "status": "請選擇狀態",
+      "type": "請選擇類別",
+      "sub_type": "請選擇子類別"
     }
   },
   "home": {
@@ -134,7 +136,8 @@
       "hours": "點擊按鈕計算工時",
       "context": "工作內容",
       "context_labelText": "請輸入工作內容",
-      "h": "小時"
+      "h": "小時",
+      "file": "附檔"
     }
   },
 
@@ -154,6 +157,14 @@
     "token_expired_title": "登入狀態逾期",
     "token_expired_text": "請重新輸入帳號密碼驗證",
     "return_login": "返回登入",
-    "confirm_error": "發生錯誤！"
+    "confirm_error": "發生錯誤！",
+    "confirm_success": "送出成功！",
+    "confirm_done_info": "資料已更新",
+    "confirm_done": "完成"
+  },
+  "button": {
+    "back": "返回",
+    "verify": "送審",
+    "draft": "儲存草稿"
   }
 }

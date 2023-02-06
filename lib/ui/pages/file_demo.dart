@@ -105,14 +105,17 @@ class _FileDemoState extends State<FileDemo> {
   }
 
   postData(file) async {
+    print('post');
     try {
+      dio.options.headers['Authorization'] =
+      'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO:
       api.FormData formData = api.FormData.fromMap({
         "files": await api.MultipartFile.fromFile(
           file.path,
           filename: 'test.png',
         ),
       });
-      api.Response res = await dio.post('http://10.0.2.2/api/app_demo', data: formData);
+      api.Response res = await dio.post('http://192.168.12.68:443/api/app_demo', data: formData);
       if (res.statusCode == 200 && res.data != null) {
         print(res.data['message']);
         setState(() {

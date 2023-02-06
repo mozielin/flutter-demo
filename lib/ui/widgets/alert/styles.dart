@@ -55,6 +55,31 @@ class AlertStyles {
       overlayColor: Colors.black54,
     );
   }
+  AlertStyle successStyle(context) {
+    return AlertStyle(
+      isCloseButton: true,
+      isOverlayTapDismiss: true,
+      descStyle: const TextStyle(fontSize: 15),
+      descTextAlign: TextAlign.center,
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        side: const BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      titleStyle: const TextStyle(
+        color: MetronicTheme.success,
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+      ),
+      alertAlignment: Alignment.center,
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .background,
+      overlayColor: Colors.black54,
+    );
+  }
 
   DialogButton getReturnLoginButton(context) {
     return DialogButton(
@@ -98,6 +123,23 @@ class AlertStyles {
             .apply(fontWeightDelta: 2, fontSizeDelta: -2),
       ),
       onPressed: () => Navigator.pop(context),
+    );
+  }
+
+  DialogButton getDoneButton(context, route) {
+    return DialogButton(
+      width: 200,
+      color: Theme.of(context).colorScheme.surface,
+      child: Text(
+        tr('alerts.confirm_done'),
+        style: Theme.of(context)
+            .textTheme
+            .titleLarge!
+            .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+      ),
+      onPressed: (){
+        Navigator.popAndPushNamed(context, route);
+      },
     );
   }
 }

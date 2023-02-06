@@ -24,7 +24,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         tooltip: tr("appbar.previous_page"),
         onPressed: () {
-          Navigator.of(context).pop();
+          Navigator.of(context).pushNamed('/home');
         },
       ),
       title: Text(

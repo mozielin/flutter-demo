@@ -16,20 +16,13 @@ class ClockType extends StatefulWidget {
 }
 
 class _ClockTypeState extends State<ClockType> {
+  final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
   var selected = 0;
-  // final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
   List<DropdownMenuItem> getDynamicMenu(attr_id) {
     List<DropdownMenuItem> dynamicMenus = [];
     if (widget.allType.isNotEmpty && widget.attr_id != null && attr_id != null) {
       widget.allType['$attr_id']['child'].forEach((k, v) {
-        // print('type_init_value');
-        // print(widget.type_init_value);
-        // print('selected');
-        // print(selected);
-
-        // if (widget.type_init_value == true || selected != k) {
           dynamicMenus.add(DropdownMenuItem(key: ValueKey(k), value: '$k', child: Text(v['name'])),);
-        // }
       });
     }
     return dynamicMenus;
@@ -37,28 +30,24 @@ class _ClockTypeState extends State<ClockType> {
 
   @override
   Widget build(BuildContext context) {
-    // var test =
-    if (widget.type_init_value == false) {
+    if (widget.type_init_value == false && _statusKey.currentState!= null) {
+      _statusKey.currentState!.reset();
       setState(() {
         selected = 0;
       });
     }
-    print(selected);
-    // print('type_init_value');
-    // print(widget.type_init_value);
+
     return DropdownButtonFormField(
       dropdownColor: Theme.of(context).colorScheme.surface,
-      key: widget.type_init_value == false ? ValueKey(0) : ValueKey('1') ,
-      // key: ValueKey(selected),
+      key: _statusKey,
       icon: Icon(
         Ionicons.caret_down_outline,
         color: Theme.of(context).textTheme.bodySmall!.color,
       ),
       hint: Text(
-        tr("search.hint.status"),
+        tr("search.hint.type"),
         style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
       ),
-      // value: selected == 0 ? null : selected,
       items: getDynamicMenu(widget.attr_id),
       onChanged: (value){
         print('onChanged');
@@ -66,9 +55,6 @@ class _ClockTypeState extends State<ClockType> {
           selected = int.parse(value);
         });
         widget.callback(value);
-      },
-      onTap: (){
-        print('Tapppp');
       },
 
       decoration: InputDecoration(
