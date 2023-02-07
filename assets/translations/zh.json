@@ -137,7 +137,8 @@
       "context": "工作內容",
       "context_labelText": "請輸入工作內容",
       "h": "小時",
-      "file": "附檔"
+      "file": "附檔",
+      "count_error": "請先計算工時！"
     }
   },
 
@@ -166,5 +167,8 @@
     "back": "返回",
     "verify": "送審",
     "draft": "儲存草稿"
+  },
+  "validation": {
+    "require": "此欄位為必填"
   }
 }

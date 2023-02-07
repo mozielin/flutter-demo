@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
@@ -21,6 +22,7 @@ import '../../widgets/alert/icons/error_icon.dart';
 import '../../widgets/alert/styles.dart';
 import '../../widgets/clock/clock_child_type.dart';
 import '../../widgets/clock/clock_type.dart';
+import '../../widgets/clock/format.dart';
 import '../../widgets/common/main_appbar.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart' as api;
@@ -47,7 +49,7 @@ class _CreateClockState extends State<CreateClock> {
   late Map allType = Map(); //屬性、主、子類別
   var typeBoxVisible = 1.0; //主子類別透明度
   bool typeBoxSet = true; //主子類別調完透明度調整空間
-  int attr_id = 6; //屬性id
+  int attr_id = 6; //預設屬性id
   var parent_id;
   bool type_init_value = true; //是否為主類別init (判斷是否清除主類別)
   var child_id;
@@ -88,7 +90,7 @@ class _CreateClockState extends State<CreateClock> {
       Map<String, dynamic> data = res.data;
       return data;
     }on api.DioError catch (e) {
-      error_alert(tr('auth.connection_error'));
+      errorAlert(tr('auth.connection_error'));
     }
   }
 
@@ -118,7 +120,7 @@ class _CreateClockState extends State<CreateClock> {
                 //類型
                 Column(
                   children: [
-                    input_title(tr("clock.create.attr"), true),
+                    inputTitle(tr("clock.create.attr"), true),
                     Column(
                       children: <Widget>[
                         ListTile(
@@ -188,7 +190,7 @@ class _CreateClockState extends State<CreateClock> {
                 //Internal Order
                 Column(
                   children: [
-                    input_title(tr("clock.create.internal_order"), false),
+                    inputTitle(tr("clock.create.internal_order"), false),
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: TextFormField(
@@ -218,7 +220,7 @@ class _CreateClockState extends State<CreateClock> {
                         //主類別
                         Column(
                           children: <Widget>[
-                            input_title(tr("clock.create.type"), true),
+                            inputTitle(tr("clock.create.type"), true),
                             Padding(
                               padding: EdgeInsets.only(top: 5),
                               child: ClockType(
@@ -233,14 +235,14 @@ class _CreateClockState extends State<CreateClock> {
                         //子類別
                         Column(
                           children: <Widget>[
-                            input_title(tr("clock.create.child_type"), false),
+                            inputTitle(tr("clock.create.child_type"), false),
                             Padding(
                               padding: EdgeInsets.only(top: 5),
                               child: ClockChildType(
                                 allType: allType,
                                 attr_id: attr_id,
                                 parent_id: parent_id,
-                                child_call_back: child_call_back,
+                                childCallback: childCallback,
                                 reset_child: reset_child,
                               ),
                             ),
@@ -260,8 +262,9 @@ class _CreateClockState extends State<CreateClock> {
                 //出發時間
                 Column(
                   children: [
-                    input_title(tr("clock.create.depart_time"), false),
+                    inputTitle(tr("clock.create.depart_time"), false),
                     TextFormField(
+                  //todo:優化date欄位input format
                       controller: _depart,
                       // inputFormatters: [],
                       decoration: InputDecoration(
@@ -274,7 +277,7 @@ class _CreateClockState extends State<CreateClock> {
                         labelStyle: TextStyle(
                           color: Theme.of(context).textTheme.bodySmall!.color,
                         ),
-                        suffixIcon: date_picker(_depart),
+                        suffixIcon: datePicker(_depart),
                       ),
                     ),
                   ],
@@ -282,7 +285,7 @@ class _CreateClockState extends State<CreateClock> {
                 //開始時間
                 Column(
                   children: [
-                    input_title(tr("clock.create.start_time"), true),
+                    inputTitle(tr("clock.create.start_time"), true),
                     TextFormField(
                       controller: _start,
                       decoration: InputDecoration(
@@ -292,7 +295,7 @@ class _CreateClockState extends State<CreateClock> {
                         border: const OutlineInputBorder(),
                         hintText: time_picker_placeholder,
                         hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
-                        suffixIcon: date_picker(_start),
+                        suffixIcon: datePicker(_start),
                         errorText: errorText['startTime'],
                       ),
                     ),
@@ -301,7 +304,7 @@ class _CreateClockState extends State<CreateClock> {
                 //結束時間
                 Column(
                   children: [
-                    input_title(tr("clock.create.end_time"), true),
+                    inputTitle(tr("clock.create.end_time"), true),
                     TextFormField(
                       controller: _end,
                       decoration: InputDecoration(
@@ -311,7 +314,7 @@ class _CreateClockState extends State<CreateClock> {
                         border: const OutlineInputBorder(),
                         hintText: time_picker_placeholder,
                         hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
-                        suffixIcon: date_picker(_end),
+                        suffixIcon: datePicker(_end),
                         errorText: errorText['endTime'],
                       ),
                     ),
@@ -320,7 +323,7 @@ class _CreateClockState extends State<CreateClock> {
                 //總時數
                 Column(
                   children: [
-                    input_title(tr("clock.create.total_hours"), true),
+                    inputTitle(tr("clock.create.total_hours"), true),
                     Row(
                       children: [
                         Flexible(
@@ -366,7 +369,7 @@ class _CreateClockState extends State<CreateClock> {
                 //通勤時數
                 Column(
                   children: [
-                    input_title(tr("clock.create.traffic_hours"), true),
+                    inputTitle(tr("clock.create.traffic_hours"), true),
                     Row(
                       children: [
                         Flexible(
@@ -394,7 +397,7 @@ class _CreateClockState extends State<CreateClock> {
                 //工作時數
                 Column(
                   children: [
-                    input_title(tr("clock.create.work_hours"), true),
+                    inputTitle(tr("clock.create.work_hours"), true),
                     Row(
                       children: [
                         Flexible(
@@ -419,10 +422,10 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //工作內容
+                ///工作內容
                 Column(
                   children: [
-                    input_title(tr("clock.create.context"), true),
+                    inputTitle(tr("clock.create.context"), true),
                     Row(
                       children: [
                         Flexible(
@@ -450,7 +453,7 @@ class _CreateClockState extends State<CreateClock> {
                 ),
                 Column(
                   children: [
-                    input_title(tr("clock.create.file"), true),
+                    inputTitle(tr("clock.create.file"), true),
                     Material(
                       color: Theme.of(context).colorScheme.background,
                       child: Column(
@@ -569,7 +572,7 @@ class _CreateClockState extends State<CreateClock> {
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              subimt_clock(1, token);
+                              subimtClock(1, token);
                             },
                             icon: Icon(Ionicons.pencil,
                                 color: themeMode == ThemeMode.dark
@@ -602,7 +605,7 @@ class _CreateClockState extends State<CreateClock> {
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              subimt_clock(2, token);
+                              subimtClock(2, token);
                             },
                             icon: Icon(Ionicons.checkmark_circle,
                                 color: themeMode == ThemeMode.dark
@@ -646,7 +649,7 @@ class _CreateClockState extends State<CreateClock> {
     );
   }
 
-  input_title(String string, require) {
+  inputTitle(String string, require) {
     var require_span = const Text('');
     if (require) {
       require_span = const Text(
@@ -691,13 +694,14 @@ class _CreateClockState extends State<CreateClock> {
     });
   }
 
-  child_call_back(id) {
+  childCallback(id) {
     child_id = id;
     reset_child = false;
   }
 
   //計算工時
   countHours(token) async {
+    //todo 日期格式判斷
     try {
       setState(() {
         errorText['startTime'] = null;
@@ -742,7 +746,7 @@ class _CreateClockState extends State<CreateClock> {
       } else {
         setState(() {
           error.forEach((k, v) {
-            errorText['${k}'] = '此欄位必塡';
+            errorText['${k}'] = tr('validation.require');
           });
         });
       }
@@ -750,7 +754,7 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   //登錄工時
-  subimt_clock(draft, token) async {
+  subimtClock(draft, token) async {
     bool check = true;
     setState(() {
       errorText.forEach((k, v) {
@@ -758,22 +762,22 @@ class _CreateClockState extends State<CreateClock> {
       });
 
       if (_clock_context.text.isEmpty) {
-        errorText['clock_context'] = '此欄位必塡';
+        errorText['clock_context'] = tr('validation.require');
         check = false;
       }
 
       if (_start.text.isEmpty) {
-        errorText['startTime'] = '此欄位必塡';
+        errorText['startTime'] = tr('validation.require');
         check = false;
       }
 
       if (_end.text.isEmpty) {
-        errorText['endTime'] = '此欄位必塡';
+        errorText['endTime'] = tr('validation.require');
         check = false;
       }
 
       if (_totalHours.text.isEmpty) {
-        error_alert('請先計算工時！');
+        errorAlert(tr('clock.create.count_error'));
         check = false;
       }
     });
@@ -831,14 +835,14 @@ class _CreateClockState extends State<CreateClock> {
         var error = json.decode(message);
 
         if (error['error'] != null) {
-          error_alert("${error['error']}");
+          errorAlert("${error['error']}");
         } else {
           if (error['clock_type'] != null) {
-            error_alert("請選擇主類別！");
+            errorAlert("請選擇主類別！");
           } else {
             setState(() {
               error.forEach((k, v) {
-                errorText['${k}'] = '此欄位必塡';
+                errorText['${k}'] = tr('validation.require');
               });
             });
           }
@@ -848,7 +852,7 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   //錯誤訊息alert
-  error_alert(msg) {
+  errorAlert(msg) {
     return Alert(
       context: context,
       style: AlertStyles().dangerStyle(context),
@@ -861,17 +865,17 @@ class _CreateClockState extends State<CreateClock> {
     ).show();
   }
 
-  date_picker(controller) {
+  datePicker(controller) {
     return IconButton(
       onPressed: () {
         DatePicker.showDateTimePicker(
           context,
           showTitleActions: true,
           onConfirm: (date) {
-            var seconds = int.parse(DateFormat('mm').format(date));
-            if (seconds < 15) {
+            var minutes = int.parse(DateFormat('mm').format(date));
+            if (minutes < 15) {
               controller.text = DateFormat('yyyy-MM-dd kk:00').format(date);
-            } else if (seconds >= 15 && seconds < 45) {
+            } else if (minutes >= 15 && minutes < 45) {
               controller.text = DateFormat('yyyy-MM-dd kk:30').format(date);
             } else {
               var new_date = date.add(Duration(hours: 1));
@@ -949,5 +953,4 @@ class _CreateClockState extends State<CreateClock> {
       return null;
     }
   }
-
 }

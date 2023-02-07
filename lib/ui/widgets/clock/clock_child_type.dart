@@ -11,14 +11,14 @@ class ClockChildType extends StatefulWidget {
     Key? key,
     required this.allType,
     required this.attr_id,
-    required this.child_call_back,
+    required this.childCallback,
     required this.parent_id,
     required this.reset_child,
   }) : super(key: key);
   final allType;
   final attr_id;
   final parent_id;
-  final child_call_back;
+  final childCallback;
   final reset_child;
 
   @override
@@ -64,7 +64,7 @@ class _ClockChildTypeState extends State<ClockChildType> {
       value: null,
       items: getDynamicChildType(widget.attr_id, widget.parent_id),
       onChanged: (value) {
-        widget.child_call_back(value);
+        widget.childCallback(value);
       },
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 15),

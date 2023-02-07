@@ -132,7 +132,8 @@
       "context": "Work Log",
       "context_labelText": "Please type in work log",
       "h": "H",
-      "file": "File"
+      "file": "File",
+      "count_error": "Please click to calculate working hours"
     }
   },
 
@@ -158,5 +159,8 @@
     "back": "Back",
     "verify": "Verify",
     "draft": "Draft"
+  },
+  "validation": {
+    "require": "This field is required"
   }
 }

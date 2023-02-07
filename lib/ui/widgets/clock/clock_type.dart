@@ -50,7 +50,6 @@ class _ClockTypeState extends State<ClockType> {
       ),
       items: getDynamicMenu(widget.attr_id),
       onChanged: (value){
-        print('onChanged');
         setState(() {
           selected = int.parse(value);
         });

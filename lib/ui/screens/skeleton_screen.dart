@@ -29,6 +29,8 @@ class SkeletonScreen extends StatelessWidget {
       // biometrics with the local_auth package.
       onNeedUnlock: (secureApplicationStateNotifier) {
         var user = BlocProvider.of<UserCubit>(context).state;
+        print('token');
+        print(user.token);
         AuthService().verifyToken(user.token)
             .then((res) {
           if (res['success']) {
