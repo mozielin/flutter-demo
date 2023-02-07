@@ -28,7 +28,6 @@ class CutsceneScreen extends StatefulWidget {
 
 class _CutsceneScreenState extends State<CutsceneScreen> {
   double loadingBallSize = 1;
-  AlignmentGeometry _alignment = Alignment.center;
   bool stopScaleAnimtion = false;
   bool _apiEnable = false;
   bool showMessages = true;
@@ -70,7 +69,6 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
   @override
   void initState() {
     super.initState();
-    _initNetworkInfo();
     // Instantiate NewVersion manager object (Using GCP Console app as example)
     //TODO:更換APPID
     final newVersion = NewVersionPlus(
@@ -91,17 +89,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
     //   advancedStatusCheck(newVersion);
     // }
 
-
-    Future.delayed(Duration(milliseconds: 2000), () {
-      setState(() {
-        _alignment = Alignment.topRight;
-        stopScaleAnimtion = true;
-      });
-    });
-
-  }
-
-  Future<void> _initNetworkInfo() async {
+    ///嘗試驗證token判斷是否可以連到API Server
     developer.log('Cutscene...');
     var user = BlocProvider.of<UserCubit>(context).state;
     developer.log('User-Token:${user.token}');
@@ -113,8 +101,15 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           BlocProvider.of<UserCubit>(context).refreshToken(token);
           developer.log("Token refresh: $token");
         } else {
+          BlocProvider.of<UserCubit>(context).changeAPIStatus(false);
           developer.log('Failed to fetch api', error: res['message']);
         }
+        //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
+        Future.delayed(Duration(milliseconds: 3000), () {
+          setState(() {
+            stopScaleAnimtion = true;
+          });
+        });
       }).onError((error, stackTrace) {
         ///Alert token expired return to login
         Alert(
@@ -142,7 +137,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           children: [
             AnimatedAlign(
               duration: Duration(milliseconds: 300),
-              alignment: _alignment,
+              alignment: Alignment.center,
               child: TweenAnimationBuilder<double>(
                 duration: Duration(milliseconds: 500),
                 tween: Tween(begin: 0, end: loadingBallSize),
@@ -180,6 +175,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
                 ),
               ),
             ),
+            SizedBox(height: 16),
             Text(
               'Connecting API Server...',
               style: TextStyle(
@@ -188,7 +184,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
               ),
             ),
             SizedBox(height: 16),
-            Text('Success', style: TextStyle(color: MetronicTheme.success, fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(BlocProvider.of<UserCubit>(context).state.networkEnable ? 'Enabled' : 'Disabled', style: TextStyle(color: BlocProvider.of<UserCubit>(context).state.networkEnable ? MetronicTheme.success : MetronicTheme.danger, fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ));
   }

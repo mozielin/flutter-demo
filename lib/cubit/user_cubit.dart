@@ -32,10 +32,11 @@ class UserCubit extends HydratedCubit<UserState> {
 
   void refreshToken(token) {
     state.token = token;
+    state.networkEnable = true;
     emit(state);
   }
 
-  void networkStatus(UserState userState, status) {
+  void changeAPIStatus(status) {
     state.networkEnable = status;
     emit(state);
   }
