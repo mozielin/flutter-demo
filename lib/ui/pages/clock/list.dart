@@ -34,6 +34,7 @@ class _ClockDemoState extends State<ClockDemo> {
   bool is_bottom = false;
   bool _load = false;
   bool _loading = true;
+  bool _canLoad = true;
   int skip = 0;
   int take = 20;
   List items = [];
@@ -445,6 +446,7 @@ class _ClockDemoState extends State<ClockDemo> {
   }
 
   getClocks(bool clear) async {
+    if (!_canLoad) return;
     try {
       if (clear) {
         // 是否清空
@@ -475,22 +477,22 @@ class _ClockDemoState extends State<ClockDemo> {
               is_bottom = true;
             }
 
-            for (var each in res.data['clocks']) {
-              items.add(each);
-            }
-
+            items.addAll(res.data['clocks']);
             skip += take;
             _load = true;
+            _canLoad = true;
           });
         } else {
           setState(() {
             _load = false;
+            _canLoad = true;
           });
         }
       }
     } catch (e) {
       setState(() {
         _load = false;
+        _canLoad = true;
       });
       rethrow;
     }
@@ -498,6 +500,7 @@ class _ClockDemoState extends State<ClockDemo> {
     if (mounted) {
       setState(() {
         _loading = false;
+        _canLoad = true;
       });
     }
   }
@@ -562,6 +565,9 @@ class _ClockDemoState extends State<ClockDemo> {
       double currentScroll = scrollController.position.pixels;
       if (maxScroll - currentScroll <= 0) {
         getClocks(false); // 滑至底部 Load more
+        setState(() {
+          _canLoad = false;
+        });
       }
     });
 
