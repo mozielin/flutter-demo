@@ -22,7 +22,6 @@ import '../../widgets/alert/icons/error_icon.dart';
 import '../../widgets/alert/styles.dart';
 import '../../widgets/clock/clock_child_type.dart';
 import '../../widgets/clock/clock_type.dart';
-import '../../widgets/clock/format.dart';
 import '../../widgets/common/main_appbar.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart' as api;
