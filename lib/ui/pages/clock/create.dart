@@ -381,11 +381,8 @@ class _CreateClockState extends State<CreateClock> {
                                 filled: true,
                                 fillColor: Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
-                                labelText: tr("clock.create.hours"),
-                                labelStyle: TextStyle(
-                                  color:
-                                  Theme.of(context).textTheme.bodySmall!.color,
-                                ),
+                                hintText: tr("clock.create.hours"),
+                                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
                               ),
                             ),
                           ),
@@ -412,11 +409,8 @@ class _CreateClockState extends State<CreateClock> {
                                 filled: true,
                                 fillColor: Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
-                                labelText: tr("clock.create.hours"),
-                                labelStyle: TextStyle(
-                                  color:
-                                  Theme.of(context).textTheme.bodySmall!.color,
-                                ),
+                                hintText: tr("clock.create.hours"),
+                                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
                               ),
                             ),
                           ),
@@ -443,11 +437,8 @@ class _CreateClockState extends State<CreateClock> {
                                 filled: true,
                                 fillColor: Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
-                                labelText: tr("clock.create.context_labelText"),
-                                labelStyle: TextStyle(
-                                  color:
-                                  Theme.of(context).textTheme.bodySmall!.color,
-                                ),
+                                hintText: tr("clock.create.hours"),
+                                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
                                 errorText: errorText['clock_context'] ?? null,
                               ),
                             ),
@@ -712,7 +703,7 @@ class _CreateClockState extends State<CreateClock> {
         errorText['startTime'] = null;
         errorText['endTime'] = null;
       });
-      dio.options.headers['Authorization'] = 'Bearer ${token}'; // TODO: 統一設定
+      dio.options.headers['Authorization'] = 'Bearer ${token}';
       api.Response res = await dio.post(
         'http://192.168.12.68:443/api/countHoursAPI', // TODO: URL 放至 env 相關設定
         data: {
@@ -789,12 +780,12 @@ class _CreateClockState extends State<CreateClock> {
 
     if (check) {
       try {
-        if (attr_id == 9) {
+        if (attr_id == 8) {
           parent_id = 9;
         }
 
         // var file = await ImageController().imgData;
-        dio.options.headers['Authorization'] = 'Bearer ${token}'; // TODO: 統一設定
+        dio.options.headers['Authorization'] = 'Bearer ${token}';
         api.FormData formData = api.FormData.fromMap({
           "files[]": await api.MultipartFile.fromFile(
             img.path,

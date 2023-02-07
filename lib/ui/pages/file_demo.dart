@@ -14,6 +14,7 @@ import 'package:hws_app/service/ImageController.dart';
 import 'package:dio/dio.dart' as api;
 
 import '../../cubit/bottom_nav_cubit.dart';
+import '../../cubit/user_cubit.dart';
 
 class FileDemo extends StatefulWidget {
   const FileDemo({super.key});
@@ -108,7 +109,7 @@ class _FileDemoState extends State<FileDemo> {
     print('post');
     try {
       dio.options.headers['Authorization'] =
-      'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO:
+      'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
       api.FormData formData = api.FormData.fromMap({
         "files": await api.MultipartFile.fromFile(
           file.path,

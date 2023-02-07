@@ -39,7 +39,7 @@ class AppRouter {
                 child: child,
               );
              },
-            transitionDuration: const Duration(milliseconds:1500) //any duration you want
+            transitionDuration: const Duration(milliseconds:500) //any duration you want
         );
 
       case RouteName.demo:
