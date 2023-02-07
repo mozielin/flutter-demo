@@ -172,6 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     email: Authenticated['user']['email'],
                                     avatar: Authenticated['user']['avatar'],
                                     token: Authenticated['user']['token'],
+                                    networkEnable: true,
                                   ),
                                 );
                                 Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);

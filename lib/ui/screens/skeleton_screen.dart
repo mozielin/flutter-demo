@@ -14,6 +14,7 @@ import '../widgets/app_bar_gone.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'first_screen.dart';
 import 'second_screen.dart';
+import 'dart:developer' as developer;
 
 class SkeletonScreen extends StatelessWidget {
   const SkeletonScreen({super.key});
@@ -27,33 +28,40 @@ class SkeletonScreen extends StatelessWidget {
       // unlock the content again. Here we can use any auth logic, for example
       // biometrics with the local_auth package.
       onNeedUnlock: (secureApplicationStateNotifier) {
-        var user = BlocProvider.of<UserCubit>(context).state;
-        AuthService().verifyToken(user.token)
-            .then((res) {
-          if (res['success']) {
-            var token = res['token'];
-            BlocProvider.of<UserCubit>(context).refreshToken(user, token);
-            print("Token refresh : $token");
-            secureApplicationStateNotifier!.unlock();
-          } else {
-            ///Alert token expired return to login
-            Alert(
-              context: context,
-              style: AlertStyles().blockStyle(context),
-              image: const ErrorIcon(),
-              title: tr('alerts.token_expired_title'),
-              desc: tr('alerts.token_expired_text'),
-              buttons: [
-                AlertStyles().getReturnLoginButton(context),
-              ],
-            ).show();
-            BlocProvider.of<UserCubit>(context).clearUser();
-          }
-        }).onError((error, stackTrace) {
-          BlocProvider.of<UserCubit>(context).clearUser();
-
+        developer.log('Resume Foreground...');
+        Future.delayed(Duration(milliseconds: 500), () {
+          secureApplicationStateNotifier!.unlock();
         });
-        return null;
+        ///取消返回前景驗證token
+        // var user = BlocProvider.of<UserCubit>(context).state;
+        // developer.log('...${user.token}');
+        // AuthService().verifyToken(user.token)
+        //     .then((res) {
+        //   if (res['success']) {
+        //     var token = res['token'];
+        //     BlocProvider.of<UserCubit>(context).refreshToken(token);
+        //     print("Token refresh : $token");
+        //     secureApplicationStateNotifier!.unlock();
+        //   } else {
+        //     developer.log('Failed to get cast', error: res['message']);
+        //     ///Alert token expired return to login
+        //     Alert(
+        //       context: context,
+        //       style: AlertStyles().blockStyle(context),
+        //       image: const ErrorIcon(),
+        //       title: tr('alerts.token_expired_title'),
+        //       desc: tr('alerts.token_expired_text'),
+        //       buttons: [
+        //         AlertStyles().getReturnLoginButton(context),
+        //       ],
+        //     ).show();
+        //     BlocProvider.of<UserCubit>(context).clearUser();
+        //   }
+        // }).onError((error, stackTrace) {
+        //   BlocProvider.of<UserCubit>(context).clearUser();
+        //   developer.log('Failed to get Wifi broadcast', error: error);
+        // });
+        // return null;
       },
       child: _SecureApplicationContent(),
     );
@@ -69,6 +77,12 @@ class _SecureApplicationContent extends StatefulWidget {
 }
 
 class _SecureApplicationContentState extends State<_SecureApplicationContent> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -93,11 +107,11 @@ class _SecureApplicationContentState extends State<_SecureApplicationContent> {
       // comes back to foreground and its content was hidden with the overlay.
       lockedBuilder: (context, secureApplicationController) => Center(
         child: AnimatedAlign(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 100),
           alignment: Alignment.center,
           child: TweenAnimationBuilder<double>(
             duration: const Duration(milliseconds: 500),
-            tween: Tween(begin: 0, end: 1),
+            tween: Tween(begin: 0, end: 1.5),
             builder: (_, value, __) => Transform.scale(
               scale: value,
               child: Container(

@@ -63,7 +63,6 @@ dependencies:
   percent_indicator: any
   flutter_launcher_icons: ^0.11.0
   secure_application: ^3.8.0
-  network_info_plus: ^3.0.1
   new_version_plus: ^0.0.9
   local_auth: ^2.1.3
 
