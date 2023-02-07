@@ -9,7 +9,7 @@ class AuthService{
   final Dio dio = Dio();
   //final UserCubit userBloc = UserCubit();
   ///登入
-  Future<Map<String, dynamic>> login(String account, String password) async {
+  Future login(String account, String password) async {
     try {
       Response response = await dio.post(// TODO: URL 放至 env 相關設定
         'http://192.168.12.68/api/jwt/login',
@@ -29,9 +29,11 @@ class AuthService{
         Codec<String, String> stringToBase64Url = utf8.fuse(base64Url);
         var array = token.split('.');
         var remainder = array[1].length % 4;
-        var addlen = 4 - remainder;
-        for(var i = 0; i < addlen; i++){
-          array[1] += '=';
+        if (remainder != 0) {
+          var addlen = 4 - remainder;
+          for(var i = 0; i < addlen; i++){
+            array[1] += '=';
+          }
         }
         String decoded = stringToBase64Url.decode(array[1]);
         final parsed = jsonDecode(decoded);
@@ -47,14 +49,17 @@ class AuthService{
         if(!isExpired){
           return {'success':true, 'user':{'name':parsed['name'], 'email':parsed['email'], 'enumber':parsed['enumber'], 'avatar':parsed['avatar'], 'token':parsed['user_token']}, };
         }
-
         return json.decode(response.data);
       } else {
         return json.decode(response.data);
       }
-
     } on DioError catch (e) {
-      return e.response!.data;
+      try{
+        if(!e.response!.data['success']) return e.response!.data;
+      }catch(es){
+        var errorMsg = tr('auth.connection_error');
+        return {"response_code": 400, "success": false, "data": null, "message": '{"error":"$errorMsg"}'};
+      }
     } on TimeoutException catch (e) {
       var errorMsg = tr('auth.connection_error');
       return {"response_code": 400, "success": false, "data": null, "message": '{"error":"$errorMsg"}'};

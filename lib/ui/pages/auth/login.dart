@@ -178,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               } else {
                                 ///錯誤訊息
-                                print(Authenticated);
+                                print(Authenticated['message']);
                                 var error = json.decode(Authenticated['message']);
                                 if (error['error'] == null) {
                                   setState(() {

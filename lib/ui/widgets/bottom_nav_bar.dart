@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
 
+import '../../config/theme.dart';
 import '../../cubit/bottom_nav_cubit.dart';
+import '../../cubit/theme_cubit.dart';
+import '../pages/clock/create_type.dart';
+import 'clock/card_hole_clipper.dart';
 
 class BottomNavBar extends StatelessWidget {
   /// It is okay not to use a const constructor here.
@@ -12,6 +16,8 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ScrollController dialogController = ScrollController();
+    final themeMode = BlocProvider.of<ThemeCubit>(context).state.themeMode;
     return Card(
       margin: const EdgeInsets.only(top: 1, right: 4, left: 4),
       elevation: 4,
@@ -27,8 +33,13 @@ class BottomNavBar extends StatelessWidget {
           builder: (BuildContext context, int state) {
         return BottomNavigationBar(
           currentIndex: state,
-          onTap: (int index) =>
-              context.read<BottomNavCubit>().updateIndex(index),
+          onTap: (int index) {
+            if (index != 2) {
+              context.read<BottomNavCubit>().updateIndex(index);
+            } else { //登錄工時
+              ClockCreateType().typeBox(context);
+            }
+          },
           type: BottomNavigationBarType.fixed,
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -42,6 +53,10 @@ class BottomNavBar extends StatelessWidget {
             BottomNavigationBarItem(
               icon: const Icon(Ionicons.apps_outline),
               label: tr('bottom_nav_app'),
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Ionicons.cloud_upload_outline),
+              label: tr('bottom_nav_clock'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Ionicons.paper_plane_outline),

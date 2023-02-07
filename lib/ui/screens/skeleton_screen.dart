@@ -7,6 +7,7 @@ import 'package:secure_application/secure_application.dart';
 import '../../cubit/bottom_nav_cubit.dart';
 import '../../cubit/user_cubit.dart';
 import '../../service/authenticate/auth.dart';
+import '../pages/hive_demo.dart';
 import '../pages/home.dart';
 import '../widgets/alert/icons/error_icon.dart';
 import '../widgets/alert/styles.dart';
@@ -28,6 +29,8 @@ class SkeletonScreen extends StatelessWidget {
       // biometrics with the local_auth package.
       onNeedUnlock: (secureApplicationStateNotifier) {
         var user = BlocProvider.of<UserCubit>(context).state;
+        print('token');
+        print(user.token);
         AuthService().verifyToken(user.token)
             .then((res) {
           if (res['success']) {
@@ -81,6 +84,7 @@ class _SecureApplicationContentState extends State<_SecureApplicationContent> {
     const List<Widget> pageNavigation = <Widget>[
       Home(),
       SecondScreen(),
+      HiveDemo(),
       ApiDemo(),
       FirstScreen(),
     ];

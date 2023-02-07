@@ -99,7 +99,6 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
             duration: Duration(milliseconds: 500),
             tween: Tween(begin: 0, end: loadingBallSize),
             onEnd: () {
-              print(Text(release));
               if (!stopScaleAnimtion) {
                 setState(() {
                   if (loadingBallSize == 1) {

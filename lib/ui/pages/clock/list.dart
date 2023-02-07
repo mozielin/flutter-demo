@@ -5,10 +5,12 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/config/theme.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:uiblock/uiblock.dart';
+import '../../../cubit/user_cubit.dart';
 import '../../widgets/clock/card_hole_clipper.dart';
 import '../../widgets/common/status_label.dart';
 import '../../widgets/common/main_appbar.dart';
@@ -457,7 +459,7 @@ class _ClockDemoState extends State<ClockDemo> {
 
       if (!is_bottom) {
         dio.options.headers['Authorization'] =
-            'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+            'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
         Response res = await dio.post(
           'http://192.168.12.68:443/api/getClocks', // TODO: URL 放至 env 相關設定
           data: {
@@ -511,7 +513,7 @@ class _ClockDemoState extends State<ClockDemo> {
       });
 
       dio.options.headers['Authorization'] =
-          'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+          'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
       Response res = await dio.post(
         'http://192.168.12.68:443/api/getClockImages', // TODO: URL 放至 env 相關設定
         data: {'clock_id': clock_id},
