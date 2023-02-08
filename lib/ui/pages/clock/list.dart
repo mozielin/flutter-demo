@@ -5,10 +5,13 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hws_app/config/theme.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:uiblock/uiblock.dart';
+import '../../../config/setting.dart';
+import '../../../cubit/user_cubit.dart';
 import '../../widgets/clock/card_hole_clipper.dart';
 import '../../widgets/common/status_label.dart';
 import '../../widgets/common/main_appbar.dart';
@@ -32,6 +35,7 @@ class _ClockDemoState extends State<ClockDemo> {
   bool is_bottom = false;
   bool _load = false;
   bool _loading = true;
+  bool _canLoad = true;
   int skip = 0;
   int take = 20;
   List items = [];
@@ -443,6 +447,7 @@ class _ClockDemoState extends State<ClockDemo> {
   }
 
   getClocks(bool clear) async {
+    if (!_canLoad) return;
     try {
       if (clear) {
         // 是否清空
@@ -454,12 +459,14 @@ class _ClockDemoState extends State<ClockDemo> {
       }
 
       if (!is_bottom) {
+        var user = BlocProvider.of<UserCubit>(context).state;
         dio.options.headers['Authorization'] =
-            'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+            'Bearer ${user.token}';
+        print('${InitSettings.apiUrl}:443/api/getClocks');
         Response res = await dio.post(
-          'http://192.168.12.68:443/api/getClocks', // TODO: URL 放至 env 相關設定
+          '${InitSettings.apiUrl}:443/api/getClocks', // TODO: URL 放至 env 相關設定
           data: {
-            'enumber': 'HW-M54',
+            'enumber': user.enumber,
             'skip': skip,
             'take': take,
             'fuzzy_search': _searchController.text,
@@ -473,22 +480,22 @@ class _ClockDemoState extends State<ClockDemo> {
               is_bottom = true;
             }
 
-            for (var each in res.data['clocks']) {
-              items.add(each);
-            }
-
+            items.addAll(res.data['clocks']);
             skip += take;
             _load = true;
+            _canLoad = true;
           });
         } else {
           setState(() {
             _load = false;
+            _canLoad = true;
           });
         }
       }
     } catch (e) {
       setState(() {
         _load = false;
+        _canLoad = true;
       });
       rethrow;
     }
@@ -496,6 +503,7 @@ class _ClockDemoState extends State<ClockDemo> {
     if (mounted) {
       setState(() {
         _loading = false;
+        _canLoad = true;
       });
     }
   }
@@ -508,9 +516,9 @@ class _ClockDemoState extends State<ClockDemo> {
       });
 
       dio.options.headers['Authorization'] =
-          'Bearer 515|eM1k7UlR33lFFJLFhtm6exPkIaLcXXrJk2qWoNh9'; // TODO: 統一設定
+          'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
       Response res = await dio.post(
-        'http://192.168.12.68:443/api/getClockImages', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/getClockImages', // TODO: URL 放至 env 相關設定
         data: {'clock_id': clock_id},
       ).timeout(const Duration(seconds: 5));
 
@@ -560,6 +568,9 @@ class _ClockDemoState extends State<ClockDemo> {
       double currentScroll = scrollController.position.pixels;
       if (maxScroll - currentScroll <= 0) {
         getClocks(false); // 滑至底部 Load more
+        setState(() {
+          _canLoad = false;
+        });
       }
     });
 

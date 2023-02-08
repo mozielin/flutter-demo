@@ -7,6 +7,7 @@ import 'package:secure_application/secure_application.dart';
 import '../../cubit/bottom_nav_cubit.dart';
 import '../../cubit/user_cubit.dart';
 import '../../service/authenticate/auth.dart';
+import '../pages/hive_demo.dart';
 import '../pages/home.dart';
 import '../widgets/alert/icons/error_icon.dart';
 import '../widgets/alert/styles.dart';
@@ -95,6 +96,7 @@ class _SecureApplicationContentState extends State<_SecureApplicationContent> {
     const List<Widget> pageNavigation = <Widget>[
       Home(),
       SecondScreen(),
+      HiveDemo(),
       ApiDemo(),
       FirstScreen(),
     ];

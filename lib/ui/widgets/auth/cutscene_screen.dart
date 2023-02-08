@@ -28,6 +28,7 @@ class CutsceneScreen extends StatefulWidget {
 
 class _CutsceneScreenState extends State<CutsceneScreen> {
   double loadingBallSize = 1;
+  AlignmentGeometry _alignment = Alignment.center;
   bool stopScaleAnimtion = false;
   bool _apiEnable = false;
   bool showMessages = true;
@@ -101,91 +102,100 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           BlocProvider.of<UserCubit>(context).refreshToken(token);
           developer.log("Token refresh: $token");
         } else {
-          BlocProvider.of<UserCubit>(context).changeAPIStatus(false);
-          developer.log('Failed to fetch api', error: res['message']);
+          if (res['response_code'] == 419){
+            _logoutUser();
+          }else{
+            BlocProvider.of<UserCubit>(context).changeAPIStatus(false);
+            developer.log('Failed to fetch api', error: res['message']);
+
+            //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
+            Future.delayed(Duration(milliseconds: 3000), () {
+              setState(() {
+                stopScaleAnimtion = true;
+              });
+            });
+          }
         }
-        //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
-        Future.delayed(Duration(milliseconds: 3000), () {
-          setState(() {
-            stopScaleAnimtion = true;
-          });
-        });
       }).onError((error, stackTrace) {
         ///Alert token expired return to login
-        Alert(
-          context: context,
-          style: AlertStyles().dangerStyle(context),
-          image: const ErrorIcon(),
-          title: tr('alerts.token_expired_title'),
-          desc: tr('alerts.token_expired_text'),
-          buttons: [
-            AlertStyles().getReturnLoginButton(context),
-          ],
-        ).show();
-        BlocProvider.of<UserCubit>(context).clearUser();
+        _logoutUser();
       });
     } else {
       developer.log('Token empty');
     }
   }
 
+  _logoutUser(){
+    Alert(
+      context: context,
+      style: AlertStyles().dangerStyle(context),
+      image: const ErrorIcon(),
+      title: tr('alerts.token_expired_title'),
+      desc: tr('alerts.token_expired_text'),
+      buttons: [
+        AlertStyles().getReturnLoginButton(context),
+      ],
+    ).show();
+    BlocProvider.of<UserCubit>(context).clearUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedAlign(
-              duration: Duration(milliseconds: 300),
-              alignment: Alignment.center,
-              child: TweenAnimationBuilder<double>(
-                duration: Duration(milliseconds: 500),
-                tween: Tween(begin: 0, end: loadingBallSize),
-                onEnd: () {
-                  if (!stopScaleAnimtion) {
-                    setState(() {
-                      if (loadingBallSize == 1) {
-                        loadingBallSize = 1.5;
-                      } else {
-                        loadingBallSize = 1;
-                      }
-                    });
-                  } else {
-                    if(_apiEnable){
-                      developer.log('ApiEnable...');
-                      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-                    }else{
-                      developer.log('ApiDisable...');
-                      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedAlign(
+            duration: Duration(milliseconds: 300),
+            alignment: Alignment.center,
+            child: TweenAnimationBuilder<double>(
+              duration: Duration(milliseconds: 500),
+              tween: Tween(begin: 0, end: loadingBallSize),
+              onEnd: () {
+                if (!stopScaleAnimtion) {
+                  setState(() {
+                    if (loadingBallSize == 1) {
+                      loadingBallSize = 1.5;
+                    } else {
+                      loadingBallSize = 1;
                     }
+                  });
+                } else {
+                  if(_apiEnable){
+                    developer.log('ApiEnable...');
+                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                  }else{
+                    developer.log('ApiDisable...');
+                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
                   }
-                },
-                builder: (_, value, __) => Transform.scale(
-                  scale: value,
-                  child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: !stopScaleAnimtion
-                            ? Theme.of(context).colorScheme.primary
-                            : null,
-                        shape: BoxShape.circle,
-                      ),
-                      child: null),
-                ),
+                }
+              },
+              builder: (_, value, __) => Transform.scale(
+                scale: value,
+                child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: !stopScaleAnimtion
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                      shape: BoxShape.circle,
+                    ),
+                    child: null),
               ),
             ),
-            SizedBox(height: 16),
-            Text(
-              'Connecting API Server...',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Connecting API Server...',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
-            SizedBox(height: 16),
-            Text(BlocProvider.of<UserCubit>(context).state.networkEnable ? 'Enabled' : 'Disabled', style: TextStyle(color: BlocProvider.of<UserCubit>(context).state.networkEnable ? MetronicTheme.success : MetronicTheme.danger, fontSize: 16, fontWeight: FontWeight.bold)),
-          ],
-        ));
+          ),
+          SizedBox(height: 16),
+          Text(BlocProvider.of<UserCubit>(context).state.networkEnable ? 'Enabled' : 'Disabled', style: TextStyle(color: BlocProvider.of<UserCubit>(context).state.networkEnable ? MetronicTheme.success : MetronicTheme.danger, fontSize: 16, fontWeight: FontWeight.bold)),
+        ],
+      ));
   }
 }

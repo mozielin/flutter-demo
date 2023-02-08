@@ -13,7 +13,9 @@ import 'package:cross_file/cross_file.dart';
 import 'package:hws_app/service/ImageController.dart';
 import 'package:dio/dio.dart' as api;
 
+import '../../config/setting.dart';
 import '../../cubit/bottom_nav_cubit.dart';
+import '../../cubit/user_cubit.dart';
 
 class FileDemo extends StatefulWidget {
   const FileDemo({super.key});
@@ -105,14 +107,17 @@ class _FileDemoState extends State<FileDemo> {
   }
 
   postData(file) async {
+    print('post');
     try {
+      dio.options.headers['Authorization'] =
+      'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
       api.FormData formData = api.FormData.fromMap({
         "files": await api.MultipartFile.fromFile(
           file.path,
           filename: 'test.png',
         ),
       });
-      api.Response res = await dio.post('http://10.0.2.2/api/app_demo', data: formData);
+      api.Response res = await dio.post('${InitSettings.apiUrl}:443/api/app_demo', data: formData);
       if (res.statusCode == 200 && res.data != null) {
         print(res.data['message']);
         setState(() {

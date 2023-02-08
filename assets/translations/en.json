@@ -2,6 +2,7 @@
   "app_name": "Hwacom Mobile",
   "bottom_nav_first": "Home",
   "bottom_nav_second": "Info",
+  "bottom_nav_clock": "Clock",
   "bottom_nav_api": "API",
   "bottom_nav_hive": "Hive",
   "bottom_nav_app": "apps",
@@ -74,7 +75,9 @@
     "search": "Search",
     "advance_search": "Advance search",
     "hint": {
-      "status": "Select status"
+      "status": "Select status",
+      "type": "Select type",
+      "sub_type": "Select sub type"
     }
   },
   "home": {
@@ -84,7 +87,8 @@
   },
   "clock": {
     "appbar": {
-      "list": "Clock list"
+      "list": "Clock list",
+      "create": "Create clock"
     },
     "status": {
       "draft": "Draft",
@@ -103,6 +107,33 @@
       "arrive_time": "Arrive",
       "start_time": "Start",
       "end_time": "End"
+    },
+    "create_type": {
+      "no_case_title": "No Case",
+      "no_case_desc": "Project Research/Office/Day Off"
+    },
+    "create": {
+      "attr": "Clock Attributes",
+      "internal_order": "Internal Order",
+      "internal_order_labelText": "Please input Internal Order",
+      "attr_project": "Research Project",
+      "attr_office": "Office",
+      "attr_day_off": "Day Off",
+      "type": "Main Type",
+      "child_type": "Sub Type",
+      "depart_time": "Depart Time",
+      "depart_time_labelText": "EX:2021-01-01 00:00",
+      "start_time": "Start Time",
+      "end_time": "End Time",
+      "total_hours": "Total Hours",
+      "traffic_hours": "Traffic Hours",
+      "work_hours": "Working Hours",
+      "hours": "Click to calculate working hours",
+      "context": "Work Log",
+      "context_labelText": "Please type in work log",
+      "h": "H",
+      "file": "File",
+      "count_error": "Please click to calculate working hours"
     }
   },
 
@@ -121,6 +152,15 @@
     "logout_confirm_text": "You won't be able to revert this",
     "token_expired_title": "Authenticate Failed",
     "token_expired_text": "Your login state has been expired",
-    "return_login": "Return to login"
+    "return_login": "Return to login",
+    "confirm_error": "Something Error！"
+  },
+  "button": {
+    "back": "Back",
+    "verify": "Verify",
+    "draft": "Draft"
+  },
+  "validation": {
+    "require": "This field is required"
   }
 }

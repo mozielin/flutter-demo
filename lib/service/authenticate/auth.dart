@@ -31,9 +31,11 @@ class AuthService{
         Codec<String, String> stringToBase64Url = utf8.fuse(base64Url);
         var array = token.split('.');
         var remainder = array[1].length % 4;
-        var addlen = 4 - remainder;
-        for(var i = 0; i < addlen; i++){
-          array[1] += '=';
+        if (remainder != 0) {
+          var addlen = 4 - remainder;
+          for(var i = 0; i < addlen; i++){
+            array[1] += '=';
+          }
         }
         String decoded = stringToBase64Url.decode(array[1]);
         final parsed = jsonDecode(decoded);
@@ -49,12 +51,10 @@ class AuthService{
         if(!isExpired){
           return {'success':true, 'user':{'name':parsed['name'], 'email':parsed['email'], 'enumber':parsed['enumber'], 'avatar':parsed['avatar'], 'token':parsed['user_token']}, };
         }
-
         return json.decode(response.data);
       } else {
         return json.decode(response.data);
       }
-
     } on DioError catch (e) {
       try{
         if(!e.response!.data['success']) return e.response!.data;
@@ -103,6 +103,7 @@ class AuthService{
           ///token過期清空使用者資訊並倒回登入
           developer.log('Token-Expired');
           developer.log('Clear User data and Redirect to Login');
+          return {"response_code": 419, "success": false, "data": null, "message": '{"error":"Token-Expired"}'};
         }else{
           ///直接進去(離線版)
           errormsg = 'Cannot Verify Token code:$statusCode';

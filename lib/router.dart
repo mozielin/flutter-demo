@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hws_app/ui/pages/clock/create.dart';
 import 'package:hws_app/ui/pages/common/photo_detail_base64.dart';
 import 'package:hws_app/ui/pages/api_demo.dart';
 import 'package:hws_app/ui/pages/hive_demo.dart';
@@ -16,6 +17,7 @@ class RouteName {
   static const String file = '/file_demo';
   static const String photo_detail_base64 = '/photo_detail_base64';
   static const String login = '/login';
+  static const String create_clock = '/create_clock';
 }
 
 class AppRouter {
@@ -37,7 +39,7 @@ class AppRouter {
                 child: child,
               );
              },
-            transitionDuration: const Duration(milliseconds:1500) //any duration you want
+            transitionDuration: const Duration(milliseconds:500) //any duration you want
         );
 
       case RouteName.demo:
@@ -54,6 +56,8 @@ class AppRouter {
         return CupertinoPageRoute(builder: (context) => PhotoDetailBase64());
       case RouteName.login:
         return CupertinoPageRoute(builder: (context) => LoginScreen());
+      case RouteName.create_clock:
+        return CupertinoPageRoute(builder: (context) => CreateClock(), settings: settings);
       default:
         return CupertinoPageRoute(
             builder: (_) => Scaffold(
