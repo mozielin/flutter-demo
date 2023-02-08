@@ -13,6 +13,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:hws_app/service/ImageController.dart';
 import 'package:dio/dio.dart' as api;
 
+import '../../config/setting.dart';
 import '../../cubit/bottom_nav_cubit.dart';
 import '../../cubit/user_cubit.dart';
 
@@ -116,7 +117,7 @@ class _FileDemoState extends State<FileDemo> {
           filename: 'test.png',
         ),
       });
-      api.Response res = await dio.post('http://192.168.12.68:443/api/app_demo', data: formData);
+      api.Response res = await dio.post('${InitSettings.apiUrl}:443/api/app_demo', data: formData);
       if (res.statusCode == 200 && res.data != null) {
         print(res.data['message']);
         setState(() {
