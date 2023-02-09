@@ -167,7 +167,8 @@
   "cutscene": {
     "info_default_title": "System Preparing Resources",
     "info_default_text": "Ready to check data resource",
-    "case_type_title": "Getting Case Types",
+    "clock_type_title": "Getting Clock Types",
+    "clock_type_text": "Clock Types Analysing...",
     "finish_title": "System Ready",
     "finish_text": "Enjoy your working Day"
   }

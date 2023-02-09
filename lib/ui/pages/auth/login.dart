@@ -83,9 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     const simpleBehavior = true;
 
-    if (simpleBehavior) {
-      basicStatusCheck(newVersion);
-    }
+    // if (simpleBehavior) {
+    //   basicStatusCheck(newVersion);
+    // }
     // else {
     //   advancedStatusCheck(newVersion);
     // }

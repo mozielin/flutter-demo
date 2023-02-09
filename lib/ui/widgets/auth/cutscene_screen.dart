@@ -32,7 +32,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
   double _loadingBallSize = 1;
   bool _stopScaleAnimtion = false;
   bool _apiEnable = false;
-  String _infoTitle = tr('cutscene.info_default_title_default');
+  String _infoTitle = tr('cutscene.info_default_title');
   String _infoText = tr('cutscene.info_default_text');
   final api.Dio dio = api.Dio();
 
@@ -56,20 +56,19 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
 
           SyncService().initTypeSelection(user.token).then((res){
+            _infoTitle = tr('cutscene.clock_type_title');
+            _infoText = tr('cutscene.clock_type_text');
             print(res);
             BlocProvider.of<CaseTypeCubit>(context).setCaseType(CaseTypeState(value: "$res"));
             print(res['6']['child']);
           });
 
           Future.delayed(const Duration(milliseconds: 1500), () {
-            _infoTitle = tr('cutscene.case_type_title');
-            _infoText = tr('cutscene.case_type_text');
-
+            _infoTitle = tr('cutscene.finish_title');
+            _infoText = tr('cutscene.finish_text');
           });
 
-          Future.delayed(const Duration(milliseconds: 300), () {
-            _infoTitle = tr('cutscene.info_finish_title');
-            _infoText = tr('cutscene.info_finish_text');
+          Future.delayed(const Duration(milliseconds: 5000), () {
             setState(() {
               ///最後判斷是否結束動畫進入首頁
               _stopScaleAnimtion = true;

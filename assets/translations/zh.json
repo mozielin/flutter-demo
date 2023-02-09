@@ -174,9 +174,9 @@
   "cutscene": {
     "info_default_title": "系統資料抓取中",
     "info_default_text": "開始檢查需要資源",
-    "case_type_title": "取得專案類型",
+    "clock_type_title": "取得工時類別",
+    "clock_type_text": "工時類別解析中",
     "finish_title": "系統準備完成",
     "finish_text": "好好工作吧!"
-
   }
 }
