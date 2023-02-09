@@ -64,6 +64,8 @@ class Clock extends HiveObject {
   String internal_order;
   @HiveField(28, defaultValue: '')
   String bpm_number;
+  @HiveField(29, defaultValue: '')
+  String images;
 
   Clock({
     required this.id,
@@ -95,5 +97,6 @@ class Clock extends HiveObject {
     required this.order_date,
     required this.internal_order,
     required this.bpm_number,
+    required this.images,
   });
 }

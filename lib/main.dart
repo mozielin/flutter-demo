@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hws_app/models/clock.dart';
+import 'package:hws_app/models/supportCase.dart';
 import 'package:hws_app/ui/pages/auth/login.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/router.dart';
@@ -37,6 +38,8 @@ void main() async {
   await Hive.openBox('userBox');
   Hive.registerAdapter(ClockAdapter());
   await Hive.openBox('clockBox');
+  Hive.registerAdapter(SupportCaseAdapter());
+  await Hive.openBox('supportCaseBox');
 
   HydratedBlocOverrides.runZoned(
         () => runApp(
