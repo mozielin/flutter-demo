@@ -30,15 +30,22 @@ class UserCubit extends HydratedCubit<UserState> {
 
   void clearUser() => emit(UserState(name: '', email: '', enumber: '', avatar: '', token: '', networkEnable: false));
 
-  void refreshToken(token) {
-    state.token = token;
-    state.networkEnable = true;
-    emit(state);
-  }
+  void refreshToken(token) => emit(UserState(
+      name: state.name,
+      email: state.email,
+      enumber: state.enumber,
+      avatar: state.avatar,
+      token: token,
+      networkEnable: true));
 
   void changeAPIStatus(status) {
-    state.networkEnable = status;
-    emit(state);
+    emit(UserState(
+        name: state.name,
+        email: state.email,
+        enumber: state.enumber,
+        avatar: state.avatar,
+        token: state.token,
+        networkEnable: status));
   }
 
   @override

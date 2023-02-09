@@ -22,7 +22,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
 
 class CutsceneScreen extends StatefulWidget {
-  const CutsceneScreen({super.key});
+  const CutsceneScreen({super.key, required bool loginRecently});
 
   @override
   State<CutsceneScreen> createState() => _CutsceneScreenState();
@@ -32,71 +32,17 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
   double _loadingBallSize = 1;
   bool _stopScaleAnimtion = false;
   bool _apiEnable = false;
-
   String _infoTitle = tr('cutscene.info_default_title_default');
   String _infoText = tr('cutscene.info_default_text');
-
-  String release = "";
-
   final api.Dio dio = api.Dio();
-
-  basicStatusCheck(NewVersionPlus newVersion) async {
-    final version = await newVersion.getVersionStatus();
-    if (version != null) {
-      release = version.releaseNotes ?? "";
-      //setState(() {});
-    }
-    newVersion.showAlertIfNecessary(
-      context: context,
-      launchModeVersion: LaunchModeVersion.external,
-    );
-  }
-
-  advancedStatusCheck(NewVersionPlus newVersion) async {
-    //TODO:要求更新客製訊息
-    final status = await newVersion.getVersionStatus();
-    if (status != null) {
-      debugPrint(status.releaseNotes);
-      debugPrint(status.appStoreLink);
-      debugPrint(status.localVersion);
-      debugPrint(status.storeVersion);
-      debugPrint(status.canUpdate.toString());
-      newVersion.showUpdateDialog(
-        context: context,
-        versionStatus: status,
-        dialogTitle: 'Custom Title',
-        dialogText: 'Custom Text',
-      );
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    // Instantiate NewVersion manager object (Using GCP Console app as example)
-    //TODO:更換APPID
-    final newVersion = NewVersionPlus(
-        iOSId: 'com.google.Vespa',
-        androidId: 'com.disney.disneyplus',
-        androidPlayStoreCountry: "es_ES" //support country code
-    );
-
-    // You can let the plugin handle fetching the status and showing a dialog,
-    // or you can fetch the status and display your own dialog, or no dialog.
-
-    const simpleBehavior = true;
-
-    if (simpleBehavior) {
-      basicStatusCheck(newVersion);
-    }
-    // else {
-    //   advancedStatusCheck(newVersion);
-    // }
 
     ///嘗試驗證token判斷是否可以連到API Server
     developer.log('Cutscene...');
     var user = BlocProvider.of<UserCubit>(context).state;
-    developer.log('User-Token:${user.token}');
     if (user.token != '') {
       developer.log("Token verify: ${user.token}");
       ///TODO:刷新的token沒存到導致一直驗證不過被登出
@@ -106,7 +52,30 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           var token = res['token'];
           BlocProvider.of<UserCubit>(context).refreshToken(token);
           developer.log("Token refresh: $token");
-          developer.log("Token check: ${BlocProvider.of<UserCubit>(context).state.token}");
+
+          //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
+
+          SyncService().initTypeSelection(user.token).then((res){
+            print(res);
+            BlocProvider.of<CaseTypeCubit>(context).setCaseType(CaseTypeState(value: "$res"));
+            print(res['6']['child']);
+          });
+
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            _infoTitle = tr('cutscene.case_type_title');
+            _infoText = tr('cutscene.case_type_text');
+
+          });
+
+          Future.delayed(const Duration(milliseconds: 300), () {
+            _infoTitle = tr('cutscene.info_finish_title');
+            _infoText = tr('cutscene.info_finish_text');
+            setState(() {
+              ///最後判斷是否結束動畫進入首頁
+              _stopScaleAnimtion = true;
+            });
+          });
+
         } else {
           if (res['response_code'] == 419){
             _logoutUser();
@@ -118,28 +87,6 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
       }).onError((error, stackTrace) {
         ///Alert token expired return to login
         _logoutUser();
-      });
-      //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
-
-      SyncService().initTypeSelection(user.token).then((res){
-        print(res);
-        BlocProvider.of<CaseTypeCubit>(context).setCaseType(CaseTypeState(value: "$res"));
-        print(res['6']['child']);
-      });
-
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        _infoTitle = tr('cutscene.case_type_title');
-        _infoText = tr('cutscene.case_type_text');
-
-      });
-
-      Future.delayed(const Duration(milliseconds: 300), () {
-        _infoTitle = tr('cutscene.info_finish_title');
-        _infoText = tr('cutscene.info_finish_text');
-        setState(() {
-          ///最後判斷是否結束動畫進入首頁
-          _stopScaleAnimtion = true;
-        });
       });
     } else {
       developer.log('Token empty');

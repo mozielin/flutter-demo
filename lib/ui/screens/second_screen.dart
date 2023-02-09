@@ -22,7 +22,7 @@ class SecondScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               physics: const BouncingScrollPhysics(),
               children: <Widget>[
-                Header(text: 'Hi，' + user.name),
+                Header(text: 'Hi，${user.name}'),
                 LinkCard(
                     title: 'github_card_title',
                     icon: Ionicons.logo_github,
