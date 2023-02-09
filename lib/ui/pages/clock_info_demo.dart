@@ -134,6 +134,81 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                   ),
                 ),
                 TextButton.icon(
+                  onPressed: () async {
+                    Map clockData = {
+                      'id': '',
+                      'type': '18',
+                      'clock_attribute': '1',
+                      'clocking_no': '',
+                      'source_no': '',
+                      'enumber': 'HW-M54',
+                      'bu_code': '5500',
+                      'dept_code': '5503',
+                      'project_id': '',
+                      'context': 'test context',
+                      'function_code': 'C42',
+                      'direct_code': '1',
+                      'traffic_hours': 0.50,
+                      'worked_hours': 3.50,
+                      'total_hours': 4.00,
+                      'depart_time': '2022-12-18 00:30:00',
+                      'start_time': '2022-12-18 01:00:00',
+                      'end_time': '2022-12-18 04:30:00',
+                      'status': '1',
+                      'created_at': '',
+                      'updated_at': '',
+                      'deleted_at': '',
+                      'sales_enumber': 'error',
+                      'sales_bu_code': 'error',
+                      'sales_dept_code': 'error',
+                      'sap_wbs': '',
+                      'order_date': '',
+                      'internal_order': '',
+                      'bpm_number': '',
+                      'images': '[]',
+                      'sync_status': '1',
+                    };
+                    await ClockInfo().InsertClock(clockData);
+                  },
+                  icon: Icon(Ionicons.server_outline,
+                      color: Theme.of(context).colorScheme.primary),
+                  label: Text(
+                    'InsertClock',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () async {
+                    List clocks = await ClockInfo().GetToBeSyncClock();
+                    for (var data in clocks) {
+                      print(data.id);
+                      print(data.images);
+                    }
+                  },
+                  icon: Icon(Ionicons.server_outline,
+                      color: Theme.of(context).colorScheme.primary),
+                  label: Text(
+                    'GetToBeSyncClock',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                ),
+                TextButton.icon(
                   onPressed: () {
                     //判斷可以跳頁才pop，不然沒有上一頁會掉到黑洞裡
                     if (Navigator.of(context).canPop()){

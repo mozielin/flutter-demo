@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hws_app/models/clock.dart';
 import 'package:hws_app/models/supportCase.dart';
+import 'package:hws_app/models/toBeSyncClock.dart';
 import 'package:hws_app/ui/pages/auth/login.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/router.dart';
@@ -18,7 +19,6 @@ import 'package:path_provider/path_provider.dart';
 
 import 'config/theme.dart';
 import 'cubit/theme_cubit.dart';
-import 'ui/screens/skeleton_screen.dart';
 
 void main() async {
   /// Initialize packages
@@ -40,6 +40,8 @@ void main() async {
   await Hive.openBox('clockBox');
   Hive.registerAdapter(SupportCaseAdapter());
   await Hive.openBox('supportCaseBox');
+  Hive.registerAdapter(ToBeSyncClockAdapter());
+  await Hive.openBox('toBeSyncClockBox');
 
   HydratedBlocOverrides.runZoned(
         () => runApp(

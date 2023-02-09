@@ -31,6 +31,10 @@ class AppCard extends StatelessWidget {
         appIcon = Ionicons.images_outline;
         appName = 'File Demo';
         break;
+      case "clock_info_demo":
+        appIcon = Ionicons.time_outline;
+        appName = 'Clock Info Hive Demo';
+        break;
       default:
         appIcon = Ionicons.help_outline;
         appName = appPath;
