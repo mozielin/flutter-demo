@@ -162,5 +162,13 @@
   },
   "validation": {
     "require": "This field is required"
+  },
+
+  "cutscene": {
+    "info_default_title": "System Preparing Resources",
+    "info_default_text": "Ready to check data resource",
+    "case_type_title": "Getting Case Types",
+    "finish_title": "System Ready",
+    "finish_text": "Enjoy your working Day"
   }
 }

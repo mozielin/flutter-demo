@@ -10,8 +10,10 @@ import 'package:hws_app/config/theme.dart';
 import 'package:new_version_plus/new_version_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../config/setting.dart';
+import '../../../cubit/case_type_cubit.dart';
 import '../../../cubit/user_cubit.dart';
 import '../../../service/authenticate/auth.dart';
+import '../../../service/sync.dart';
 import '../alert/icons/error_icon.dart';
 import '../alert/styles.dart';
 
@@ -27,11 +29,12 @@ class CutsceneScreen extends StatefulWidget {
 }
 
 class _CutsceneScreenState extends State<CutsceneScreen> {
-  double loadingBallSize = 1;
-  AlignmentGeometry _alignment = Alignment.center;
-  bool stopScaleAnimtion = false;
+  double _loadingBallSize = 1;
+  bool _stopScaleAnimtion = false;
   bool _apiEnable = false;
-  bool showMessages = true;
+
+  String _infoTitle = tr('cutscene.info_default_title_default');
+  String _infoText = tr('cutscene.info_default_text');
 
   String release = "";
 
@@ -41,7 +44,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
     final version = await newVersion.getVersionStatus();
     if (version != null) {
       release = version.releaseNotes ?? "";
-      setState(() {});
+      //setState(() {});
     }
     newVersion.showAlertIfNecessary(
       context: context,
@@ -95,30 +98,48 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
     var user = BlocProvider.of<UserCubit>(context).state;
     developer.log('User-Token:${user.token}');
     if (user.token != '') {
+      developer.log("Token verify: ${user.token}");
+      ///TODO:刷新的token沒存到導致一直驗證不過被登出
       AuthService().verifyToken(user.token).then((res) {
         if (res['success']) {
           _apiEnable = true;
           var token = res['token'];
           BlocProvider.of<UserCubit>(context).refreshToken(token);
           developer.log("Token refresh: $token");
+          developer.log("Token check: ${BlocProvider.of<UserCubit>(context).state.token}");
         } else {
           if (res['response_code'] == 419){
             _logoutUser();
           }else{
             BlocProvider.of<UserCubit>(context).changeAPIStatus(false);
             developer.log('Failed to fetch api', error: res['message']);
-
-            //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
-            Future.delayed(Duration(milliseconds: 3000), () {
-              setState(() {
-                stopScaleAnimtion = true;
-              });
-            });
           }
         }
       }).onError((error, stackTrace) {
         ///Alert token expired return to login
         _logoutUser();
+      });
+      //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
+
+      SyncService().initTypeSelection(user.token).then((res){
+        print(res);
+        BlocProvider.of<CaseTypeCubit>(context).setCaseType(CaseTypeState(value: "$res"));
+        print(res['6']['child']);
+      });
+
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        _infoTitle = tr('cutscene.case_type_title');
+        _infoText = tr('cutscene.case_type_text');
+
+      });
+
+      Future.delayed(const Duration(milliseconds: 300), () {
+        _infoTitle = tr('cutscene.info_finish_title');
+        _infoText = tr('cutscene.info_finish_text');
+        setState(() {
+          ///最後判斷是否結束動畫進入首頁
+          _stopScaleAnimtion = true;
+        });
       });
     } else {
       developer.log('Token empty');
@@ -150,14 +171,14 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
             alignment: Alignment.center,
             child: TweenAnimationBuilder<double>(
               duration: Duration(milliseconds: 500),
-              tween: Tween(begin: 0, end: loadingBallSize),
+              tween: Tween(begin: 0, end: _loadingBallSize),
               onEnd: () {
-                if (!stopScaleAnimtion) {
+                if (!_stopScaleAnimtion) {
                   setState(() {
-                    if (loadingBallSize == 1) {
-                      loadingBallSize = 1.5;
+                    if (_loadingBallSize == 1) {
+                      _loadingBallSize = 1.5;
                     } else {
-                      loadingBallSize = 1;
+                      _loadingBallSize = 1;
                     }
                   });
                 } else {
@@ -176,7 +197,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: !stopScaleAnimtion
+                      color: !_stopScaleAnimtion
                           ? Theme.of(context).colorScheme.primary
                           : null,
                       shape: BoxShape.circle,
@@ -187,7 +208,15 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           ),
           SizedBox(height: 16),
           Text(
-            'Connecting API Server...',
+            _infoTitle,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            _infoText,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -195,6 +224,13 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           ),
           SizedBox(height: 16),
           Text(BlocProvider.of<UserCubit>(context).state.networkEnable ? 'Enabled' : 'Disabled', style: TextStyle(color: BlocProvider.of<UserCubit>(context).state.networkEnable ? MetronicTheme.success : MetronicTheme.danger, fontSize: 16, fontWeight: FontWeight.bold)),
+          TextButton(onPressed: (){
+            setState(() {
+              ///最後判斷是否結束動畫進入首頁
+              _stopScaleAnimtion = true;
+            });
+          }, child:Text('Skip', style: TextStyle(color: MetronicTheme.success, fontSize: 16, fontWeight: FontWeight.bold)),
+          )
         ],
       ));
   }

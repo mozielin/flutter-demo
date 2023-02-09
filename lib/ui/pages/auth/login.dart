@@ -175,8 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     networkEnable: true,
                                   ),
                                 );
-                                Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-
+                                //Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                                setState(() {
+                                  loadingBallAppear = true;
+                                });
                               } else {
                                 ///錯誤訊息
                                 print(Authenticated['message']);

@@ -170,5 +170,13 @@
   },
   "validation": {
     "require": "此欄位為必填"
+  },
+  "cutscene": {
+    "info_default_title": "系統資料抓取中",
+    "info_default_text": "開始檢查需要資源",
+    "case_type_title": "取得專案類型",
+    "finish_title": "系統準備完成",
+    "finish_text": "好好工作吧!"
+
   }
 }
