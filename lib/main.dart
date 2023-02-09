@@ -91,6 +91,12 @@ class MyApp extends StatelessWidget {
                   home: const LoginScreen(),
                   onGenerateRoute: AppRouter.generateRoute,
                   initialRoute: '/',
+                  builder: (BuildContext context, Widget? child) {
+                    return MediaQuery(
+                      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: child!,
+                    );
+                  },
               ),
             );
           },
