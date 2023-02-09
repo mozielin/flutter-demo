@@ -1,13 +1,16 @@
-// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, must_be_immutable, camel_case_types, use_build_context_synchronously
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, must_be_immutable, camel_case_types, use_build_context_synchronously, unrelated_type_equality_checks
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:hws_app/config/theme.dart';
 import 'package:hws_app/global_data.dart';
+import 'package:hws_app/service/ClockInfo.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:uiblock/uiblock.dart';
 import '../../../config/setting.dart';
@@ -29,7 +32,7 @@ class _ClockDemoState extends State<ClockDemo> {
   final ScrollController scrollController = ScrollController();
   final ScrollController dialogController = ScrollController();
   final GlobalKey<FormFieldState> _statusKey = GlobalKey<FormFieldState>();
-  var _status = '';
+  String _status = '';
   bool hideAdvanceSearch = true;
   bool showbtn = false;
   bool is_bottom = false;
@@ -47,47 +50,47 @@ class _ClockDemoState extends State<ClockDemo> {
     var bgColor;
 
     switch (status) {
-      case 1:
+      case '1':
         text = tr('clock.status.draft');
         textColor = MetronicTheme.success;
         bgColor = MetronicTheme.light_success;
         break;
-      case 2:
+      case '2':
         text = tr('clock.status.verify');
         textColor = MetronicTheme.info;
         bgColor = MetronicTheme.light_info;
         break;
-      case 3:
+      case '3':
         text = tr("clock.status.verify_owner");
         textColor = MetronicTheme.info;
         bgColor = MetronicTheme.light_info;
         break;
-      case 4:
+      case '4':
         text = tr('clock.status.verify_sales');
         textColor = MetronicTheme.info;
         bgColor = MetronicTheme.light_info;
         break;
-      case 5:
+      case '5':
         text = tr('clock.status.done');
         textColor = MetronicTheme.primary;
         bgColor = MetronicTheme.light_primary;
         break;
-      case 6:
+      case '6':
         text = tr('clock.status.reject');
         textColor = MetronicTheme.danger;
         bgColor = MetronicTheme.light_danger;
         break;
-      case 7:
+      case '7':
         text = tr('clock.status.not_save_sap');
         textColor = MetronicTheme.warning;
         bgColor = MetronicTheme.light_warning;
         break;
-      case 8:
+      case '8':
         text = tr('clock.status.not_save_crm');
         textColor = MetronicTheme.warning;
         bgColor = MetronicTheme.light_warning;
         break;
-      case 9:
+      case '9':
         text = tr('clock.status.not_save_hws');
         textColor = MetronicTheme.warning;
         bgColor = MetronicTheme.light_warning;
@@ -129,7 +132,7 @@ class _ClockDemoState extends State<ClockDemo> {
 
   clock_detail(data) {
     // 參數帶入
-    var clock_context = data['context'];
+    var clock_context = data.context;
     return Column(
       children: [
         Column(
@@ -221,17 +224,17 @@ class _ClockDemoState extends State<ClockDemo> {
       tr('week.short.sun')
     ];
     // 參數帶入
-    var clock_id = data['id'];
-    var documentNumber = data['source_no'];
-    var caseNo = data['case_no'] ?? tr("clock.card.no_case_number");
-    var status = data['status'];
+    var documentNumber = data.source_no;
+    var caseNo =
+        data.case_no != '' ? data.case_no : tr("clock.card.no_case_number");
+    var status = data.status;
 
-    var departDatetime = DateTime.tryParse(data['depart_time'])!;
-    var startDatetime = DateTime.tryParse(data['start_time'])!;
-    var endDatetime = DateTime.tryParse(data['end_time'])!;
-    var traffic_hours = data['traffic_hours'];
-    var worked_hours = data['worked_hours'];
-    var total_hours = data['total_hours'];
+    var departDatetime = DateTime.tryParse(data.depart_time)!;
+    var startDatetime = DateTime.tryParse(data.start_time)!;
+    var endDatetime = DateTime.tryParse(data.end_time)!;
+    var traffic_hours = data.traffic_hours;
+    var worked_hours = data.worked_hours;
+    var total_hours = data.total_hours;
     var createDate =
         '${DateFormat('M/d').format(departDatetime)}(${weekday[departDatetime.weekday]})';
     // 時間計算
@@ -253,9 +256,9 @@ class _ClockDemoState extends State<ClockDemo> {
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12))),
         child: ListTile(
-          onTap: () async {
+          onTap: () {
             if (index != null) {
-              await getClockImages(clock_id);
+              images = jsonDecode(data.images);
               clock_dialog(items[index]);
             }
           },
@@ -286,7 +289,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          (documentNumber != null)
+                          (documentNumber != '')
                               ? Text('$documentNumber')
                               : Container(),
                           Text('$caseNo')
@@ -447,50 +450,68 @@ class _ClockDemoState extends State<ClockDemo> {
   }
 
   getClocks(bool clear) async {
-    if (!_canLoad) return;
+    print(clear);
+    List clockList = [];
+    int skipCount = 0;
+    int count = 0;
+    bool filterStatus = true;
+    bool filterFuzzySearch = true;
+
     try {
       if (clear) {
-        // 是否清空
+        /// 是否清空
         setState(() {
+          _canLoad = true;
           is_bottom = false;
           skip = 0;
           items = [];
         });
       }
 
+      if (!_canLoad) return;
+
       if (!is_bottom) {
-        var user = BlocProvider.of<UserCubit>(context).state;
-        dio.options.headers['Authorization'] = 'Bearer ${user.token}';
-        Response res = await dio.post(
-          '${InitSettings.apiUrl}:443/api/getClocks',
-          data: {
-            'enumber': user.enumber,
-            'skip': skip,
-            'take': take,
-            'fuzzy_search': _searchController.text,
-            'status': _status,
-          },
-        ).timeout(const Duration(seconds: 5));
+        print('loaddddd');
+        List hiveClocks = await ClockInfo().GetClock();
 
-        if (res.statusCode == 200 && res.data != null) {
-          setState(() {
-            if (res.data['clocks'].length < take) {
-              is_bottom = true;
+        /// 資料篩選
+        List clocks = hiveClocks.where((element) {
+          if (_status != '') {
+            filterStatus = (element.status == _status);
+          }
+
+          if (_searchController.text != '') {
+            filterFuzzySearch =
+                element.case_no.contains(_searchController.text);
+          }
+
+          return filterStatus && filterFuzzySearch;
+        }).toList();
+
+        for (var data in clocks) {
+          if (skipCount == skip) {
+            if (count == take) {
+              break;
+            } else {
+              clockList.add(data);
+              count++;
             }
-
-            items.addAll(res.data['clocks']);
-            skip += take;
-            _load = true;
-            _canLoad = true;
-          });
-        } else {
-          setState(() {
-            _load = false;
-            _canLoad = true;
-          });
+          } else {
+            skipCount++;
+          }
         }
+
+        setState(() {
+          if (clockList.length < take) is_bottom = true;
+          print('setttttt');
+          items.addAll(clockList);
+          skip += take;
+          _load = true;
+          _canLoad = true;
+        });
       }
     } catch (e) {
+      print('errorrrrrr');
       setState(() {
         _load = false;
         _canLoad = true;
@@ -504,40 +525,6 @@ class _ClockDemoState extends State<ClockDemo> {
         _canLoad = true;
       });
     }
-  }
-
-  getClockImages(clock_id) async {
-    try {
-      UIBlock.block(context);
-      setState(() {
-        images = [];
-      });
-
-      dio.options.headers['Authorization'] =
-          'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
-      Response res = await dio.post(
-        '${InitSettings.apiUrl}:443/api/getClockImages',
-        data: {'clock_id': clock_id},
-      ).timeout(const Duration(seconds: 5));
-
-      if (res.statusCode == 200 && res.data != null) {
-        setState(() {
-          for (var each in res.data['images']) {
-            images.add(each['base64_path'].split('base64,')[1]);
-          }
-        });
-      } else {
-        setState(() {});
-      }
-    } catch (e) {
-      setState(() {});
-      rethrow;
-    }
-
-    if (mounted) {
-      setState(() {});
-    }
-    UIBlock.unblock(context);
   }
 
   Future<void> _pullToRefresh() async {
@@ -653,34 +640,33 @@ class _ClockDemoState extends State<ClockDemo> {
                                         .bodySmall!
                                         .color),
                               ),
-                              value: null,
+                              onChanged: (value) async {
+                                if (value != null) {
+                                  _status = value;
+                                }
+                                await getClocks(true);
+                              },
+                              value: _status == '' ? null : _status,
                               items: [
                                 DropdownMenuItem(
-                                    value: '1', child: getStatusLabel(1)),
+                                    value: '1', child: getStatusLabel('1')),
                                 DropdownMenuItem(
-                                    value: '2', child: getStatusLabel(2)),
+                                    value: '2', child: getStatusLabel('2')),
                                 DropdownMenuItem(
-                                    value: '3', child: getStatusLabel(3)),
+                                    value: '3', child: getStatusLabel('3')),
                                 DropdownMenuItem(
-                                    value: '4', child: getStatusLabel(4)),
+                                    value: '4', child: getStatusLabel('4')),
                                 DropdownMenuItem(
-                                    value: '5', child: getStatusLabel(5)),
+                                    value: '5', child: getStatusLabel('5')),
                                 DropdownMenuItem(
-                                    value: '6', child: getStatusLabel(6)),
+                                    value: '6', child: getStatusLabel('6')),
                                 DropdownMenuItem(
-                                    value: '7', child: getStatusLabel(7)),
+                                    value: '7', child: getStatusLabel('7')),
                                 // DropdownMenuItem(
-                                //     value: '8', child: getStatusLabel(8)),
+                                //     value: '8', child: getStatusLabel('8')),
                                 DropdownMenuItem(
-                                    value: '9', child: getStatusLabel(9)),
+                                    value: '9', child: getStatusLabel('9')),
                               ],
-                              onChanged: (value) {
-                                FocusScope.of(context)
-                                    .requestFocus(FocusNode());
-                                setState(() {
-                                  _status = value!;
-                                });
-                              },
                               decoration: InputDecoration(
                                 contentPadding:
                                     const EdgeInsets.symmetric(horizontal: 15),

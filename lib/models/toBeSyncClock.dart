@@ -65,8 +65,10 @@ class ToBeSyncClock extends HiveObject {
   @HiveField(28, defaultValue: '')
   String bpm_number;
   @HiveField(29, defaultValue: '')
-  String images;
+  String case_no;
   @HiveField(30, defaultValue: '')
+  String images;
+  @HiveField(31, defaultValue: '')
   String sync_status;
 
   ToBeSyncClock({
@@ -99,6 +101,7 @@ class ToBeSyncClock extends HiveObject {
     required this.order_date,
     required this.internal_order,
     required this.bpm_number,
+    required this.case_no,
     required this.images,
     required this.sync_status,
   });

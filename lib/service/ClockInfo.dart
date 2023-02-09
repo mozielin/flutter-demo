@@ -64,6 +64,7 @@ class ClockInfo {
             order_date: data['order_date'] ?? '',
             internal_order: data['internal_order'] ?? '',
             bpm_number: data['bpm_number'] ?? '',
+            case_no: (data['project'] != null) ? data['project']['case_no'] : '',
             images: '[]',
           );
 
@@ -127,6 +128,7 @@ class ClockInfo {
             order_date: data.order_date,
             internal_order: data.internal_order,
             bpm_number: data.bpm_number,
+            case_no: data.case_no,
             images: json.encode(images),
           );
 
@@ -225,6 +227,7 @@ class ClockInfo {
         order_date: data['order_date'] ?? '',
         internal_order: data['internal_order'] ?? '',
         bpm_number: data['bpm_number'] ?? '',
+        case_no: data['case_no'] ?? '',
         images: '[]',
         sync_status: '1',
       );
