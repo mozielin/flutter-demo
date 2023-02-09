@@ -10,6 +10,7 @@ import 'package:hws_app/config/theme.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:uiblock/uiblock.dart';
+import '../../../config/setting.dart';
 import '../../../cubit/user_cubit.dart';
 import '../../widgets/clock/card_hole_clipper.dart';
 import '../../widgets/common/status_label.dart';
@@ -458,12 +459,14 @@ class _ClockDemoState extends State<ClockDemo> {
       }
 
       if (!is_bottom) {
+        var user = BlocProvider.of<UserCubit>(context).state;
         dio.options.headers['Authorization'] =
-            'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
+            'Bearer ${user.token}';
+        print('${InitSettings.apiUrl}:443/api/getClocks');
         Response res = await dio.post(
-          'http://192.168.12.68:443/api/getClocks', // TODO: URL 放至 env 相關設定
+          '${InitSettings.apiUrl}:443/api/getClocks', // TODO: URL 放至 env 相關設定
           data: {
-            'enumber': 'HW-M54',
+            'enumber': user.enumber,
             'skip': skip,
             'take': take,
             'fuzzy_search': _searchController.text,
@@ -515,7 +518,7 @@ class _ClockDemoState extends State<ClockDemo> {
       dio.options.headers['Authorization'] =
           'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
       Response res = await dio.post(
-        'http://192.168.12.68:443/api/getClockImages', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/getClockImages', // TODO: URL 放至 env 相關設定
         data: {'clock_id': clock_id},
       ).timeout(const Duration(seconds: 5));
 

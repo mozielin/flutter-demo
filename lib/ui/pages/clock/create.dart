@@ -14,6 +14,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import '../../../config/setting.dart';
 import '../../../config/theme.dart';
 import '../../../cubit/theme_cubit.dart';
 import '../../../cubit/user_cubit.dart';
@@ -78,7 +79,7 @@ class _CreateClockState extends State<CreateClock> {
     try{
       dio.options.headers['Authorization'] = 'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
       api.Response res = await dio.post(
-        'http://192.168.12.68:443/api/getClockTypeAPI', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/getClockTypeAPI', // TODO: URL 放至 env 相關設定
         // 'https://uathws.hwacom.com//api/getClocks', // TODO: URL 放至 env 相關設定
         data: {
           'case_no': 'no_case',
@@ -708,7 +709,7 @@ class _CreateClockState extends State<CreateClock> {
       });
       dio.options.headers['Authorization'] = 'Bearer ${token}';
       api.Response res = await dio.post(
-        'http://192.168.12.68:443/api/countHoursAPI', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/countHoursAPI', // TODO: URL 放至 env 相關設定
         data: {
           'departTime': _depart.text,
           'startTime': _start.text,
@@ -814,7 +815,7 @@ class _CreateClockState extends State<CreateClock> {
             // 'draft': draft,
         });
         api.Response res = await dio.post(
-          'http://192.168.12.68:443/api/storeClockAPI',data: formData
+          '${InitSettings.apiUrl}:443/api/storeClockAPI',data: formData
         );
 
         if (res.data != null) {

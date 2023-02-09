@@ -1,30 +1,45 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import '../config/setting.dart';
+import 'dart:developer' as developer;
 
 part 'user_state.dart';
 
 class UserCubit extends HydratedCubit<UserState> {
   UserCubit()
-      : super(UserState(name: 'default', email: 'default', enumber: 'default', avatar: 'default', token: 'default'));
+      : super(UserState(name: 'default', email: 'default', enumber: 'default', avatar: 'default', token: 'default', networkEnable: false));
+
+  final Dio dio = Dio();
+  @override
+  // TODO: implement state
 
   void setUser(UserState userState) => emit(UserState(
       name: userState.name,
       email: userState.email,
       enumber: userState.enumber,
       avatar: userState.avatar,
-      token: userState.token));
+      token: userState.token,
+      networkEnable: userState.networkEnable
+  ));
 
-  void clearUser() => emit(UserState(name: '', email: '', enumber: '', avatar: '', token: ''));
+  void clearUser() => emit(UserState(name: '', email: '', enumber: '', avatar: '', token: '', networkEnable: false));
 
-  void refreshToken(UserState userState, token) => emit(UserState(
-      name: userState.name,
-      email: userState.email,
-      enumber: userState.enumber,
-      avatar: userState.avatar,
-      token: token));
+  void refreshToken(token) {
+    state.token = token;
+    state.networkEnable = true;
+    emit(state);
+  }
+
+  void changeAPIStatus(status) {
+    state.networkEnable = status;
+    emit(state);
+  }
 
   @override
   UserState? fromJson(Map<String, dynamic> json) {

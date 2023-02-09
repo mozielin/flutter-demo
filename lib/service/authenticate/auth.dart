@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
-
+import 'dart:developer' as developer;
+import '../../config/setting.dart';
 import '../../cubit/user_cubit.dart';
 
 class AuthService{
@@ -12,7 +14,7 @@ class AuthService{
   Future login(String account, String password) async {
     try {
       Response response = await dio.post(// TODO: URL 放至 env 相關設定
-        'http://192.168.12.68/api/jwt/login',
+        '${InitSettings.apiUrl}/api/jwt/login',
         data: {
           'enumber': account,
           'password': password,
@@ -78,25 +80,44 @@ class AuthService{
 
   ///驗證token並回傳新token
   Future<Map<String, dynamic>> verifyToken(String token) async {
+    String errormsg = '';
     try {
       dio.options.headers['Authorization'] = 'Bearer $token';
-      Response response = await dio.post(// TODO: URL 放至 env 相關設定
-        'http://192.168.12.68/api/refresh/token'
+      Response response = await dio.post(
+        '${InitSettings.apiUrl}/api/refresh/token'
       ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200 && response.data != null) {
         String token = response.data['token'];
-        print(token);
+        developer.log('User-token: $token');
+        ///TODO:成功刷新token觸發同步事件並上傳工時
         return {'success':true, 'token':token};
       } else {
         return json.decode(response.data);
       }
 
     } on DioError catch (e) {
-      var errormsg = e.message;
+      try{
+        var statusCode = e.response!.statusCode;
+        if (statusCode == 302){
+          ///token過期清空使用者資訊並倒回登入
+          developer.log('Token-Expired');
+          developer.log('Clear User data and Redirect to Login');
+          return {"response_code": 419, "success": false, "data": null, "message": '{"error":"Token-Expired"}'};
+        }else{
+          ///直接進去(離線版)
+          errormsg = 'Cannot Verify Token code:$statusCode';
+          developer.log('Cannot Verify Token and Login Local');
+          developer.log('${e.response!.statusMessage}');
+        }
+      }catch(es){
+        ///直接進去(離線版)
+        errormsg = 'Undefined Dio Error';
+        developer.log('Cannot Verify Token and Login Local');
+      }
       return {"response_code": 400, "success": false, "data": null, "message": '{"error":"$errormsg"}'};
-      //return e.response!.data;
     } on TimeoutException catch (e) {
+      ///直接進去(離線版)
       var errorMsg = tr('auth.connection_error');
       return {"response_code": 400, "success": false, "data": null, "message": '{"error":"$errorMsg"}'};
     }
