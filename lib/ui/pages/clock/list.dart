@@ -460,8 +460,7 @@ class _ClockDemoState extends State<ClockDemo> {
 
       if (!is_bottom) {
         var user = BlocProvider.of<UserCubit>(context).state;
-        dio.options.headers['Authorization'] =
-            'Bearer ${user.token}';
+        dio.options.headers['Authorization'] = 'Bearer ${user.token}';
         print('${InitSettings.apiUrl}:443/api/getClocks');
         Response res = await dio.post(
           '${InitSettings.apiUrl}:443/api/getClocks', // TODO: URL 放至 env 相關設定
@@ -518,7 +517,8 @@ class _ClockDemoState extends State<ClockDemo> {
       dio.options.headers['Authorization'] =
           'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
       Response res = await dio.post(
-        '${InitSettings.apiUrl}:443/api/getClockImages', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/getClockImages',
+        // TODO: URL 放至 env 相關設定
         data: {'clock_id': clock_id},
       ).timeout(const Duration(seconds: 5));
 
@@ -604,6 +604,7 @@ class _ClockDemoState extends State<ClockDemo> {
         appBar: MainAppBar(
           title: tr("clock.appbar.list"),
           appBar: AppBar(),
+          isPop: true,
         ),
         body: Material(
           color: Theme.of(context).colorScheme.background,
