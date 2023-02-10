@@ -32,7 +32,7 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                 TextButton.icon(
                   onPressed: () async {
                     await ClockInfo().SyncClock(
-                        BlocProvider.of<UserCubit>(context).state.token);
+                        BlocProvider.of<UserCubit>(context).state.token, BlocProvider.of<UserCubit>(context).state.enumber);
                   },
                   icon: Icon(Ionicons.server_outline,
                       color: Theme.of(context).colorScheme.primary),

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hws_app/config/setting.dart';
 import 'package:hws_app/models/clock.dart';
 import 'package:hws_app/models/supportCase.dart';
 import 'package:hws_app/models/toBeSyncClock.dart';
@@ -16,16 +17,17 @@ class ClockInfo {
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
 
   /// 同步工時資料
-  SyncClock(String token) async {
+  SyncClock(String token, String enumber) async {
     try {
       /// API 抓取工時資料
       dio.options.headers['Authorization'] = 'Bearer $token';
       Response res = await dio.post(
-        'http://192.168.12.68:443/api/getClocks', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/getClocks', // TODO: URL 放至 env 相關設定
         data: {
-          'enumber': 'HW-M54',
+          'enumber': enumber,
           'skip': 0,
           'take': 1000,
+          'isNotMonthly': true
         },
       ).timeout(const Duration(seconds: 5));
 
@@ -89,7 +91,7 @@ class ClockInfo {
         List<String> images = [];
         dio.options.headers['Authorization'] = 'Bearer $token';
         Response res = await dio.post(
-          'http://192.168.12.68:443/api/getClockImages',
+          '${InitSettings.apiUrl}:443/api/getClockImages',
           data: {'clock_id': data.id},
         ).timeout(const Duration(seconds: 5));
 
@@ -161,7 +163,7 @@ class ClockInfo {
       dio.options.headers['Authorization'] = 'Bearer $token';
       Response res = await dio
           .post(
-            'http://192.168.12.68:443/api/getUserCase',
+            '${InitSettings.apiUrl}:443/api/getUserCase',
           )
           .timeout(const Duration(seconds: 5));
 
