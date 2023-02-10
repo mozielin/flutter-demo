@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hws_app/models/clock.dart';
+import 'package:hws_app/models/dispatch.dart';
 import 'package:hws_app/models/supportCase.dart';
 import 'package:hws_app/models/toBeSyncClock.dart';
+import 'package:hws_app/models/warranty.dart';
 import 'package:hws_app/ui/pages/auth/login.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/router.dart';
@@ -42,6 +44,10 @@ void main() async {
   await Hive.openBox('supportCaseBox');
   Hive.registerAdapter(ToBeSyncClockAdapter());
   await Hive.openBox('toBeSyncClockBox');
+  Hive.registerAdapter(DispatchAdapter());
+  await Hive.openBox('dispatchBox');
+  Hive.registerAdapter(WarrantyAdapter());
+  await Hive.openBox('warrantyBox');
 
   HydratedBlocOverrides.runZoned(
         () => runApp(

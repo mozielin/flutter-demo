@@ -6,8 +6,10 @@ import 'package:dio/dio.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hws_app/config/setting.dart';
 import 'package:hws_app/models/clock.dart';
+import 'package:hws_app/models/dispatch.dart';
 import 'package:hws_app/models/supportCase.dart';
 import 'package:hws_app/models/toBeSyncClock.dart';
+import 'package:hws_app/models/warranty.dart';
 import 'package:uuid/uuid.dart';
 
 class ClockInfo {
@@ -15,6 +17,8 @@ class ClockInfo {
   late final Box clockBox = Hive.box('clockBox');
   late final Box supportCaseBox = Hive.box('supportCaseBox');
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
+  late final Box dispatchBox = Hive.box('dispatchBox');
+  late final Box warrantyBox = Hive.box('warrantyBox');
 
   /// 同步工時資料
   SyncClock(String token, String enumber) async {
@@ -66,7 +70,8 @@ class ClockInfo {
             order_date: data['order_date'] ?? '',
             internal_order: data['internal_order'] ?? '',
             bpm_number: data['bpm_number'] ?? '',
-            case_no: (data['project'] != null) ? data['project']['case_no'] : '',
+            case_no:
+                (data['project'] != null) ? data['project']['case_no'] : '',
             images: '[]',
           );
 
@@ -159,7 +164,6 @@ class ClockInfo {
   /// 同步支援 Case
   SyncSupportCase(String token) async {
     try {
-      List<String> images = [];
       dio.options.headers['Authorization'] = 'Bearer $token';
       Response res = await dio
           .post(
@@ -251,5 +255,81 @@ class ClockInfo {
       ClockList.add(data);
     }
     return ClockList;
+  }
+
+  /// 同步使用者的客訴派工單
+  SyncDispatch(String token, String enumber) async {
+    try {
+      dio.options.headers['Authorization'] = 'Bearer $token';
+
+      /// TODO: IP 調整
+      Response res = await dio.post(
+        'http://10.0.2.2:80/api/dispatch/getUserDispatch',
+        data: {
+          'enumber': enumber,
+        },
+      ).timeout(const Duration(seconds: 5));
+
+      if (res.statusCode == 200 && res.data != null) {
+        await dispatchBox.clear();
+
+        Dispatch DispatchData = Dispatch(
+          data: json.encode(res.data),
+        );
+
+        dispatchBox.put('first', DispatchData);
+        print('SyncDispatch success');
+      } else {
+        print('404 SyncDispatch error');
+      }
+    } catch (e) {
+      print('SyncDispatch error');
+      print(e);
+    }
+  }
+
+  /// 取得使用者的客訴派工單
+  GetDispatch() async {
+    var dispatchData = dispatchBox.get('first');
+    Map dispatchDataMap = jsonDecode(dispatchData.data);
+    return dispatchDataMap;
+  }
+
+  /// 同步使用者的定保派工單
+  SyncWarranty(String token, String enumber) async {
+    try {
+      dio.options.headers['Authorization'] = 'Bearer $token';
+
+      /// TODO: IP 調整
+      Response res = await dio.post(
+        'http://10.0.2.2/api/dispatch/getUserWarranty',
+        data: {
+          'enumber': enumber,
+        },
+      ).timeout(const Duration(seconds: 5));
+
+      if (res.statusCode == 200 && res.data != null) {
+        await warrantyBox.clear();
+
+        Warranty WarrantyData = Warranty(
+          data: json.encode(res.data),
+        );
+
+        warrantyBox.put('first', WarrantyData);
+        print('SyncWarranty success');
+      } else {
+        print('404 SyncWarranty error');
+      }
+    } catch (e) {
+      print('SyncWarranty error');
+      print(e);
+    }
+  }
+
+  /// 取得使用者的定保派工單
+  GetWarranty() async {
+    var warrantyData = warrantyBox.get('first');
+    Map warrantyDataMap = jsonDecode(warrantyData.data);
+    return warrantyDataMap;
   }
 }
