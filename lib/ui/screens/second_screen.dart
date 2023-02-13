@@ -42,6 +42,7 @@ class SecondScreen extends StatelessWidget {
                     AppCard(appPath: 'api_demo'),
                     AppCard(appPath: 'hive_demo'),
                     AppCard(appPath: 'file_demo'),
+                    AppCard(appPath: 'clock_info_demo'),
                   ],
                 ),
                 const TextDivider(text: 'author_divider_title'),
