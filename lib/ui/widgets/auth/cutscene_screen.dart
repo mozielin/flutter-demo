@@ -10,7 +10,8 @@ import 'package:hws_app/config/theme.dart';
 import 'package:new_version_plus/new_version_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../config/setting.dart';
-import '../../../cubit/case_type_cubit.dart';
+import '../../../cubit/case_cubit.dart';
+import '../../../cubit/clock_cubit.dart';
 import '../../../cubit/user_cubit.dart';
 import '../../../service/authenticate/auth.dart';
 import '../../../service/sync.dart';
@@ -55,12 +56,17 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
 
           //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
 
-          SyncService().initTypeSelection(user.token).then((res){
+          SyncService().initTypeSelection(token).then((res){
             _infoTitle = tr('cutscene.clock_type_title');
             _infoText = tr('cutscene.clock_type_text');
-            print(res);
-            BlocProvider.of<CaseTypeCubit>(context).setCaseType(CaseTypeState(value: "$res"));
-            print(res['6']['child']);
+            BlocProvider.of<ClockCubit>(context).setClockType(res);
+          });
+
+          SyncService().initUserCase(token).then((res){
+            _infoTitle = tr('cutscene.clock_type_title');
+            _infoText = tr('cutscene.clock_type_text');
+            // BlocProvider.of<CaseCubit>(context).setUserCase(res);
+             BlocProvider.of<ClockCubit>(context).setUserCase(res);
           });
 
           Future.delayed(const Duration(milliseconds: 1500), () {

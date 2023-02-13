@@ -131,6 +131,7 @@ class _SecureApplicationContentState extends State<_SecureApplicationContent> {
       child: BlocProvider<BottomNavCubit>(
           create: (BuildContext context) => BottomNavCubit(),
           child: Scaffold(
+            resizeToAvoidBottomInset: true,
             extendBodyBehindAppBar: true,
             appBar: const AppBarGone(),
             /// When switching between tabs this will fade the old

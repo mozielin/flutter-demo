@@ -115,7 +115,9 @@
     },
     "create_type": {
       "no_case_title": "無 Case",
-      "no_case_desc": "專案開發/Office/請假"
+      "no_case_desc": "專案開發/Office/請假",
+      "case_title": "有 Case",
+      "case_desc": "選擇 WBS 編號"
     },
     "create": {
       "attr": "類型",
@@ -138,7 +140,9 @@
       "context_labelText": "請輸入工作內容",
       "h": "小時",
       "file": "附檔",
-      "count_error": "請先計算工時！"
+      "count_error": "請先計算工時！",
+      "case_no": "Case編號",
+      "case_no_hint": "請選擇Case編號"
     }
   },
 

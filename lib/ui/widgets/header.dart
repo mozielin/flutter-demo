@@ -27,7 +27,7 @@ class Header extends StatelessWidget {
           return Row(
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 2, right: 2, top: 48, bottom: 24),
+                padding: const EdgeInsets.only(left:8, top: 48, bottom: 24),
                 child: Text(
                   text,
                   textAlign: TextAlign.start,
@@ -38,7 +38,7 @@ class Header extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 2, right: 2, top: 48, bottom: 24),
+                padding: const EdgeInsets.only(top: 48, bottom: 24),
                 child: LogoutButton(
                   onPressed: () async {
                     _onLogoutButtonsPressed(context);

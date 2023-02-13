@@ -110,7 +110,9 @@
     },
     "create_type": {
       "no_case_title": "No Case",
-      "no_case_desc": "Project Research/Office/Day Off"
+      "no_case_desc": "Project Research/Office/Day Off",
+      "case_title": "Has Case",
+      "case_desc": "Select WBS Number"
     },
     "create": {
       "attr": "Clock Attributes",
@@ -133,7 +135,9 @@
       "context_labelText": "Please type in work log",
       "h": "H",
       "file": "File",
-      "count_error": "Please click to calculate working hours"
+      "count_error": "Please click to calculate working hours",
+      "case_no": "Case Number",
+      "case_no_hint": "Select case number"
     }
   },
 

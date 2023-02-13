@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
+import 'package:hws_app/cubit/case_cubit.dart';
 import 'package:hws_app/ui/widgets/alert/alert_icons.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,8 +15,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import '../../../config/setting.dart';
 import '../../../config/theme.dart';
+import '../../../cubit/clock_cubit.dart';
 import '../../../cubit/theme_cubit.dart';
 import '../../../cubit/user_cubit.dart';
 import '../../../service/ImageController.dart';
@@ -24,14 +25,14 @@ import '../../widgets/alert/styles.dart';
 import '../../widgets/clock/clock_child_type.dart';
 import '../../widgets/clock/clock_type.dart';
 import '../../widgets/common/main_appbar.dart';
-import 'package:cross_file/cross_file.dart';
+
 import 'package:dio/dio.dart' as api;
 
 import '../file_demo.dart';
 
 enum SingingCharacter { project, office, day_off }
 
-class CreateClock extends StatefulWidget  {
+class CreateClock extends StatefulWidget {
   @override
   State<CreateClock> createState() => _CreateClockState();
 }
@@ -47,8 +48,10 @@ class _CreateClockState extends State<CreateClock> {
   final _worksHours = TextEditingController(); //工作時數
   final _clock_context = TextEditingController(); //工作內容
   late Map allType = Map(); //屬性、主、子類別
-  var typeBoxVisible = 1.0; //主子類別透明度
-  bool typeBoxSet = true; //主子類別調完透明度調整空間
+  var typeBoxVisible = 1.0; //主子類別透明度(無CASE)
+  var caseTypeBoxVisible = 0.0; //主子類別透明度(有CASE)
+  bool typeBoxSet = true; //主子類別調完透明度調整空間(無CASE)
+  bool caseTypeBoxSet = false; //主子類別調完透明度調整空間(有CASE)
   int attr_id = 6; //預設屬性id
   var parent_id;
   bool type_init_value = true; //是否為主類別init (判斷是否清除主類別)
@@ -61,35 +64,62 @@ class _CreateClockState extends State<CreateClock> {
   };
   bool reset_child = false; //是否清除子類別key
   var user;
-  late File img = File('your initial file');
+  late Map userCase = Map();
+  var case_number = null; //無Case
+  File? img;
+  late String sale_type = '';
+
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  ///User Case下拉選單
+  @override
   void initState() {
-    initTypeSelection().then((val) {
-      setState(() {
-        allType = val;
+    Future.delayed(Duration.zero, () {
+      Map arguments = (ModalRoute.of(context)?.settings.arguments ??
+          <String, dynamic>{}) as Map;
+      String type = arguments['type'];
+      int has_case = 2; //無case
+      switch (type) {
+        case 'has_case':
+          has_case = 1;
+          getUserCase().then((val) {
+            setState(() {
+              userCase = val;
+            });
+          });
+          break;
+      }
+
+      initTypeSelection(has_case).then((val) {
+        setState(() {
+          allType = val;
+        });
       });
     });
-
     super.initState();
   }
 
-  //todo:(更換來源)離線報工時
-  Future initTypeSelection() async {
-    try{
-      dio.options.headers['Authorization'] = 'Bearer ${BlocProvider.of<UserCubit>(context).state.token}';
-      api.Response res = await dio.post(
-        '${InitSettings.apiUrl}:443/api/getClockTypeAPI', // TODO: URL 放至 env 相關設定
-        // 'https://uathws.hwacom.com//api/getClocks', // TODO: URL 放至 env 相關設定
-        data: {
-          'case_no': 'no_case',
-          'attr': 6,
-          'has_case': 2 //無Case
-        },
-      );
-      Map<String, dynamic> data = res.data;
+  Future initTypeSelection(has_case) async {
+    try {
+      var res = BlocProvider.of<ClockCubit>(context).state.toMap();
+      Map<String, dynamic> data = res['clockType'];
       return data;
-    }on api.DioError catch (e) {
+    } on api.DioError catch (e) {
+      errorAlert(tr('auth.connection_error'));
+    }
+  }
+
+  Future getUserCase() async {
+    try {
+      var res = BlocProvider.of<ClockCubit>(context).state.toMap();
+      Map<String, dynamic> data = res['userCase'];
+      return data;
+    } on api.DioError catch (e) {
       errorAlert(tr('auth.connection_error'));
     }
   }
@@ -117,8 +147,7 @@ class _CreateClockState extends State<CreateClock> {
             padding: const EdgeInsets.all(25),
             child: ListView(
               children: <Widget>[
-                //類型
-                Column(
+                type == 'has_case' ? caseBox(userCase) : Column(
                   children: [
                     inputTitle(tr("clock.create.attr"), true),
                     Column(
@@ -126,10 +155,13 @@ class _CreateClockState extends State<CreateClock> {
                         ListTile(
                           title: Text(tr("clock.create.attr_project")),
                           leading: Radio<SingingCharacter>(
-                            fillColor: MaterialStateColor.resolveWith((states) =>
-                            Theme.of(context).colorScheme.inverseSurface),
-                            activeColor:
-                            Theme.of(context).colorScheme.inverseSurface,
+                            fillColor: MaterialStateColor.resolveWith(
+                                    (states) => Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface),
+                            activeColor: Theme.of(context)
+                                .colorScheme
+                                .inverseSurface,
                             value: SingingCharacter.project,
                             groupValue: _character,
                             onChanged: (SingingCharacter? value) {
@@ -147,10 +179,13 @@ class _CreateClockState extends State<CreateClock> {
                         ListTile(
                           title: Text(tr("clock.create.attr_office")),
                           leading: Radio<SingingCharacter>(
-                            fillColor: MaterialStateColor.resolveWith((states) =>
-                            Theme.of(context).colorScheme.inverseSurface),
-                            activeColor:
-                            Theme.of(context).colorScheme.inverseSurface,
+                            fillColor: MaterialStateColor.resolveWith(
+                                    (states) => Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface),
+                            activeColor: Theme.of(context)
+                                .colorScheme
+                                .inverseSurface,
                             value: SingingCharacter.office,
                             groupValue: _character,
                             onChanged: (SingingCharacter? value) {
@@ -168,10 +203,13 @@ class _CreateClockState extends State<CreateClock> {
                         ListTile(
                           title: Text(tr("clock.create.attr_day_off")),
                           leading: Radio<SingingCharacter>(
-                            fillColor: MaterialStateColor.resolveWith((states) =>
-                            Theme.of(context).colorScheme.inverseSurface),
-                            activeColor:
-                            Theme.of(context).colorScheme.inverseSurface,
+                            fillColor: MaterialStateColor.resolveWith(
+                                    (states) => Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface),
+                            activeColor: Theme.of(context)
+                                .colorScheme
+                                .inverseSurface,
                             value: SingingCharacter.day_off,
                             groupValue: _character,
                             onChanged: (SingingCharacter? value) {
@@ -179,6 +217,7 @@ class _CreateClockState extends State<CreateClock> {
                                 typeBoxVisible = 0.0;
                                 _character = value;
                                 type_init_value = true;
+                                attr_id = 8;
                               });
                             },
                           ),
@@ -187,7 +226,6 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //Internal Order
                 Column(
                   children: [
                     inputTitle(tr("clock.create.internal_order"), false),
@@ -198,11 +236,16 @@ class _CreateClockState extends State<CreateClock> {
                           contentPadding:
                           const EdgeInsets.symmetric(horizontal: 15),
                           filled: true,
-                          fillColor: Theme.of(context).colorScheme.surface,
+                          fillColor:
+                          Theme.of(context).colorScheme.surface,
                           border: const OutlineInputBorder(),
-                          labelText: tr("clock.create.internal_order_labelText"),
+                          labelText:
+                          tr("clock.create.internal_order_labelText"),
                           labelStyle: TextStyle(
-                            color: Theme.of(context).textTheme.bodySmall!.color,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .color,
                           ),
                         ),
                       ),
@@ -211,10 +254,10 @@ class _CreateClockState extends State<CreateClock> {
                 ),
                 //主、子類別下拉選單
                 AnimatedOpacity(
-                  opacity: typeBoxVisible,
+                  opacity: type == 'no_case' ? typeBoxVisible : caseTypeBoxVisible,
                   duration: const Duration(seconds: 1),
                   child: Visibility(
-                    visible: typeBoxSet,
+                    visible: type == 'no_case' ? typeBoxSet : caseTypeBoxSet,
                     child: Column(
                       children: <Widget>[
                         //主類別
@@ -228,6 +271,8 @@ class _CreateClockState extends State<CreateClock> {
                                 attr_id: attr_id,
                                 callback: callback,
                                 type_init_value: type_init_value,
+                                has_case: type,
+                                parent_id: parent_id,
                               ),
                             ),
                           ],
@@ -244,6 +289,7 @@ class _CreateClockState extends State<CreateClock> {
                                 parent_id: parent_id,
                                 childCallback: childCallback,
                                 reset_child: reset_child,
+                                child_id: child_id
                               ),
                             ),
                           ],
@@ -264,16 +310,19 @@ class _CreateClockState extends State<CreateClock> {
                   children: [
                     inputTitle(tr("clock.create.depart_time"), false),
                     TextFormField(
-                  //todo:優化date欄位input format
+                      //todo:優化date欄位input format
                       controller: _depart,
                       // inputFormatters: [],
                       decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 15),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: const OutlineInputBorder(),
                         hintText: time_picker_placeholder,
-                        hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+                        hintStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodySmall!.color),
                         labelStyle: TextStyle(
                           color: Theme.of(context).textTheme.bodySmall!.color,
                         ),
@@ -289,12 +338,15 @@ class _CreateClockState extends State<CreateClock> {
                     TextFormField(
                       controller: _start,
                       decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 15),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: const OutlineInputBorder(),
                         hintText: time_picker_placeholder,
-                        hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+                        hintStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodySmall!.color),
                         suffixIcon: datePicker(_start),
                         errorText: errorText['startTime'],
                       ),
@@ -308,12 +360,15 @@ class _CreateClockState extends State<CreateClock> {
                     TextFormField(
                       controller: _end,
                       decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 15),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: const OutlineInputBorder(),
                         hintText: time_picker_placeholder,
-                        hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+                        hintStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodySmall!.color),
                         suffixIcon: datePicker(_end),
                         errorText: errorText['endTime'],
                       ),
@@ -334,12 +389,17 @@ class _CreateClockState extends State<CreateClock> {
                               enabled: false,
                               decoration: InputDecoration(
                                 contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 15),
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 filled: true,
-                                fillColor: Theme.of(context).colorScheme.surface,
+                                fillColor:
+                                    Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
                                 hintText: tr("clock.create.hours"),
-                                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+                                hintStyle: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color),
                               ),
                             ),
                           ),
@@ -350,14 +410,18 @@ class _CreateClockState extends State<CreateClock> {
                                 ? Theme.of(context).colorScheme.surface
                                 : MetronicTheme.light_primary,
                             shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(5))),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
                             child: IconButton(
                               onPressed: () {
                                 countHours(token);
                               },
                               icon: Icon(Ionicons.calculator_outline),
                               color: themeMode == ThemeMode.dark
-                                  ? Theme.of(context).textTheme.titleLarge!.color
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .color
                                   : MetronicTheme.primary,
                             ),
                           ),
@@ -380,12 +444,17 @@ class _CreateClockState extends State<CreateClock> {
                               enabled: false,
                               decoration: InputDecoration(
                                 contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 15),
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 filled: true,
-                                fillColor: Theme.of(context).colorScheme.surface,
+                                fillColor:
+                                    Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
                                 hintText: tr("clock.create.hours"),
-                                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+                                hintStyle: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color),
                               ),
                             ),
                           ),
@@ -408,12 +477,17 @@ class _CreateClockState extends State<CreateClock> {
                               enabled: false,
                               decoration: InputDecoration(
                                 contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 15),
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 filled: true,
-                                fillColor: Theme.of(context).colorScheme.surface,
+                                fillColor:
+                                    Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
                                 hintText: tr("clock.create.hours"),
-                                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+                                hintStyle: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color),
                               ),
                             ),
                           ),
@@ -422,6 +496,7 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
+
                 ///工作內容
                 Column(
                   children: [
@@ -436,12 +511,17 @@ class _CreateClockState extends State<CreateClock> {
                               maxLines: 5,
                               decoration: InputDecoration(
                                 contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 15),
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 filled: true,
-                                fillColor: Theme.of(context).colorScheme.surface,
+                                fillColor:
+                                    Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
                                 hintText: tr("clock.create.hours"),
-                                hintStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+                                hintStyle: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color),
                                 errorText: errorText['clock_context'] ?? null,
                               ),
                             ),
@@ -465,8 +545,12 @@ class _CreateClockState extends State<CreateClock> {
                               aspectRatio: 16 / 9,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: FileImage(img),
+                                  color: Theme.of(context).colorScheme.surface,
+                                  image: img == null ? DecorationImage(
+                                    image: AssetImage("assets/img/default_image.png"),
+                                    fit: BoxFit.cover,
+                                  ) :DecorationImage(
+                                    image: FileImage(img!),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -475,7 +559,8 @@ class _CreateClockState extends State<CreateClock> {
                                   padding: const EdgeInsets.all(5.0),
                                   margin: const EdgeInsets.all(5.0),
                                   decoration: BoxDecoration(
-                                    border: Border.all(width: 8.0, color: Colors.white30),
+                                    border: Border.all(
+                                        width: 8.0, color: Colors.white30),
                                   ),
                                 ),
                               ),
@@ -488,7 +573,9 @@ class _CreateClockState extends State<CreateClock> {
                                 onPressed: () async {
                                   getImage(ImageSource.camera);
                                 },
-                                icon:Icon(Ionicons.camera_outline, color: Theme.of(context).colorScheme.primary),
+                                icon: Icon(Ionicons.camera_outline,
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
                                 label: Text(
                                   '相機',
                                   textAlign: TextAlign.center,
@@ -496,7 +583,9 @@ class _CreateClockState extends State<CreateClock> {
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium!
-                                      .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                                      .apply(
+                                          fontWeightDelta: 2,
+                                          fontSizeDelta: -2),
                                 ),
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.red,
@@ -506,7 +595,9 @@ class _CreateClockState extends State<CreateClock> {
                                 onPressed: () async {
                                   getImage(ImageSource.gallery);
                                 },
-                                icon:Icon(Ionicons.image_outline, color: Theme.of(context).colorScheme.primary),
+                                icon: Icon(Ionicons.image_outline,
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
                                 label: Text(
                                   '相簿',
                                   textAlign: TextAlign.center,
@@ -514,7 +605,9 @@ class _CreateClockState extends State<CreateClock> {
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium!
-                                      .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                                      .apply(
+                                          fontWeightDelta: 2,
+                                          fontSizeDelta: -2),
                                 ),
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.red,
@@ -543,7 +636,10 @@ class _CreateClockState extends State<CreateClock> {
                             },
                             icon: Icon(Ionicons.arrow_back,
                                 color: themeMode == ThemeMode.dark
-                                    ? Theme.of(context).textTheme.titleLarge!.color
+                                    ? Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .color
                                     : MetronicTheme.dark),
                             label: Text(
                               tr('button.back'),
@@ -552,9 +648,9 @@ class _CreateClockState extends State<CreateClock> {
                               style: TextStyle(
                                   color: themeMode == ThemeMode.dark
                                       ? Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .color
+                                          .textTheme
+                                          .titleLarge!
+                                          .color
                                       : MetronicTheme.dark,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -567,16 +663,19 @@ class _CreateClockState extends State<CreateClock> {
                                   : MetronicTheme.light_dark,
                               shape: const RoundedRectangleBorder(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(5))),
+                                      BorderRadius.all(Radius.circular(5))),
                             ),
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              subimtClock(1, token);
+                              submitClock(1, token);
                             },
                             icon: Icon(Ionicons.pencil,
                                 color: themeMode == ThemeMode.dark
-                                    ? Theme.of(context).textTheme.titleLarge!.color
+                                    ? Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .color
                                     : MetronicTheme.success),
                             label: Text(
                               tr('button.draft'),
@@ -585,9 +684,9 @@ class _CreateClockState extends State<CreateClock> {
                               style: TextStyle(
                                   color: themeMode == ThemeMode.dark
                                       ? Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .color
+                                          .textTheme
+                                          .titleLarge!
+                                          .color
                                       : MetronicTheme.success,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -600,16 +699,19 @@ class _CreateClockState extends State<CreateClock> {
                                   : MetronicTheme.light_success,
                               shape: const RoundedRectangleBorder(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(5))),
+                                      BorderRadius.all(Radius.circular(5))),
                             ),
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              subimtClock(2, token);
+                              submitClock(2, token);
                             },
                             icon: Icon(Ionicons.checkmark_circle,
                                 color: themeMode == ThemeMode.dark
-                                    ? Theme.of(context).textTheme.titleLarge!.color
+                                    ? Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .color
                                     : MetronicTheme.info),
                             label: Text(
                               tr('button.verify'),
@@ -618,9 +720,9 @@ class _CreateClockState extends State<CreateClock> {
                               style: TextStyle(
                                   color: themeMode == ThemeMode.dark
                                       ? Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .color
+                                          .textTheme
+                                          .titleLarge!
+                                          .color
                                       : MetronicTheme.info,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -633,7 +735,7 @@ class _CreateClockState extends State<CreateClock> {
                                   : MetronicTheme.light_info,
                               shape: const RoundedRectangleBorder(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(5))),
+                                      BorderRadius.all(Radius.circular(5))),
                             ),
                           ),
                         ],
@@ -666,21 +768,21 @@ class _CreateClockState extends State<CreateClock> {
     return Row(
       children: [
         Padding(
-            padding: EdgeInsets.only(top: 10),
-            child: Row(
-              children: [
-                Text(
-                  string,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
+          padding: EdgeInsets.only(top: 10),
+          child: Row(
+            children: [
+              Text(
+                string,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
-                require_span,
-              ],
-            ),
+              ),
+              require_span,
+            ],
+          ),
         ),
       ],
     );
@@ -695,7 +797,9 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   childCallback(id) {
-    child_id = id;
+    setState(() {
+      child_id = id;
+    });
     reset_child = false;
   }
 
@@ -709,7 +813,7 @@ class _CreateClockState extends State<CreateClock> {
       });
       dio.options.headers['Authorization'] = 'Bearer ${token}';
       api.Response res = await dio.post(
-        '${InitSettings.apiUrl}:443/api/countHoursAPI', // TODO: URL 放至 env 相關設定
+        'http://192.168.12.68:443/api/countHoursAPI', // TODO: URL 放至 env 相關設定
         data: {
           'departTime': _depart.text,
           'startTime': _start.text,
@@ -719,10 +823,8 @@ class _CreateClockState extends State<CreateClock> {
       if (res.statusCode == 200 && res.data != null) {
         _departHour.text =
             res.data['data']['trafficHours']; // + tr('clock.create.h')
-        _totalHours.text =
-            res.data['data']['totalHours'];
-        _worksHours.text =
-            res.data['data']['worksHours'];
+        _totalHours.text = res.data['data']['totalHours'];
+        _worksHours.text = res.data['data']['worksHours'];
       }
     } on api.DioError catch (e) {
       _departHour.text = '';
@@ -754,7 +856,7 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   //登錄工時
-  subimtClock(draft, token) async {
+  submitClock(draft, token) async {
     bool check = true;
     setState(() {
       errorText.forEach((k, v) {
@@ -788,35 +890,36 @@ class _CreateClockState extends State<CreateClock> {
           parent_id = 9;
         }
 
-        // var file = await ImageController().imgData;
         dio.options.headers['Authorization'] = 'Bearer ${token}';
         api.FormData formData = api.FormData.fromMap({
-          "files[]": await api.MultipartFile.fromFile(
-            img.path,
-            filename: img.path.split("image_picker").last,
+          "files[]": img == null ? null : await api.MultipartFile.fromFile(
+            img!.path,
+            filename: img!.path.split("image_picker").last,
           ),
-            'context': _clock_context.text,
-            'type': child_id,
-            'clock_type': parent_id,
-            'departTime': _depart.text,
-            'startTime': _start.text, //_start.text
-            'endTime': _end.text, //_end.text
-            'total_hours': _totalHours.text,
-            'clock_attribute': attr_id,
-            'draft': draft,
-            // 'context': '123132',
-            // 'type': 7,
-            // 'clock_type': 8,
-            // 'departTime': DateFormat('yyyy-MM-dd 00:00').format(DateTime.now()),
-            // 'startTime': DateFormat('yyyy-MM-dd 00:00').format(DateTime.now()), //_start.text
-            // 'endTime': DateFormat('yyyy-MM-dd 00:30').format(DateTime.now()), //_end.text
-            // 'total_hours': 1,
-            // 'clock_attribute': 1,
-            // 'draft': draft,
+          'context': _clock_context.text,
+          'type': child_id,
+          'clock_type': parent_id,
+          'departTime': _depart.text,
+          'startTime': _start.text,
+          'endTime': _end.text,
+          'total_hours': _totalHours.text,
+          'clock_attribute': attr_id,
+          'draft': draft,
+          'case_number': case_number ?? 'no_case',
+          'sale_type': sale_type,
+          // 'context': '123132',
+          // 'type': 7,
+          // 'clock_type': 8,
+          // 'departTime': DateFormat('yyyy-MM-dd 00:00').format(DateTime.now()),
+          // 'startTime': DateFormat('yyyy-MM-dd 00:00').format(DateTime.now()), //_start.text
+          // 'endTime': DateFormat('yyyy-MM-dd 00:30').format(DateTime.now()), //_end.text
+          // 'total_hours': 1,
+          // 'clock_attribute': 1,
+          // 'draft': draft,
         });
-        api.Response res = await dio.post(
-          '${InitSettings.apiUrl}:443/api/storeClockAPI',data: formData
-        );
+
+        api.Response res = await dio.post('http://192.168.12.68:443/api/clock',
+            data: formData);
 
         if (res.data != null) {
           Alert(
@@ -901,13 +1004,13 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   ///寫入圖片
-  Future<void> getImage(ImageSource source) async{
+  Future<void> getImage(ImageSource source) async {
     // Step 1: 彈出圖片選擇
     final XFile? image = await ImagePicker().pickImage(source: source);
-    
+
     // Step 2: 判斷是否有選擇到圖片
     if (image == null) return;
-    
+
     // Step 3: 取得檔案目錄.
     final dir = await getTemporaryDirectory();
     // Step 4: 複製檔案到儲存目錄;
@@ -926,17 +1029,17 @@ class _CreateClockState extends State<CreateClock> {
         sourcePath: pickedFilePath,
         aspectRatioPresets: Platform.isAndroid
             ? [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.original,
-          //CropAspectRatioPreset.ratio4x3,
-          //CropAspectRatioPreset.ratio16x9
-        ]
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.original,
+                //CropAspectRatioPreset.ratio4x3,
+                //CropAspectRatioPreset.ratio16x9
+              ]
             : [
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.square,
-          //CropAspectRatioPreset.ratio4x3,
-          //CropAspectRatioPreset.ratio16x9
-        ],
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                //CropAspectRatioPreset.ratio4x3,
+                //CropAspectRatioPreset.ratio16x9
+              ],
         androidUiSettings: AndroidUiSettings(
             toolbarTitle: 'Cropper',
             toolbarColor: Colors.blueAccent,
@@ -953,4 +1056,62 @@ class _CreateClockState extends State<CreateClock> {
       return null;
     }
   }
+
+  caseBox(userCase) {
+    List<DropdownMenuItem> dynamicMenus = [];
+    if (userCase.isNotEmpty) {
+      userCase.forEach((k, v) {
+        dynamicMenus.add(
+          DropdownMenuItem(
+              key: ValueKey(k), value: '$k', child: Text(v['name'])),
+        );
+      });
+    }
+    return Column(
+      children: [
+        inputTitle(tr("clock.create.case_no"), true),
+        DropdownButtonFormField(
+          isExpanded: true,
+          value: case_number,
+          dropdownColor: Theme.of(context).colorScheme.surface,
+          icon: Icon(
+            Ionicons.caret_down_outline,
+            color: Theme.of(context).textTheme.bodySmall!.color,
+          ),
+          hint: Text(
+            tr("clock.create.case_no_hint"),
+            style:
+                TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
+          ),
+          items: dynamicMenus,
+          onChanged: (value) {
+            checkCaseType(value);
+            case_number = value;
+          },
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  checkCaseType(case_no) {
+    Map info = userCase[case_no]['info'];
+    initTypeSelection(1).then((val) {
+      setState(() {
+        attr_id = info['sale_type'] == 'pre' ? 1 : 5;
+        sale_type = info['sale_type'];
+        type_init_value = false;
+        reset_child = true;
+        caseTypeBoxSet = true;
+        caseTypeBoxVisible = 1.0;
+        case_number = case_no;
+      });
+    });
+  }
 }
+

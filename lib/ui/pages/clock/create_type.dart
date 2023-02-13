@@ -81,7 +81,8 @@ class ClockCreateType {
                                         onTap: () {
                                           Navigator.pushNamed(
                                               context, '/create_clock',
-                                              arguments: {'type': 'no_case'});
+                                              arguments: {'type': 'no_case'}
+                                          );
                                         },
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
@@ -127,7 +128,9 @@ class ClockCreateType {
                                       child: ListTile(
                                         onTap: () {
                                           Navigator.pushNamed(
-                                              context, '/hive_demo');
+                                              context, '/create_clock',
+                                              arguments: {'type': 'has_case'}
+                                          );
                                         },
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
@@ -136,20 +139,23 @@ class ClockCreateType {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
                                           children: <Widget>[
-                                            Icon(Ionicons.server_outline,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary),
                                             Text(
-                                              'Hive Demo',
+                                              tr("clock.create_type.case_title"),
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium!
-                                                  .apply(
-                                                      fontWeightDelta: 2,
-                                                      fontSizeDelta: -2),
+                                              style: TextStyle(
+                                                color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.primary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            Text(
+                                              tr("clock.create_type.case_desc"),
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
                                             ),
                                           ],
                                         ),
