@@ -108,6 +108,7 @@ class _CreateClockState extends State<CreateClock> {
       appBar: MainAppBar(
         title: tr("clock.appbar.create"),
         appBar: AppBar(),
+        isPop: false,
       ),
       body: Material(
         color: Theme.of(context).colorScheme.background,

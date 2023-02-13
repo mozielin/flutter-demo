@@ -16,6 +16,7 @@ class PhotoDetailBase64 extends StatelessWidget {
       appBar: MainAppBar(
         title: '${g?.photo_file_base64_title}',
         appBar: AppBar(),
+        isPop: true,
       ),
       body: PhotoView(
         backgroundDecoration: BoxDecoration(

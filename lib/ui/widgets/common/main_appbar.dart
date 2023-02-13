@@ -1,14 +1,15 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_typing_uninitialized_variables, non_constant_identifier_names
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const MainAppBar({Key? key, required this.title, required this.appBar})
+  const MainAppBar({Key? key, required this.title, required this.appBar, required this.isPop})
       : super(key: key);
   final AppBar appBar;
   final title;
+  final bool isPop;
 
   @override
   Size get preferredSize => Size.fromHeight(appBar.preferredSize.height);
@@ -24,7 +25,11 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         tooltip: tr("appbar.previous_page"),
         onPressed: () {
-          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+          if (isPop) {
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+          }
         },
       ),
       title: Text(

@@ -76,7 +76,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
         iOSId: 'com.google.Vespa',
         androidId: 'com.disney.disneyplus',
         androidPlayStoreCountry: "es_ES" //support country code
-    );
+        );
 
     // You can let the plugin handle fetching the status and showing a dialog,
     // or you can fetch the status and display your own dialog, or no dialog.
@@ -102,9 +102,9 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           BlocProvider.of<UserCubit>(context).refreshToken(token);
           developer.log("Token refresh: $token");
         } else {
-          if (res['response_code'] == 419){
+          if (res['response_code'] == 419) {
             _logoutUser();
-          }else{
+          } else {
             BlocProvider.of<UserCubit>(context).changeAPIStatus(false);
             developer.log('Failed to fetch api', error: res['message']);
 
@@ -125,7 +125,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
     }
   }
 
-  _logoutUser(){
+  _logoutUser() {
     Alert(
       context: context,
       style: AlertStyles().dangerStyle(context),
@@ -142,60 +142,84 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AnimatedAlign(
-            duration: Duration(milliseconds: 300),
-            alignment: Alignment.center,
-            child: TweenAnimationBuilder<double>(
-              duration: Duration(milliseconds: 500),
-              tween: Tween(begin: 0, end: loadingBallSize),
-              onEnd: () {
-                if (!stopScaleAnimtion) {
-                  setState(() {
-                    if (loadingBallSize == 1) {
-                      loadingBallSize = 1.5;
-                    } else {
-                      loadingBallSize = 1;
-                    }
-                  });
-                } else {
-                  if(_apiEnable){
-                    developer.log('ApiEnable...');
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-                  }else{
-                    developer.log('ApiDisable...');
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedAlign(
+          duration: Duration(milliseconds: 300),
+          alignment: Alignment.center,
+          child: TweenAnimationBuilder<double>(
+            duration: Duration(milliseconds: 500),
+            tween: Tween(begin: 0, end: loadingBallSize),
+            onEnd: () {
+              if (!stopScaleAnimtion) {
+                setState(() {
+                  if (loadingBallSize == 1) {
+                    loadingBallSize = 1.5;
+                  } else {
+                    loadingBallSize = 1;
                   }
+                });
+              } else {
+                if (_apiEnable) {
+                  developer.log('ApiEnable...');
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/home', (route) => false);
+                } else {
+                  developer.log('ApiDisable...');
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/home', (route) => false);
                 }
-              },
-              builder: (_, value, __) => Transform.scale(
-                scale: value,
-                child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: !stopScaleAnimtion
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                      shape: BoxShape.circle,
-                    ),
-                    child: null),
-              ),
+              }
+            },
+            builder: (_, value, __) => Transform.scale(
+              scale: value,
+              child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: !stopScaleAnimtion
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                    shape: BoxShape.circle,
+                  ),
+                  child: null),
             ),
           ),
-          SizedBox(height: 16),
-          Text(
-            'Connecting API Server...',
+        ),
+        SizedBox(height: 16),
+        Text(
+          'Connecting API Server...',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 16),
+        Text(
+            BlocProvider.of<UserCubit>(context).state.networkEnable
+                ? 'Enabled'
+                : 'Disabled',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 16),
-          Text(BlocProvider.of<UserCubit>(context).state.networkEnable ? 'Enabled' : 'Disabled', style: TextStyle(color: BlocProvider.of<UserCubit>(context).state.networkEnable ? MetronicTheme.success : MetronicTheme.danger, fontSize: 16, fontWeight: FontWeight.bold)),
-        ],
-      ));
+                color: BlocProvider.of<UserCubit>(context).state.networkEnable
+                    ? MetronicTheme.success
+                    : MetronicTheme.danger,
+                fontSize: 16,
+                fontWeight: FontWeight.bold)),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              ///最後判斷是否結束動畫進入首頁
+              stopScaleAnimtion = true;
+            });
+          },
+          child: Text('Skip',
+              style: TextStyle(
+                  color: MetronicTheme.success,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold)),
+        ),
+      ],
+    ));
   }
 }
