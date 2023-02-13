@@ -198,7 +198,7 @@ class ClockInfo {
 
   /// insert 工時資料
   InsertClock(Map data) async {
-    /// TODO:若同步 toBeSyncClock hive 資料至 Web 時，用 id find clock data，若有 find 到則 updata，若無 find 到則 create
+    /// TODO-Ryan:若同步 toBeSyncClock hive 資料至 Web 時，用 id find clock data，若有 find 到則 updata，若無 find 到則 create
     try {
       /// 使用 uuid 作為 hive 中的 key
       if (data['id'] == '') data['id'] = const Uuid().v1();

@@ -450,7 +450,6 @@ class _ClockDemoState extends State<ClockDemo> {
   }
 
   getClocks(bool clear) async {
-    print(clear);
     List clockList = [];
     int skipCount = 0;
     int count = 0;
@@ -471,7 +470,6 @@ class _ClockDemoState extends State<ClockDemo> {
       if (!_canLoad) return;
 
       if (!is_bottom) {
-        print('loaddddd');
         List hiveClocks = await ClockInfo().GetClock();
 
         /// 資料篩選
@@ -488,6 +486,8 @@ class _ClockDemoState extends State<ClockDemo> {
           return filterStatus && filterFuzzySearch;
         }).toList();
 
+        clocks.sort((b, a) => a.depart_time.compareTo(b.depart_time));
+
         for (var data in clocks) {
           if (skipCount == skip) {
             if (count == take) {
@@ -503,7 +503,6 @@ class _ClockDemoState extends State<ClockDemo> {
 
         setState(() {
           if (clockList.length < take) is_bottom = true;
-          print('setttttt');
           items.addAll(clockList);
           skip += take;
           _load = true;
@@ -511,7 +510,6 @@ class _ClockDemoState extends State<ClockDemo> {
         });
       }
     } catch (e) {
-      print('errorrrrrr');
       setState(() {
         _load = false;
         _canLoad = true;
