@@ -18,7 +18,7 @@ class SyncService{
     try{
       dio.options.headers['Authorization'] = 'Bearer $token';
       Response res = await dio.post(
-        '${InitSettings.apiUrl}:443/api/getClockTyffpeAPI',
+        '${InitSettings.apiUrl}:443/api/getClockTypeAPI',
         data: {},
       );
       Map<String, dynamic> data = res.data;
