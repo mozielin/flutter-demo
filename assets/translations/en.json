@@ -138,6 +138,11 @@
       "count_error": "Please click to calculate working hours",
       "case_no": "Case Number",
       "case_no_hint": "Select case number"
+    },
+    "sync": {
+      "title": "Sync Error",
+      "type": "Sync Clock type error",
+      "case": "Sync user case error"
     }
   },
 

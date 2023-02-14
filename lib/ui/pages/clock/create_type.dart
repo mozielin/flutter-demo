@@ -8,7 +8,6 @@ import '../../../cubit/theme_cubit.dart';
 
 class ClockCreateType {
   typeBox(context) {
-    final themeMode = BlocProvider.of<ThemeCubit>(context).state.themeMode;
     return
         showDialog(
             context: context,
@@ -69,7 +68,7 @@ class ClockCreateType {
                                     Card(
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -96,12 +95,12 @@ class ClockCreateType {
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.success,
+                                                color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.success,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 20,
                                               ),
-                                            ),
-                                            Text(
+                                        ),
+                                        Text(
                                               tr("clock.create_type.no_case_desc"),
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
@@ -117,7 +116,7 @@ class ClockCreateType {
                                       // elevation: 2,
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -144,7 +143,7 @@ class ClockCreateType {
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.primary,
+                                                color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.primary,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 20,
                                               ),
@@ -164,7 +163,7 @@ class ClockCreateType {
                                     Card(
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -207,7 +206,7 @@ class ClockCreateType {
                                     Card(
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -259,12 +258,12 @@ class ClockCreateType {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      backgroundColor: themeMode == ThemeMode.dark
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).colorScheme.primary
                           : MetronicTheme.light_dark,
                       child: Icon(
                         Ionicons.close_outline,
-                        color: themeMode == ThemeMode.dark
+                        color: Theme.of(context).brightness == Brightness.dark
                             ? Theme.of(context).textTheme.titleLarge!.color
                             : MetronicTheme.dark,
                       ),

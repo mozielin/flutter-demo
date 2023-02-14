@@ -8,7 +8,6 @@ import 'package:hws_app/ui/pages/auth/login.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'cubit/case_cubit.dart';
 import 'cubit/clock_cubit.dart';
 import 'cubit/user_cubit.dart';
 import 'models/user.dart';
@@ -84,9 +83,6 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<ClockCubit>(
           create: (BuildContext context) => ClockCubit(),
-        ),
-        BlocProvider<CaseCubit>(
-          create: (BuildContext context) => CaseCubit(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeModeState>(

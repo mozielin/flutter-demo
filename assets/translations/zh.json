@@ -143,6 +143,11 @@
       "count_error": "請先計算工時！",
       "case_no": "Case編號",
       "case_no_hint": "請選擇Case編號"
+    },
+    "sync": {
+      "title": "同步失敗",
+      "type": "同步工時類別失敗",
+      "case": "同步Case資料失敗"
     }
   },
 

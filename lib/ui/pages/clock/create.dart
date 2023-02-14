@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
-import 'package:hws_app/cubit/case_cubit.dart';
 import 'package:hws_app/ui/widgets/alert/alert_icons.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,6 +14,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import '../../../config/setting.dart';
 import '../../../config/theme.dart';
 import '../../../cubit/clock_cubit.dart';
 import '../../../cubit/theme_cubit.dart';
@@ -105,28 +105,19 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   Future initTypeSelection(has_case) async {
-    try {
       var res = BlocProvider.of<ClockCubit>(context).state.toMap();
       Map<String, dynamic> data = res['clockType'];
       return data;
-    } on api.DioError catch (e) {
-      errorAlert(tr('auth.connection_error'));
-    }
   }
 
   Future getUserCase() async {
-    try {
-      var res = BlocProvider.of<ClockCubit>(context).state.toMap();
-      Map<String, dynamic> data = res['userCase'];
-      return data;
-    } on api.DioError catch (e) {
-      errorAlert(tr('auth.connection_error'));
-    }
+    var res = BlocProvider.of<ClockCubit>(context).state.toMap();
+    Map<String, dynamic> data = res['userCase'];
+    return data;
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = BlocProvider.of<ThemeCubit>(context).state.themeMode;
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
     final token = BlocProvider.of<UserCubit>(context).state.token;
@@ -225,10 +216,6 @@ class _CreateClockState extends State<CreateClock> {
                         ),
                       ],
                     ),
-                  ],
-                ),
-                Column(
-                  children: [
                     inputTitle(tr("clock.create.internal_order"), false),
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
@@ -407,7 +394,7 @@ class _CreateClockState extends State<CreateClock> {
                         ),
                         ClipPath(
                           child: Card(
-                            color: themeMode == ThemeMode.dark
+                            color: Theme.of(context).brightness == Brightness.dark
                                 ? Theme.of(context).colorScheme.surface
                                 : MetronicTheme.light_primary,
                             shape: const RoundedRectangleBorder(
@@ -418,7 +405,7 @@ class _CreateClockState extends State<CreateClock> {
                                 countHours(token);
                               },
                               icon: Icon(Ionicons.calculator_outline),
-                              color: themeMode == ThemeMode.dark
+                              color: Theme.of(context).brightness == Brightness.dark
                                   ? Theme.of(context)
                                       .textTheme
                                       .titleLarge!
@@ -534,7 +521,7 @@ class _CreateClockState extends State<CreateClock> {
                 ),
                 Column(
                   children: [
-                    inputTitle(tr("clock.create.file"), true),
+                    inputTitle(tr("clock.create.file"), false),
                     Material(
                       color: Theme.of(context).colorScheme.background,
                       child: Column(
@@ -636,7 +623,7 @@ class _CreateClockState extends State<CreateClock> {
                               Navigator.of(context).pop();
                             },
                             icon: Icon(Ionicons.arrow_back,
-                                color: themeMode == ThemeMode.dark
+                                color: Theme.of(context).brightness == Brightness.dark
                                     ? Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -647,7 +634,7 @@ class _CreateClockState extends State<CreateClock> {
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                  color: themeMode == ThemeMode.dark
+                                  color: Theme.of(context).brightness == Brightness.dark
                                       ? Theme.of(context)
                                           .textTheme
                                           .titleLarge!
@@ -659,7 +646,7 @@ class _CreateClockState extends State<CreateClock> {
                               padding: EdgeInsets.only(
                                   left: 10, right: 15, top: 10, bottom: 10),
                               foregroundColor: Colors.red,
-                              backgroundColor: themeMode == ThemeMode.dark
+                              backgroundColor: Theme.of(context).brightness == Brightness.dark
                                   ? Theme.of(context).colorScheme.surface
                                   : MetronicTheme.light_dark,
                               shape: const RoundedRectangleBorder(
@@ -672,7 +659,7 @@ class _CreateClockState extends State<CreateClock> {
                               submitClock(1, token);
                             },
                             icon: Icon(Ionicons.pencil,
-                                color: themeMode == ThemeMode.dark
+                                color: Theme.of(context).brightness == Brightness.dark
                                     ? Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -683,7 +670,7 @@ class _CreateClockState extends State<CreateClock> {
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                  color: themeMode == ThemeMode.dark
+                                  color: Theme.of(context).brightness == Brightness.dark
                                       ? Theme.of(context)
                                           .textTheme
                                           .titleLarge!
@@ -695,7 +682,7 @@ class _CreateClockState extends State<CreateClock> {
                               padding: EdgeInsets.only(
                                   left: 10, right: 15, top: 10, bottom: 10),
                               foregroundColor: Colors.red,
-                              backgroundColor: themeMode == ThemeMode.dark
+                              backgroundColor: Theme.of(context).brightness == Brightness.dark
                                   ? Theme.of(context).colorScheme.surface
                                   : MetronicTheme.light_success,
                               shape: const RoundedRectangleBorder(
@@ -708,7 +695,7 @@ class _CreateClockState extends State<CreateClock> {
                               submitClock(2, token);
                             },
                             icon: Icon(Ionicons.checkmark_circle,
-                                color: themeMode == ThemeMode.dark
+                                color: Theme.of(context).brightness == Brightness.dark
                                     ? Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -719,7 +706,7 @@ class _CreateClockState extends State<CreateClock> {
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                  color: themeMode == ThemeMode.dark
+                                  color: Theme.of(context).brightness == Brightness.dark
                                       ? Theme.of(context)
                                           .textTheme
                                           .titleLarge!
@@ -731,7 +718,7 @@ class _CreateClockState extends State<CreateClock> {
                               padding: EdgeInsets.only(
                                   left: 10, right: 15, top: 10, bottom: 10),
                               foregroundColor: Colors.red,
-                              backgroundColor: themeMode == ThemeMode.dark
+                              backgroundColor: Theme.of(context).brightness == Brightness.dark
                                   ? Theme.of(context).colorScheme.surface
                                   : MetronicTheme.light_info,
                               shape: const RoundedRectangleBorder(
@@ -814,7 +801,7 @@ class _CreateClockState extends State<CreateClock> {
       });
       dio.options.headers['Authorization'] = 'Bearer ${token}';
       api.Response res = await dio.post(
-        'http://192.168.12.68:443/api/countHoursAPI', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/countHoursAPI', // TODO: URL 放至 env 相關設定
         data: {
           'departTime': _depart.text,
           'startTime': _start.text,
@@ -919,7 +906,7 @@ class _CreateClockState extends State<CreateClock> {
           // 'draft': draft,
         });
 
-        api.Response res = await dio.post('http://192.168.12.68:443/api/clock',
+        api.Response res = await dio.post('${InitSettings.apiUrl}:443/api/clock',
             data: formData);
 
         if (res.data != null) {
