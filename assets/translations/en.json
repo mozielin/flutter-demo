@@ -110,7 +110,9 @@
     },
     "create_type": {
       "no_case_title": "No Case",
-      "no_case_desc": "Project Research/Office/Day Off"
+      "no_case_desc": "Project Research/Office/Day Off",
+      "case_title": "Has Case",
+      "case_desc": "Select WBS Number"
     },
     "create": {
       "attr": "Clock Attributes",
@@ -133,7 +135,14 @@
       "context_labelText": "Please type in work log",
       "h": "H",
       "file": "File",
-      "count_error": "Please click to calculate working hours"
+      "count_error": "Please click to calculate working hours",
+      "case_no": "Case Number",
+      "case_no_hint": "Select case number"
+    },
+    "sync": {
+      "title": "Sync Error",
+      "type": "Sync Clock type error",
+      "case": "Sync user case error"
     }
   },
 
@@ -162,5 +171,14 @@
   },
   "validation": {
     "require": "This field is required"
+  },
+
+  "cutscene": {
+    "info_default_title": "System Preparing Resources",
+    "info_default_text": "Ready to check data resource",
+    "clock_type_title": "Getting Clock Types",
+    "clock_type_text": "Clock Types Analysing...",
+    "finish_title": "System Ready",
+    "finish_text": "Enjoy your working Day"
   }
 }

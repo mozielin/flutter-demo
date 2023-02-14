@@ -14,12 +14,14 @@ class ClockChildType extends StatefulWidget {
     required this.childCallback,
     required this.parent_id,
     required this.reset_child,
+    this.child_id,
   }) : super(key: key);
   final allType;
   final attr_id;
   final parent_id;
   final childCallback;
   final reset_child;
+  final child_id;
 
   @override
   State<ClockChildType> createState() => _ClockChildTypeState();
@@ -32,12 +34,13 @@ class _ClockChildTypeState extends State<ClockChildType> {
 
   List<DropdownMenuItem> getDynamicChildType(attr_id, parent_id) {
     List<DropdownMenuItem> dynamicMenus = [];
+    if (_statusKeyChild.currentState != null && widget.reset_child == true) {
+      _statusKeyChild.currentState!.reset();
+    }
+
     if (parent_id != null) {
       widget.allType['$attr_id']['child'].forEach((k, v) {
         if (k == parent_id && v['child'] != null) {
-          if (_statusKeyChild.currentState != null && widget.reset_child == true) {
-            _statusKeyChild.currentState!.reset();
-          }
           v['child'].forEach((kk, vv) {
             dynamicMenus
                 .add(DropdownMenuItem(value: '$kk', child: Text('$vv')));
@@ -50,7 +53,11 @@ class _ClockChildTypeState extends State<ClockChildType> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.child_id != null && widget.reset_child != true) {
+      selected = widget.child_id;
+    }
     return DropdownButtonFormField(
+      isExpanded: true,
       dropdownColor: Theme.of(context).colorScheme.surface,
       key: _statusKeyChild,
       icon: Icon(
@@ -61,7 +68,7 @@ class _ClockChildTypeState extends State<ClockChildType> {
         tr("search.hint.sub_type"),
         style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
       ),
-      value: null,
+      value: widget.reset_child == true ? null : selected,
       items: getDynamicChildType(widget.attr_id, widget.parent_id),
       onChanged: (value) {
         widget.childCallback(value);

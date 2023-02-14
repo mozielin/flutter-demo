@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,21 +29,71 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController passwordController;
   double _elementsOpacity = 1;
   bool loadingBallAppear = false;
+  bool loginRecently = false;
   double loadingBallSize = 1;
   late String accountError = '';
   late String passwordError = '';
   late bool accountInvalid = false;
   late bool passwordInvalid = false;
   late ThemeMode mode;
+  String release = "";
+
+  basicStatusCheck(NewVersionPlus newVersion) async {
+    final version = await newVersion.getVersionStatus();
+    if (version != null) {
+      release = version.releaseNotes ?? "";
+      //setState(() {});
+    }
+    newVersion.showAlertIfNecessary(
+      context: context,
+      launchModeVersion: LaunchModeVersion.external,
+    );
+  }
+
+  advancedStatusCheck(NewVersionPlus newVersion) async {
+    //TODO:要求更新客製訊息
+    final status = await newVersion.getVersionStatus();
+    if (status != null) {
+      debugPrint(status.releaseNotes);
+      debugPrint(status.appStoreLink);
+      debugPrint(status.localVersion);
+      debugPrint(status.storeVersion);
+      debugPrint(status.canUpdate.toString());
+      newVersion.showUpdateDialog(
+        context: context,
+        versionStatus: status,
+        dialogTitle: 'Custom Title',
+        dialogText: 'Custom Text',
+      );
+    }
+  }
 
   @override
   initState() {
+    // Instantiate NewVersion manager object (Using GCP Console app as example)
+    //TODO:更換APPID
+    final newVersion = NewVersionPlus(
+        iOSId: 'com.google.Vespa',
+        androidId: 'com.disney.disneyplus',
+        androidPlayStoreCountry: "es_ES" //support country code
+    );
+
+    // You can let the plugin handle fetching the status and showing a dialog,
+    // or you can fetch the status and display your own dialog, or no dialog.
+
+    const simpleBehavior = true;
+
+    // if (simpleBehavior) {
+    //   basicStatusCheck(newVersion);
+    // }
+    // else {
+    //   advancedStatusCheck(newVersion);
+    // }
+
     accountController = TextEditingController();
     passwordController = TextEditingController();
     //透過Provider取得UserCubit狀態
-    var user = BlocProvider
-        .of<UserCubit>(context)
-        .state;
+    var user = BlocProvider.of<UserCubit>(context).state;
     if (user.token != '') {
       setState(() {
         loadingBallAppear = true;
@@ -94,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
             body: SafeArea(
               bottom: false,
               child: loadingBallAppear
-                  ? Padding(padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30.0), child: CutsceneScreen())
+                  ? Padding(padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30.0), child: CutsceneScreen(loginRecently:loginRecently))
                   : Padding(
                 padding: EdgeInsets.symmetric(horizontal: 50.0),
                 child: Column(
@@ -175,8 +226,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     networkEnable: true,
                                   ),
                                 );
-                                Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                                print("Login get token:${Authenticated['user']['token']}");
 
+                                ///登入狀態(進入Cutscene不要再刷一次token)
+                                loginRecently = true;
+                                ///進入Cutscene
+                                setState(() {
+                                  loadingBallAppear = true;
+                                });
                               } else {
                                 ///錯誤訊息
                                 print(Authenticated['message']);

@@ -8,7 +8,6 @@ import '../../../cubit/theme_cubit.dart';
 
 class ClockCreateType {
   typeBox(context) {
-    final themeMode = BlocProvider.of<ThemeCubit>(context).state.themeMode;
     return
         showDialog(
             context: context,
@@ -69,7 +68,7 @@ class ClockCreateType {
                                     Card(
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -81,7 +80,8 @@ class ClockCreateType {
                                         onTap: () {
                                           Navigator.pushNamed(
                                               context, '/create_clock',
-                                              arguments: {'type': 'no_case'});
+                                              arguments: {'type': 'no_case'}
+                                          );
                                         },
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
@@ -95,12 +95,12 @@ class ClockCreateType {
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
-                                                color: themeMode == ThemeMode.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.success,
+                                                color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.success,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 20,
                                               ),
-                                            ),
-                                            Text(
+                                        ),
+                                        Text(
                                               tr("clock.create_type.no_case_desc"),
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
@@ -116,7 +116,7 @@ class ClockCreateType {
                                       // elevation: 2,
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -127,7 +127,9 @@ class ClockCreateType {
                                       child: ListTile(
                                         onTap: () {
                                           Navigator.pushNamed(
-                                              context, '/hive_demo');
+                                              context, '/create_clock',
+                                              arguments: {'type': 'has_case'}
+                                          );
                                         },
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
@@ -136,20 +138,23 @@ class ClockCreateType {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
                                           children: <Widget>[
-                                            Icon(Ionicons.server_outline,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary),
                                             Text(
-                                              'Hive Demo',
+                                              tr("clock.create_type.case_title"),
                                               textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium!
-                                                  .apply(
-                                                      fontWeightDelta: 2,
-                                                      fontSizeDelta: -2),
+                                              style: TextStyle(
+                                                color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.primary:MetronicTheme.primary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            Text(
+                                              tr("clock.create_type.case_desc"),
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -158,7 +163,7 @@ class ClockCreateType {
                                     Card(
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -201,7 +206,7 @@ class ClockCreateType {
                                     Card(
                                       shadowColor:
                                           Theme.of(context).colorScheme.shadow,
-                                      color: themeMode == ThemeMode.dark
+                                      color: Theme.of(context).brightness == Brightness.dark
                                           ? Theme.of(context)
                                               .colorScheme
                                               .background
@@ -253,12 +258,12 @@ class ClockCreateType {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      backgroundColor: themeMode == ThemeMode.dark
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).colorScheme.primary
                           : MetronicTheme.light_dark,
                       child: Icon(
                         Ionicons.close_outline,
-                        color: themeMode == ThemeMode.dark
+                        color: Theme.of(context).brightness == Brightness.dark
                             ? Theme.of(context).textTheme.titleLarge!.color
                             : MetronicTheme.dark,
                       ),
