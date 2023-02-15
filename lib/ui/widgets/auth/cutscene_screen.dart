@@ -66,6 +66,17 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
             }
           });
 
+          SyncService().initMonthlyDate(token).then((monthly){
+            _infoTitle = tr('cutscene.clock_type_title');
+            _infoText = tr('cutscene.clock_type_text');
+            if(monthly == '') {
+              _infoTitle = tr('clock.sync.title');
+              _infoText = tr('clock.sync.type');
+            } else {
+              BlocProvider.of<ClockCubit>(context).setMonthly(monthly);
+            }
+          });
+
           SyncService().initUserCase(token).then((resultUserCase){
             _infoTitle = tr('cutscene.clock_type_title');
             _infoText = tr('cutscene.clock_type_text');

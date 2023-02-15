@@ -229,7 +229,7 @@ class _ClockDemoState extends State<ClockDemo> {
         data.case_no != '' ? data.case_no : tr("clock.card.no_case_number");
     var status = data.status;
 
-    var departDatetime = DateTime.tryParse(data.depart_time)!;
+    var departDatetime = DateTime.tryParse(data.depart_time == '' ? data.start_time : data.depart_time)!;
     var startDatetime = DateTime.tryParse(data.start_time)!;
     var endDatetime = DateTime.tryParse(data.end_time)!;
     var traffic_hours = data.traffic_hours;

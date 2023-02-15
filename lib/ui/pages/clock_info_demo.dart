@@ -168,6 +168,8 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                       'bpm_number': '',
                       'images': '[]',
                       'sync_status': '1',
+                      'clock_type': '1',
+                      'sale_type': '1',
                     };
                     await ClockInfo().InsertClock(clockData);
                   },
@@ -280,6 +282,26 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                       color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'GetWarranty',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () async {
+                    /// TODO-Ryan: clock insert example
+                    await ClockInfo().CheckClock('66','2023-02-14 00:30:00', '2023-02-14 05:30:00', '2023-01-25');
+                  },
+                  icon: Icon(Ionicons.server_outline,
+                      color: Theme.of(context).colorScheme.primary),
+                  label: Text(
+                    'CheckClock',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context)

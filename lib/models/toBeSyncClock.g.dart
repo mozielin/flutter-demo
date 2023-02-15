@@ -49,13 +49,15 @@ class ToBeSyncClockAdapter extends TypeAdapter<ToBeSyncClock> {
       case_no: fields[29] == null ? '' : fields[29] as String,
       images: fields[30] == null ? '' : fields[30] as String,
       sync_status: fields[31] == null ? '' : fields[31] as String,
+      clock_type: fields[32] == null ? '' : fields[32] as String,
+      sale_type: fields[33] == null ? '' : fields[33] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, ToBeSyncClock obj) {
     writer
-      ..writeByte(32)
+      ..writeByte(34)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -119,7 +121,11 @@ class ToBeSyncClockAdapter extends TypeAdapter<ToBeSyncClock> {
       ..writeByte(30)
       ..write(obj.images)
       ..writeByte(31)
-      ..write(obj.sync_status);
+      ..write(obj.sync_status)
+      ..writeByte(32)
+      ..write(obj.clock_type)
+      ..writeByte(33)
+      ..write(obj.sale_type);
   }
 
   @override
