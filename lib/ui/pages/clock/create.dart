@@ -215,6 +215,7 @@ class _CreateClockState extends State<CreateClock> {
                                 _character = value;
                                 type_init_value = false;
                                 attr_id = 8;
+                                reset_child = true;
                               });
                             },
                           ),
