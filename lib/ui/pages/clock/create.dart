@@ -72,6 +72,7 @@ class _CreateClockState extends State<CreateClock> {
   Io.File? img;
   late String sale_type = '';
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
+  String img64 = '[]';
 
 
   @override
@@ -212,7 +213,7 @@ class _CreateClockState extends State<CreateClock> {
                               setState(() {
                                 typeBoxVisible = 0.0;
                                 _character = value;
-                                type_init_value = true;
+                                type_init_value = false;
                                 attr_id = 8;
                               });
                             },
@@ -890,8 +891,10 @@ class _CreateClockState extends State<CreateClock> {
           }
 
           ///圖片轉為base64在array裡轉成Json儲存
-          final bytes = Io.File(img!.path).readAsBytesSync();
-          String img64 = json.encode([base64Encode(bytes)]);
+          if(img != null){
+            final bytes = Io.File(img!.path).readAsBytesSync();
+            img64 = json.encode([base64Encode(bytes)]);
+          }
 
           Map clockData = {
             'id': '',

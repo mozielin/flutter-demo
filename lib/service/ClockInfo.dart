@@ -106,8 +106,8 @@ class ClockInfo {
       result = false;
     }
 
-    ///最小時數超過半小時
-    if (endTime.difference(startTime).inMinutes < 30){
+    ///最小時數超過半小時 & startTime不能早於departTime
+    if (endTime.difference(startTime).inMinutes < 30 || startTime.isBefore(departTime)){
       errorMessages.add(tr('clock.error.time'));
       result = false;
     }
@@ -116,7 +116,7 @@ class ClockInfo {
     if(departTime != '') startTime = departTime;
 
     ///檢查未來時間
-    if(startTime.isAfter(DateTime.now())) {
+    if(startTime.isAfter(DateTime.now()) || endTime.isAfter(DateTime.now())) {
       errorMessages.add(tr('clock.error.future_clock'));
       result = false;
     }
@@ -154,6 +154,7 @@ class ClockInfo {
       errorMessages.add(tr('clock.error.monthly'));
       result = false;
     }
+
     errorMessages.add(tr('clock.error.edit'));
     return {'success':result, 'message':errorMessages};
   }
