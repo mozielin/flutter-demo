@@ -915,6 +915,7 @@ class _CreateClockState extends State<CreateClock> {
 
   //登錄工時
   submitClock(draft, token) async {
+    var res = BlocProvider.of<ClockCubit>(context).state.toMap();
     bool check = true;
     setState(() {
       errorText.forEach((k, v) {
@@ -943,86 +944,109 @@ class _CreateClockState extends State<CreateClock> {
     });
 
     if (check) {
-        if (attr_id == 8) {
-          parent_id = 9;
-        }
+      ///字串轉DateTime格式
+      DateTime departTime = DateTime.parse(_depart.text == '' ? _start.text : _depart.text);
+      DateTime endTime = DateTime.parse(_end.text);
 
-        var files = img == null ? null : await api.MultipartFile.fromFile(
-          img!.path,
-          filename: img!.path.split("image_picker").last,
-        );
-
-        Map clockData = {
-          'id': '',
-          'type': child_id,
-          'clock_attribute': '$attr_id',
-          'clocking_no': '',
-          'source_no': '',
-          'enumber': '',
-          'bu_code': '',
-          'dept_code': '',
-          'project_id': '',
-          'context': _clock_context.text,
-          'function_code': '',
-          'direct_code': '',
-          'traffic_hours': double.parse(_departHour.text),
-          'worked_hours': double.parse(_worksHours.text),
-          'total_hours': double.parse(_totalHours.text),
-          'depart_time': _depart.text == '' ? _start.text : _depart.text,
-          'start_time': _start.text,
-          'end_time': _end.text,
-          'status': draft,
-          'created_at': '',
-          'updated_at': '',
-          'deleted_at': '',
-          'sales_enumber': '',
-          'sales_bu_code': '',
-          'sales_dept_code': '',
-          'sap_wbs': '',
-          'order_date': '',
-          'internal_order': '',
-          'bpm_number': '',
-          'case_no': case_number == 'no_case' ? '' : case_number,
-          'images': '$files',
-          'sync_status': '1',
-          'clock_type': parent_id,
-          'sale_type': sale_type
-        };
-
-        ClockInfo().InsertClock(clockData).then((res){
-          if (res) {
-            Alert(
-              context: context,
-              style: AlertStyles().successStyle(context),
-              image: SuccessIcon(),
-              title: tr('alerts.confirm_success'),
-              desc: tr('alerts.confirm_done_info'),
-              buttons: [
-                AlertStyles().getDoneButton(context, '/clock_list'),
-              ],
-            ).show();
-          }else{
-            errorAlert(tr('alerts.clock_store_error'));
+      ///TODO:修改工時將ID帶入做判斷
+      ClockInfo().CheckClock('id',departTime, endTime, res['monthly']).then((res) {
+        print('Check can Clocking?');
+        print(res);
+        if(res['success']){
+          if (attr_id == 8) {
+            parent_id = 9;
           }
-        });
 
-        ///TODO:API上傳報工紀錄error handle
-        // var message = e.response!.data['message'];
-        // var error = json.decode(message);
-        //
-        // if (error['error'] != null) {
-        //   errorAlert("${error['error']}");
-        // } else {
-        //   if (error['clock_type'] != null) {
-        //     errorAlert("請選擇主類別！");
-        //   } else {
-        //     setState(() {
-        //       error.forEach((k, v) {
-        //         errorText['${k}'] = tr('validation.require');
-        //       });
-        //     });
-        //   }
-        // }
+          var files = img == null ? null : api.MultipartFile.fromFile(
+            img!.path,
+            filename: img!.path.split("image_picker").last,
+          );
+
+          Map clockData = {
+            'id': '',
+            'type': child_id,
+            'clock_attribute': '$attr_id',
+            'clocking_no': '',
+            'source_no': '',
+            'enumber': '',
+            'bu_code': '',
+            'dept_code': '',
+            'project_id': '',
+            'context': _clock_context.text,
+            'function_code': '',
+            'direct_code': '',
+            'traffic_hours': double.parse(_departHour.text),
+            'worked_hours': double.parse(_worksHours.text),
+            'total_hours': double.parse(_totalHours.text),
+            'depart_time': _depart.text == '' ? _start.text : _depart.text,
+            'start_time': _start.text,
+            'end_time': _end.text,
+            'status': draft,
+            'created_at': '',
+            'updated_at': '',
+            'deleted_at': '',
+            'sales_enumber': '',
+            'sales_bu_code': '',
+            'sales_dept_code': '',
+            'sap_wbs': '',
+            'order_date': '',
+            'internal_order': '',
+            'bpm_number': '',
+            'case_no': case_number == 'no_case' ? '' : case_number,
+            'images': '$files',
+            'sync_status': '1',
+            'clock_type': parent_id,
+            'sale_type': sale_type
+          };
+
+          ClockInfo().InsertClock(clockData).then((res){
+            if (res) {
+              Alert(
+                context: context,
+                style: AlertStyles().successStyle(context),
+                image: SuccessIcon(),
+                title: tr('alerts.confirm_success'),
+                desc: tr('alerts.confirm_done_info'),
+                buttons: [
+                  AlertStyles().getDoneButton(context, '/clock_list'),
+                ],
+              ).show();
+            }else{
+              errorAlert(tr('alerts.clock_store_error'));
+            }
+          });
+        }else{
+          check = false;
+          Alert(
+            context: context,
+            style: AlertStyles().dangerStyle(context),
+            image: const ErrorIcon(),
+            title: tr('alerts.confirm_error'),
+            desc: "${res['message']}",
+            buttons: [
+              AlertStyles().getCancelButton(context),
+            ],
+          ).show();
+        }
+      });
+
+      ///TODO:API上傳報工紀錄error handle
+      // var message = e.response!.data['message'];
+      // var error = json.decode(message);
+      //
+      // if (error['error'] != null) {
+      //   errorAlert("${error['error']}");
+      // } else {
+      //   if (error['clock_type'] != null) {
+      //     errorAlert("請選擇主類別！");
+      //   } else {
+      //     setState(() {
+      //       error.forEach((k, v) {
+      //         errorText['${k}'] = tr('validation.require');
+      //       });
+      //     });
+      //   }
+      // }
 
     }
   }

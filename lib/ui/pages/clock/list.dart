@@ -587,7 +587,7 @@ class _ClockDemoState extends State<ClockDemo> {
         appBar: MainAppBar(
           title: tr("clock.appbar.list"),
           appBar: AppBar(),
-          isPop: true,
+          isPop: false,
         ),
         body: Material(
           color: Theme.of(context).colorScheme.background,
