@@ -91,24 +91,33 @@ class ClockInfo {
   }
 
   ///檢查工時資料正確
-  CheckClock(id, startTime, endTime, monthly) async {
+  CheckClock(id, departTime, startTime, endTime, monthly) async {
     bool result = true;
-
     List hiveClocks = await ClockInfo().GetClock();
     List errorMessages = [];
+
     /// print("輸入ID:$id");
     /// print("輸入開始:$startTime");
     /// print("輸入結束:$endTime");
 
-    ///檢查未來時間
-    if(startTime.isAfter(DateTime.now())) {
-      errorMessages.add(tr('clock.error.future_clock'));
+    ///檢查開始時間跟結束時間重複
+    if(startTime.isAtSameMomentAs(endTime)){
+      errorMessages.add(tr('clock.error.same'));
       result = false;
     }
 
     ///最小時數超過半小時
     if (endTime.difference(startTime).inMinutes < 30){
       errorMessages.add(tr('clock.error.time'));
+      result = false;
+    }
+
+    ///後續判斷如果有 departTime = startTime
+    if(departTime != '') startTime = departTime;
+
+    ///檢查未來時間
+    if(startTime.isAfter(DateTime.now())) {
+      errorMessages.add(tr('clock.error.future_clock'));
       result = false;
     }
 
@@ -145,7 +154,7 @@ class ClockInfo {
       errorMessages.add(tr('clock.error.monthly'));
       result = false;
     }
-
+    errorMessages.add(tr('clock.error.edit'));
     return {'success':result, 'message':errorMessages};
   }
 
@@ -294,7 +303,7 @@ class ClockInfo {
         internal_order: data['internal_order'] ?? '',
         bpm_number: data['bpm_number'] ?? '',
         case_no: data['case_no'] ?? '',
-        images: '[]',
+        images: data['images'] ?? '[]',
         sync_status: '1',
         clock_type: data['clock_type'] ?? '',
         sale_type: data['sale_type'] ?? '',

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as Io;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,7 +69,7 @@ class _CreateClockState extends State<CreateClock> {
   var user;
   late Map userCase = Map();
   var case_number = 'no_case'; //無Case
-  File? img;
+  Io.File? img;
   late String sale_type = '';
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
 
@@ -799,7 +799,7 @@ class _CreateClockState extends State<CreateClock> {
     reset_child = false;
   }
 
-  //計算工時
+  ///計算工時
   countHours(token) async {
     developer.log("Count and Check Local");
     var res = BlocProvider.of<ClockCubit>(context).state.toMap();
@@ -823,9 +823,7 @@ class _CreateClockState extends State<CreateClock> {
       DateTime endTime = DateTime.parse(_end.text);
 
       ///TODO:修改工時將ID帶入做判斷
-      ClockInfo().CheckClock('id',departTime, endTime, res['monthly']).then((res) {
-        print('Check can Clocking?');
-        print(res);
+      ClockInfo().CheckClock('id',departTime, startTime, endTime, res['monthly']).then((res) {
         if(res['success']){
           _departHour.text = "${startTime.difference(departTime).inMinutes / 60}";
           _worksHours.text = "${endTime.difference(startTime).inMinutes / 60}";
@@ -843,13 +841,148 @@ class _CreateClockState extends State<CreateClock> {
           ).show();
         }
       });
-
     }catch(e){
       developer.log("Required startTime & endTime");
     }
   }
 
-  //計算工時API
+  ///登錄工時
+  submitClock(draft, token) async {
+    var res = BlocProvider.of<ClockCubit>(context).state.toMap();
+    bool check = true;
+    setState(() {
+      errorText.forEach((k, v) {
+        errorText[k] = null;
+      });
+
+      if (_clock_context.text.isEmpty) {
+        errorText['clock_context'] = tr('validation.require');
+        check = false;
+      }
+
+      if (_start.text.isEmpty) {
+        errorText['startTime'] = tr('validation.require');
+        check = false;
+      }
+
+      if (_end.text.isEmpty) {
+        errorText['endTime'] = tr('validation.require');
+        check = false;
+      }
+
+      if (_totalHours.text.isEmpty) {
+        errorAlert(tr('clock.create.count_error'));
+        check = false;
+      }
+    });
+
+    if (check) {
+      ///字串轉DateTime格式
+      DateTime departTime = DateTime.parse(_depart.text == '' ? _start.text : _depart.text);
+      DateTime startTime = DateTime.parse(_start.text);
+      DateTime endTime = DateTime.parse(_end.text);
+
+      ///TODO:修改工時將ID帶入做判斷
+      ClockInfo().CheckClock('id',departTime,startTime, endTime, res['monthly']).then((res) {
+        if(res['success']){
+          if (attr_id == 8) {
+            parent_id = 9;
+          }
+
+          ///圖片轉為base64在array裡轉成Json儲存
+          final bytes = Io.File(img!.path).readAsBytesSync();
+          String img64 = json.encode([base64Encode(bytes)]);
+
+          Map clockData = {
+            'id': '',
+            'type': child_id,
+            'clock_attribute': '$attr_id',
+            'clocking_no': '',
+            'source_no': '',
+            'enumber': '',
+            'bu_code': '',
+            'dept_code': '',
+            'project_id': '',
+            'context': _clock_context.text,
+            'function_code': '',
+            'direct_code': '',
+            'traffic_hours': double.parse(_departHour.text),
+            'worked_hours': double.parse(_worksHours.text),
+            'total_hours': double.parse(_totalHours.text),
+            'depart_time': _depart.text == '' ? _start.text : _depart.text,
+            'start_time': _start.text,
+            'end_time': _end.text,
+            'status': draft,
+            'created_at': '',
+            'updated_at': '',
+            'deleted_at': '',
+            'sales_enumber': '',
+            'sales_bu_code': '',
+            'sales_dept_code': '',
+            'sap_wbs': '',
+            'order_date': '',
+            'internal_order': '',
+            'bpm_number': '',
+            'case_no': case_number == 'no_case' ? '' : case_number,
+            'images': img64,
+            'sync_status': '1',
+            'clock_type': parent_id,
+            'sale_type': sale_type
+          };
+
+          ClockInfo().InsertClock(clockData).then((res){
+            if (res) {
+              Alert(
+                context: context,
+                style: AlertStyles().successStyle(context),
+                image: SuccessIcon(),
+                title: tr('alerts.confirm_success'),
+                desc: tr('alerts.confirm_done_info'),
+                buttons: [
+                  AlertStyles().getDoneButton(context, '/clock_list'),
+                ],
+              ).show();
+            }else{
+              errorAlert(tr('alerts.clock_store_error'));
+            }
+          });
+        }else{
+          check = false;
+          Alert(
+            context: context,
+            style: AlertStyles().dangerStyle(context),
+            image: const ErrorIcon(),
+            title: tr('alerts.confirm_error'),
+            desc: "${res['message']}",
+            buttons: [
+              AlertStyles().getCancelButton(context),
+            ],
+          ).show();
+        }
+      });
+
+      ///TODO:API上傳報工紀錄error handle
+      // var message = e.response!.data['message'];
+      // var error = json.decode(message);
+      //
+      // if (error['error'] != null) {
+      //   errorAlert("${error['error']}");
+      // } else {
+      //   if (error['clock_type'] != null) {
+      //     errorAlert("請選擇主類別！");
+      //   } else {
+      //     setState(() {
+      //       error.forEach((k, v) {
+      //         errorText['${k}'] = tr('validation.require');
+      //       });
+      //     });
+      //   }
+      // }
+
+    }
+  }
+
+  ///計算工時API
   countHoursAPI(token) async {
     developer.log("Count and Check API");
     //todo 日期格式判斷
@@ -913,9 +1046,8 @@ class _CreateClockState extends State<CreateClock> {
     }
   }
 
-  //登錄工時
-  submitClock(draft, token) async {
-    var res = BlocProvider.of<ClockCubit>(context).state.toMap();
+  ///登錄工時API
+  submitClockAPI(draft, token) async {
     bool check = true;
     setState(() {
       errorText.forEach((k, v) {
@@ -944,114 +1076,75 @@ class _CreateClockState extends State<CreateClock> {
     });
 
     if (check) {
-      ///字串轉DateTime格式
-      DateTime departTime = DateTime.parse(_depart.text == '' ? _start.text : _depart.text);
-      DateTime endTime = DateTime.parse(_end.text);
+      try {
+        if (attr_id == 8) {
+          parent_id = 9;
+        }
 
-      ///TODO:修改工時將ID帶入做判斷
-      ClockInfo().CheckClock('id',departTime, endTime, res['monthly']).then((res) {
-        print('Check can Clocking?');
-        print(res);
-        if(res['success']){
-          if (attr_id == 8) {
-            parent_id = 9;
-          }
-
-          var files = img == null ? null : api.MultipartFile.fromFile(
+        // var file = await ImageController().imgData;
+        dio.options.headers['Authorization'] = 'Bearer ${token}';
+        api.FormData formData = api.FormData.fromMap({
+          "files[]": await api.MultipartFile.fromFile(
             img!.path,
-            filename: img!.path.split("image_picker").last,
-          );
+            filename: img?.path.split("image_picker").last,
+          ),
+          'context': _clock_context.text,
+          'type': child_id,
+          'clock_type': parent_id,
+          'departTime': _depart.text,
+          'startTime': _start.text, //_start.text
+          'endTime': _end.text, //_end.text
+          'total_hours': _totalHours.text,
+          'clock_attribute': attr_id,
+          'draft': draft,
+          // 'context': '123132',
+          // 'type': 7,
+          // 'clock_type': 8,
+          // 'departTime': DateFormat('yyyy-MM-dd 00:00').format(DateTime.now()),
+          // 'startTime': DateFormat('yyyy-MM-dd 00:00').format(DateTime.now()), //_start.text
+          // 'endTime': DateFormat('yyyy-MM-dd 00:30').format(DateTime.now()), //_end.text
+          // 'total_hours': 1,
+          // 'clock_attribute': 1,
+          // 'draft': draft,
+        });
+        api.Response res = await dio.post(
+            '${InitSettings.apiUrl}:443/api/storeClockAPI',data: formData
+        );
 
-          Map clockData = {
-            'id': '',
-            'type': child_id,
-            'clock_attribute': '$attr_id',
-            'clocking_no': '',
-            'source_no': '',
-            'enumber': '',
-            'bu_code': '',
-            'dept_code': '',
-            'project_id': '',
-            'context': _clock_context.text,
-            'function_code': '',
-            'direct_code': '',
-            'traffic_hours': double.parse(_departHour.text),
-            'worked_hours': double.parse(_worksHours.text),
-            'total_hours': double.parse(_totalHours.text),
-            'depart_time': _depart.text == '' ? _start.text : _depart.text,
-            'start_time': _start.text,
-            'end_time': _end.text,
-            'status': draft,
-            'created_at': '',
-            'updated_at': '',
-            'deleted_at': '',
-            'sales_enumber': '',
-            'sales_bu_code': '',
-            'sales_dept_code': '',
-            'sap_wbs': '',
-            'order_date': '',
-            'internal_order': '',
-            'bpm_number': '',
-            'case_no': case_number == 'no_case' ? '' : case_number,
-            'images': '$files',
-            'sync_status': '1',
-            'clock_type': parent_id,
-            'sale_type': sale_type
-          };
-
-          ClockInfo().InsertClock(clockData).then((res){
-            if (res) {
-              Alert(
-                context: context,
-                style: AlertStyles().successStyle(context),
-                image: SuccessIcon(),
-                title: tr('alerts.confirm_success'),
-                desc: tr('alerts.confirm_done_info'),
-                buttons: [
-                  AlertStyles().getDoneButton(context, '/clock_list'),
-                ],
-              ).show();
-            }else{
-              errorAlert(tr('alerts.clock_store_error'));
-            }
-          });
-        }else{
-          check = false;
+        if (res.data != null) {
           Alert(
             context: context,
-            style: AlertStyles().dangerStyle(context),
-            image: const ErrorIcon(),
-            title: tr('alerts.confirm_error'),
-            desc: "${res['message']}",
+            style: AlertStyles().successStyle(context),
+            image: SuccessIcon(),
+            title: tr('alerts.confirm_success'),
+            desc: tr('alerts.confirm_done_info'),
             buttons: [
-              AlertStyles().getCancelButton(context),
+              AlertStyles().getDoneButton(context, '/clock_list'),
             ],
           ).show();
         }
-      });
+      } on api.DioError catch (e) {
+        var message = e.response!.data['message'];
+        var error = json.decode(message);
 
-      ///TODO:API上傳報工紀錄error handle
-      // var message = e.response!.data['message'];
-      // var error = json.decode(message);
-      //
-      // if (error['error'] != null) {
-      //   errorAlert("${error['error']}");
-      // } else {
-      //   if (error['clock_type'] != null) {
-      //     errorAlert("請選擇主類別！");
-      //   } else {
-      //     setState(() {
-      //       error.forEach((k, v) {
-      //         errorText['${k}'] = tr('validation.require');
-      //       });
-      //     });
-      //   }
-      // }
-
+        if (error['error'] != null) {
+          errorAlert("${error['error']}");
+        } else {
+          if (error['clock_type'] != null) {
+            errorAlert("請選擇主類別！");
+          } else {
+            setState(() {
+              error.forEach((k, v) {
+                errorText['${k}'] = tr('validation.require');
+              });
+            });
+          }
+        }
+      }
     }
   }
 
-  //錯誤訊息alert
+  ///錯誤訊息alert
   errorAlert(msg) {
     return Alert(
       context: context,
@@ -1115,9 +1208,9 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   Future cropImage(String pickedFilePath) async {
-    File? croppedFile = await ImageCropper().cropImage(
+    Io.File? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFilePath,
-        aspectRatioPresets: Platform.isAndroid
+        aspectRatioPresets: Io.Platform.isAndroid
             ? [
                 CropAspectRatioPreset.square,
                 CropAspectRatioPreset.original,
@@ -1162,7 +1255,7 @@ class _CreateClockState extends State<CreateClock> {
         inputTitle(tr("clock.create.case_no"), true),
         DropdownButtonFormField(
           isExpanded: true,
-          value: case_number,
+          value: case_number == 'no_case' ? null : case_number,
           dropdownColor: Theme.of(context).colorScheme.surface,
           icon: Icon(
             Ionicons.caret_down_outline,

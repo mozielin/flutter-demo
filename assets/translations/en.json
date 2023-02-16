@@ -145,15 +145,16 @@
       "case": "Sync user case error"
     },
     "error" : {
-      "repeat"        : "{startTime} ~ {endTime} During this period of time, there are other working hours exist, please edit the working hours！",
-      "time"          : "Departure、Start、End time are wrong, please edit the working hours！",
-      "monthly"       : "The monthly closing time has passed, please edit the working hours！",
+      "repeat"        : "{startTime} ~ {endTime} During this period of time, there are other working hours exist",
+      "time"          : "Departure、Start、End time are wrong",
+      "monthly"       : "The monthly closing time has passed",
       "store"         : "Working hour log in failed！",
       "status"        : "This working record is no longer in the status of draft、pending review or rejection, it cannot be edited！",
       "delete"        : "Working hour delete failed！",
       "function_code" : "You are not functional and cannot log working hours！",
       "update_error"  : "Exception report update failed！",
-      "future_clock"  : "Do not log into Future Hours！"
+      "future_clock"  : "Do not log into Future Hours！",
+      "edit"          : "Please edit the working hours！"
     }
   },
 

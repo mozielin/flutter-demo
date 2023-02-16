@@ -1,25 +1,17 @@
-//import 'package:hws_app/ui/widgets/auth/messages_list.dart';
-
 import 'package:dio/dio.dart' as api;
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:hws_app/config/theme.dart';
-import 'package:new_version_plus/new_version_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import '../../../config/setting.dart';
 import '../../../cubit/clock_cubit.dart';
 import '../../../cubit/user_cubit.dart';
 import '../../../service/authenticate/auth.dart';
 import '../../../service/sync.dart';
 import '../alert/icons/error_icon.dart';
 import '../alert/styles.dart';
-
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:flutter/services.dart';
 
 class CutsceneScreen extends StatefulWidget {
   const CutsceneScreen({super.key, required bool loginRecently});
@@ -30,7 +22,7 @@ class CutsceneScreen extends StatefulWidget {
 
 class _CutsceneScreenState extends State<CutsceneScreen> {
   double _loadingBallSize = 1;
-  bool _stopScaleAnimtion = false;
+  bool _stopScaleAnimation = false;
   bool _apiEnable = false;
   String _infoTitle = tr('cutscene.info_default_title');
   String _infoText = tr('cutscene.info_default_text');
@@ -45,7 +37,6 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
     var user = BlocProvider.of<UserCubit>(context).state;
     if (user.token != '') {
       developer.log("Token verify: ${user.token}");
-      ///TODO:刷新的token沒存到導致一直驗證不過被登出
       AuthService().verifyToken(user.token).then((res) {
         if (res['success']) {
           _apiEnable = true;
@@ -93,10 +84,10 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
             _infoText = tr('cutscene.finish_text');
           });
 
-          Future.delayed(const Duration(milliseconds: 5000), () {
+          Future.delayed(const Duration(milliseconds: 3000), () {
             setState(() {
               ///最後判斷是否結束動畫進入首頁
-              _stopScaleAnimtion = true;
+              _stopScaleAnimation = true;
             });
           });
 
@@ -138,13 +129,13 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           AnimatedAlign(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             alignment: Alignment.center,
             child: TweenAnimationBuilder<double>(
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               tween: Tween(begin: 0, end: _loadingBallSize),
               onEnd: () {
-                if (!_stopScaleAnimtion) {
+                if (!_stopScaleAnimation) {
                   setState(() {
                     if (_loadingBallSize == 1) {
                       _loadingBallSize = 1.5;
@@ -168,7 +159,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: !_stopScaleAnimtion
+                      color: !_stopScaleAnimation
                           ? Theme.of(context).colorScheme.primary
                           : null,
                       shape: BoxShape.circle,
@@ -177,30 +168,30 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
               ),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             _infoTitle,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             _infoText,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(BlocProvider.of<UserCubit>(context).state.networkEnable ? 'Enabled' : 'Disabled', style: TextStyle(color: BlocProvider.of<UserCubit>(context).state.networkEnable ? MetronicTheme.success : MetronicTheme.danger, fontSize: 16, fontWeight: FontWeight.bold)),
           TextButton(onPressed: (){
             setState(() {
               ///最後判斷是否結束動畫進入首頁
-              _stopScaleAnimtion = true;
+              _stopScaleAnimation = true;
             });
-          }, child:Text('Skip', style: TextStyle(color: MetronicTheme.success, fontSize: 16, fontWeight: FontWeight.bold)),
+          }, child:const Text('Skip', style: TextStyle(color: MetronicTheme.success, fontSize: 16, fontWeight: FontWeight.bold)),
           )
         ],
       ));

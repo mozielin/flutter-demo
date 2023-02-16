@@ -133,6 +133,8 @@ class _ClockDemoState extends State<ClockDemo> {
   clock_detail(data) {
     // 參數帶入
     var clock_context = data.context;
+
+    print(images);
     return Column(
       children: [
         Column(

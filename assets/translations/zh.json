@@ -150,15 +150,17 @@
       "case": "同步Case資料失敗"
     },
     "error" : {
-      "repeat"        : "{startTime} ~ {endTime} 此段時間已重複，請重新調整工時登錄時間！",
-      "time"          : "出發、開始、結束時間有誤，請重新調整工時登錄時間！",
-      "monthly"       : "已超過月結時間，請重新調整工時登錄時間！",
+      "repeat"        : "{startTime} ~ {endTime} 此段時間已重複",
+      "same"          : "開始、結束時間一樣",
+      "time"          : "出發、開始、結束時間有誤",
+      "monthly"       : "已超過月結時間",
       "store"         : "工時登錄失敗！",
       "status"        : "此筆工時紀錄已非草稿、待審核或駁回狀態，無法調整！",
       "delete"        : "工時刪除失敗！",
       "function_code" : "您無職能，無法填寫工時！",
       "update_error"  : "異常報表更新失敗！",
-      "future_clock"  : "請勿登錄未來工時！"
+      "future_clock"  : "請勿登錄未來工時！",
+      "edit"          : "請重新調整工時登錄時間！"
     }
   },
 
