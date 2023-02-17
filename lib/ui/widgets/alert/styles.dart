@@ -84,8 +84,8 @@ class AlertStyles {
   }
   AlertStyle successStyle(context) {
     return AlertStyle(
-      isCloseButton: true,
-      isOverlayTapDismiss: true,
+      isCloseButton: false,
+      isOverlayTapDismiss: false,
       descStyle: const TextStyle(fontSize: 15),
       descTextAlign: TextAlign.center,
       alertBorder: RoundedRectangleBorder(

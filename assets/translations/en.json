@@ -143,6 +143,18 @@
       "title": "Sync Error",
       "type": "Sync Clock type error",
       "case": "Sync user case error"
+    },
+    "error" : {
+      "repeat"        : "{startTime} ~ {endTime} During this period of time, there are other working hours exist",
+      "time"          : "Departure、Start、End time are wrong",
+      "monthly"       : "The monthly closing time has passed",
+      "store"         : "Working hour log in failed！",
+      "status"        : "This working record is no longer in the status of draft、pending review or rejection, it cannot be edited！",
+      "delete"        : "Working hour delete failed！",
+      "function_code" : "You are not functional and cannot log working hours！",
+      "update_error"  : "Exception report update failed！",
+      "future_clock"  : "Do not log into Future Hours！",
+      "edit"          : "Please edit the working hours！"
     }
   },
 
@@ -162,7 +174,11 @@
     "token_expired_title": "Authenticate Failed",
     "token_expired_text": "Your login state has been expired",
     "return_login": "Return to login",
-    "confirm_error": "Something Error！"
+    "confirm_error": "Something Error！",
+    "confirm_success": "Submit Successfully！",
+    "confirm_done_info": "Data has been updated successfully",
+    "confirm_done": "Finished",
+    "clock_store_error": "Something Error！"
   },
   "button": {
     "back": "Back",

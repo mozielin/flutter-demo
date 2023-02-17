@@ -70,6 +70,10 @@ class ToBeSyncClock extends HiveObject {
   String images;
   @HiveField(31, defaultValue: '')
   String sync_status;
+  @HiveField(32, defaultValue: '')
+  String clock_type;
+  @HiveField(33, defaultValue: '')
+  String sale_type;
 
   ToBeSyncClock({
     required this.id,
@@ -104,5 +108,7 @@ class ToBeSyncClock extends HiveObject {
     required this.case_no,
     required this.images,
     required this.sync_status,
+    required this.clock_type,
+    required this.sale_type,
   });
 }

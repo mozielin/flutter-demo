@@ -133,6 +133,8 @@ class _ClockDemoState extends State<ClockDemo> {
   clock_detail(data) {
     // 參數帶入
     var clock_context = data.context;
+
+    print(images);
     return Column(
       children: [
         Column(
@@ -229,7 +231,7 @@ class _ClockDemoState extends State<ClockDemo> {
         data.case_no != '' ? data.case_no : tr("clock.card.no_case_number");
     var status = data.status;
 
-    var departDatetime = DateTime.tryParse(data.depart_time)!;
+    var departDatetime = DateTime.tryParse(data.depart_time == '' ? data.start_time : data.depart_time)!;
     var startDatetime = DateTime.tryParse(data.start_time)!;
     var endDatetime = DateTime.tryParse(data.end_time)!;
     var traffic_hours = data.traffic_hours;
@@ -587,7 +589,7 @@ class _ClockDemoState extends State<ClockDemo> {
         appBar: MainAppBar(
           title: tr("clock.appbar.list"),
           appBar: AppBar(),
-          isPop: true,
+          isPop: false,
         ),
         body: Material(
           color: Theme.of(context).colorScheme.background,

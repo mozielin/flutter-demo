@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hws_app/config/setting.dart';
 import 'package:hws_app/models/clock.dart';
@@ -89,6 +90,75 @@ class ClockInfo {
     }
   }
 
+  ///檢查工時資料正確
+  CheckClock(id, departTime, startTime, endTime, monthly) async {
+    bool result = true;
+    List hiveClocks = await ClockInfo().GetClock();
+    List errorMessages = [];
+
+    /// print("輸入ID:$id");
+    /// print("輸入開始:$startTime");
+    /// print("輸入結束:$endTime");
+
+    ///檢查開始時間跟結束時間重複
+    if(startTime.isAtSameMomentAs(endTime)){
+      errorMessages.add(tr('clock.error.same'));
+      result = false;
+    }
+
+    ///最小時數超過半小時 & startTime不能早於departTime
+    if (endTime.difference(startTime).inMinutes < 30 || startTime.isBefore(departTime)){
+      errorMessages.add(tr('clock.error.time'));
+      result = false;
+    }
+
+    ///後續判斷如果有 departTime = startTime
+    if(departTime != '') startTime = departTime;
+
+    ///檢查未來時間
+    if(startTime.isAfter(DateTime.now()) || endTime.isAfter(DateTime.now())) {
+      errorMessages.add(tr('clock.error.future_clock'));
+      result = false;
+    }
+
+    ///檢查重複報工
+    List clocks = hiveClocks.where((element) {
+      DateTime sTime = DateTime.parse(element.depart_time == '' ? element.start_time : element.depart_time);
+      DateTime eTime = DateTime.parse(element.end_time);
+      ///print("資料ID:${element.id}");
+      ///print("資料開始:$sTime");
+      ///print("資料結束:$eTime");
+      return element.id != id && (
+          (sTime.isBefore(endTime) && eTime.isAfter(endTime)) ||
+          (sTime.isBefore(startTime) && eTime.isAfter(startTime)) ||
+          (sTime.isAfter(startTime) && eTime.isBefore(endTime)) ||
+          eTime.isAtSameMomentAs(endTime) || sTime.isAtSameMomentAs(startTime)
+      );
+    }).toList();
+
+    if (clocks.isNotEmpty) {
+      errorMessages.add(
+        'clock.error.repeat'.tr(
+            namedArgs: {
+              'startTime': DateFormat('yyyy-MM-dd HH:mm').format(startTime),
+              'endTime': DateFormat('yyyy-MM-dd HH:mm').format(endTime)
+            }
+        )
+      );
+      result = false;
+    }
+
+    ///檢查月結
+    if(startTime.isBefore(DateTime.parse(monthly))) {
+      errorMessages.clear();
+      errorMessages.add(tr('clock.error.monthly'));
+      result = false;
+    }
+
+    errorMessages.add(tr('clock.error.edit'));
+    return {'success':result, 'message':errorMessages};
+  }
+
   /// 同部工時圖片
   SyncClockImage(String token) async {
     for (var data in clockBox.values) {
@@ -155,7 +225,7 @@ class ClockInfo {
   /// 取得工時資料
   GetClock() async {
     List ClockList = [];
-    for (var data in clockBox.values) {
+    for (var data in toBeSyncClockBox.values) {
       ClockList.add(data);
     }
     return ClockList;
@@ -234,17 +304,21 @@ class ClockInfo {
         internal_order: data['internal_order'] ?? '',
         bpm_number: data['bpm_number'] ?? '',
         case_no: data['case_no'] ?? '',
-        images: '[]',
+        images: data['images'] ?? '[]',
         sync_status: '1',
+        clock_type: data['clock_type'].toString() ?? '',
+        sale_type: data['sale_type'].toString() ?? '',
       );
 
       /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
-      toBeSyncClockBox.put(data['id'].toString(), ClockData);
-
+      var res = toBeSyncClockBox.put(data['id'].toString(), ClockData);
+      print(res);
       print('InsertClock success');
+      return true;
     } catch (e) {
       print('InsertClock error');
       print(e);
+      return false;
     }
   }
 
