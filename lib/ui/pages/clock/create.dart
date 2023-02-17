@@ -514,7 +514,7 @@ class _CreateClockState extends State<CreateClock> {
                                 fillColor:
                                     Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
-                                hintText: tr("clock.create.hours"),
+                                hintText: tr("clock.create.context_labelText"),
                                 hintStyle: TextStyle(
                                     color: Theme.of(context)
                                         .textTheme

@@ -306,8 +306,8 @@ class ClockInfo {
         case_no: data['case_no'] ?? '',
         images: data['images'] ?? '[]',
         sync_status: '1',
-        clock_type: data['clock_type'] ?? '',
-        sale_type: data['sale_type'] ?? '',
+        clock_type: data['clock_type'].toString() ?? '',
+        sale_type: data['sale_type'].toString() ?? '',
       );
 
       /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
