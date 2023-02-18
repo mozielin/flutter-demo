@@ -146,8 +146,8 @@
     },
     "sync": {
       "title": "同步失敗",
-      "type": "同步工時類別失敗",
-      "case": "同步Case資料失敗"
+      "type": "同步工時類別",
+      "case": "同步Case資料"
     },
     "error" : {
       "repeat"        : "{startTime} ~ {endTime} 此段時間已重複",
@@ -195,11 +195,21 @@
     "require": "此欄位為必填"
   },
   "cutscene": {
-    "info_default_title": "系統資料抓取中",
+    "info_default_title": "系統資料同步中",
+    "info_authenticate_text": "驗證用戶身分",
     "info_default_text": "開始檢查需要資源",
-    "clock_type_title": "取得工時類別",
-    "clock_type_text": "工時類別解析中",
+    "apiDisable_text": "切換為離線模式",
     "finish_title": "系統準備完成",
-    "finish_text": "好好工作吧!"
+    "finish_text": "好好工作吧!",
+
+    "sync" : {
+      "clock_type": "取得工時類別資料",
+      "dispatch": "取得定保客訴資料",
+      "monthly": "取得月結資料",
+      "case": "取得Case資料",
+      "success": "完成",
+      "failed": "失敗",
+      "pass": "無法與server連線"
+    }
   }
 }

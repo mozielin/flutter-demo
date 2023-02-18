@@ -2,16 +2,21 @@ import 'package:dio/dio.dart' as api;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:hws_app/config/theme.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../cubit/clock_cubit.dart';
 import '../../../cubit/user_cubit.dart';
+import '../../../service/ClockInfo.dart';
 import '../../../service/authenticate/auth.dart';
 import '../../../service/sync.dart';
 import '../alert/icons/error_icon.dart';
 import '../alert/styles.dart';
 import 'dart:async';
+import 'package:ionicons/ionicons.dart';
 import 'dart:developer' as developer;
+
+import 'animation_egg.dart';
 
 class CutsceneScreen extends StatefulWidget {
   const CutsceneScreen({super.key, required bool loginRecently});
@@ -21,19 +26,33 @@ class CutsceneScreen extends StatefulWidget {
 }
 
 class _CutsceneScreenState extends State<CutsceneScreen> {
-  double _loadingBallSize = 1;
   bool _stopScaleAnimation = false;
   bool _apiEnable = false;
   String _infoTitle = tr('cutscene.info_default_title');
   String _infoText = tr('cutscene.info_default_text');
   final api.Dio dio = api.Dio();
+  Stream? _initStreamData;
+  bool _syncStatusVisible = false;
+
+  setStopScaleAnimation() {
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      ///進入首頁
+      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+    });
+  }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   void initState() {
     super.initState();
 
     ///嘗試驗證token判斷是否可以連到API Server
     developer.log('Cutscene...');
+    _infoText = tr('cutscene.info_authenticate_text');
     var user = BlocProvider.of<UserCubit>(context).state;
     if (user.token != '') {
       developer.log("Token verify: ${user.token}");
@@ -44,52 +63,66 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           BlocProvider.of<UserCubit>(context).refreshToken(token);
           developer.log("Token refresh: $token");
 
-          //TODO:同步資料API可以寫在這、上傳未同步報工紀錄也接在這
+          //TODO:上傳未同步報工紀錄接在這
+          ///同步資料API
+          _infoText = tr('cutscene.info_default_text');
+          _initStreamData = (() async* {
+            var user = BlocProvider.of<UserCubit>(context).state;
+            String message;
+            bool status;
 
-          SyncService().initTypeSelection(token).then((resultInitType){
-            _infoTitle = tr('cutscene.clock_type_title');
-            _infoText = tr('cutscene.clock_type_text');
-            if(resultInitType['success'] == false) {
-              _infoTitle = tr('clock.sync.title');
-              _infoText = tr('clock.sync.type');
-            } else {
-              BlocProvider.of<ClockCubit>(context).setClockType(resultInitType);
-            }
-          });
-
-          SyncService().initMonthlyDate(token).then((monthly){
-            _infoTitle = tr('cutscene.clock_type_title');
-            _infoText = tr('cutscene.clock_type_text');
-            if(monthly == '') {
-              _infoTitle = tr('clock.sync.title');
-              _infoText = tr('clock.sync.type');
-            } else {
-              BlocProvider.of<ClockCubit>(context).setMonthly(monthly);
-            }
-          });
-
-          SyncService().initUserCase(token).then((resultUserCase){
-            _infoTitle = tr('cutscene.clock_type_title');
-            _infoText = tr('cutscene.clock_type_text');
-            if(resultUserCase['success'] == false) {
-              _infoTitle = tr('clock.sync.title');
-              _infoText = tr('clock.sync.case');
-            } else {
-              BlocProvider.of<ClockCubit>(context).setUserCase(resultUserCase);
-            }
-          });
-
-          Future.delayed(const Duration(milliseconds: 1500), () {
-            _infoTitle = tr('cutscene.finish_title');
-            _infoText = tr('cutscene.finish_text');
-          });
-
-          Future.delayed(const Duration(milliseconds: 3000), () {
-            setState(() {
-              ///最後判斷是否結束動畫進入首頁
-              _stopScaleAnimation = true;
+            yield await SyncService().initTypeSelection(user.token).then((resultInitType){
+              message = tr('cutscene.sync.clock_type');
+              if(resultInitType['success'] == false) {
+                developer.log("initTypeSelection: Failed");
+                status = false;
+              } else {
+                developer.log("initTypeSelection: Done");
+                BlocProvider.of<ClockCubit>(context).setClockType(resultInitType);
+                status = true;
+              }
+              return {'message':message, 'status':status};
             });
-          });
+
+            yield await ClockInfo().SyncDispatch(user.token, user.enumber).then((result){
+              message = tr('cutscene.sync.dispatch');
+              if(result) {
+                developer.log("initDispatch: Done");
+                status = true;
+              } else {
+                developer.log("initDispatch: Failed");
+                status = false;
+              }
+              return {'message':message, 'status':status};
+            });
+
+            yield await SyncService().initMonthlyDate(user.token).then((monthly){
+              message = tr('cutscene.sync.monthly');
+              if(monthly == '') {
+                developer.log("initMonthlyDate: Failed");
+                status = false;
+              } else {
+                developer.log("initMonthlyDate: Done");
+                BlocProvider.of<ClockCubit>(context).setMonthly(monthly);
+                status = true;
+              }
+              return {'message':message, 'status':status};
+            });
+
+            yield await SyncService().initUserCase(user.token).then((resultUserCase){
+              message = tr('clock.sync.case');
+              if(resultUserCase['success'] == false) {
+                developer.log("initUserCase: Failed");
+                status = false;
+              } else {
+                developer.log("initUserCase: Done");
+                BlocProvider.of<ClockCubit>(context).setUserCase(resultUserCase);
+                status = true;
+              }
+              return {'message':message, 'status':status};
+            });
+
+          })();
 
         } else {
           if (res['response_code'] == 419){
@@ -97,6 +130,10 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
           }else{
             BlocProvider.of<UserCubit>(context).changeAPIStatus(false);
             developer.log('Failed to fetch api', error: res['message']);
+            _infoTitle = tr('cutscene.sync.pass');
+            _infoText = tr('cutscene.apiDisable_text');
+            ///進入首頁
+            setStopScaleAnimation();
           }
         }
       }).onError((error, stackTrace) {
@@ -126,74 +163,107 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AnimatedAlign(
-            duration: const Duration(milliseconds: 300),
-            alignment: Alignment.center,
-            child: TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds: 500),
-              tween: Tween(begin: 0, end: _loadingBallSize),
-              onEnd: () {
-                if (!_stopScaleAnimation) {
-                  setState(() {
-                    if (_loadingBallSize == 1) {
-                      _loadingBallSize = 1.5;
-                    } else {
-                      _loadingBallSize = 1;
-                    }
-                  });
-                } else {
-                  if(_apiEnable){
-                    developer.log('ApiEnable...');
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-                  }else{
-                    developer.log('ApiDisable...');
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+          AnimationEgg(stopScaleAnimation:_stopScaleAnimation, apiEnable:_apiEnable),
+          const SizedBox(height: 16),
+          AnimatedOpacity(
+            opacity: _syncStatusVisible ? 0.0 : 1.0,
+            duration: const Duration(seconds: 1),
+            child: StreamBuilder(
+                stream: _initStreamData,
+                builder: (BuildContext context, AsyncSnapshot snapshot){
+                  if (snapshot.hasError) {
+                    print('Error: ${snapshot}');
+                    return Text('Error: ${snapshot.error}');
                   }
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                      _syncStatusVisible = false;
+                      break;
+                  //return Text('没有Stream');
+                    case ConnectionState.waiting:
+                      break;
+                  //return Text('等待数据...');
+                    case ConnectionState.active:
+                      if(snapshot.hasData) _syncStatusVisible = true;
+                      break;
+                    case ConnectionState.done:
+                      _infoTitle = tr('cutscene.finish_title');
+                      _infoText = tr('cutscene.finish_text');
+                      _syncStatusVisible = false;
+                      setStopScaleAnimation();
+                      break;
+                  }// unreachable
+                  return Column(
+                    children: [
+                      Text(
+                        _infoTitle,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _syncStatusVisible ?
+                          getStreamResult(snapshot.data) :
+                          Text(
+                            _infoText,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      ///跳過同步
+                      // TextButton.icon(
+                      //   onPressed: () async {
+                      //     ///進入首頁
+                      //     setStopScaleAnimation();
+                      //   },
+                      //   icon: const Icon(Ionicons.earth_outline,
+                      //       color: MetronicTheme.primary),
+                      //   label:const Text(
+                      //     'skip',
+                      //     textAlign: TextAlign.center,
+                      //     overflow: TextOverflow.ellipsis,
+                      //     style: TextStyle(color: MetronicTheme.primary, fontSize: 16, fontWeight: FontWeight.bold),
+                      //   ),
+                      //   style: TextButton.styleFrom(
+                      //     foregroundColor: Colors.red,
+                      //   ),
+                      // ),
+                    ],
+                  );
                 }
-              },
-              builder: (_, value, __) => Transform.scale(
-                scale: value,
-                child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: !_stopScaleAnimation
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                      shape: BoxShape.circle,
-                    ),
-                    child: null),
-              ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            _infoTitle,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            _infoText,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(BlocProvider.of<UserCubit>(context).state.networkEnable ? 'Enabled' : 'Disabled', style: TextStyle(color: BlocProvider.of<UserCubit>(context).state.networkEnable ? MetronicTheme.success : MetronicTheme.danger, fontSize: 16, fontWeight: FontWeight.bold)),
-          TextButton(onPressed: (){
-            setState(() {
-              ///最後判斷是否結束動畫進入首頁
-              _stopScaleAnimation = true;
-            });
-          }, child:const Text('Skip', style: TextStyle(color: MetronicTheme.success, fontSize: 16, fontWeight: FontWeight.bold)),
-          )
         ],
-      ));
+      ),
+    );
+  }
+
+  getStreamResult(data) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '${data['message']} ',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Icon(
+          data['status'] ? Ionicons.checkmark_outline : Ionicons.close_outline,
+          color: data['status'] ? MetronicTheme.success : MetronicTheme.danger,
+        ),
+      ],
+    );
   }
 }

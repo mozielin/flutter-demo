@@ -195,6 +195,17 @@
     "clock_type_title": "Getting Clock Types",
     "clock_type_text": "Clock Types Analysing...",
     "finish_title": "System Ready",
-    "finish_text": "Enjoy your working Day"
+    "finish_text": "Enjoy your working Day",
+    "info_authenticate_text": "驗證用戶身分",
+    "apiDisable_text": "切換為離線模式",
+    "sync" : {
+      "clock_type": "Trying to get Clock type Data",
+      "dispatch": "Trying to get Dispatch Data",
+      "monthly": "Trying to get Monthly Data",
+      "case": "Trying to get User Case",
+      "success": "Done",
+      "failed": "Failed",
+      "pass": "Can not Connect to Server"
+    }
   }
 }

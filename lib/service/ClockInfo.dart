@@ -21,7 +21,7 @@ class ClockInfo {
   late final Box dispatchBox = Hive.box('dispatchBox');
   late final Box warrantyBox = Hive.box('warrantyBox');
 
-  /// 同步工時資料
+  /// 同步工時資料 TODO:搬移至cutscene
   SyncClock(String token, String enumber) async {
     try {
       /// API 抓取工時資料
@@ -159,7 +159,7 @@ class ClockInfo {
     return {'success':result, 'message':errorMessages};
   }
 
-  /// 同部工時圖片
+  /// 同部工時圖片 TODO:搬移至cutscene
   SyncClockImage(String token) async {
     for (var data in clockBox.values) {
       try {
@@ -331,7 +331,7 @@ class ClockInfo {
     return ClockList;
   }
 
-  /// 同步使用者的客訴派工單
+  /// 同步使用者的客訴派工單 TODO:搬移至cutscene
   SyncDispatch(String token, String enumber) async {
     try {
       dio.options.headers['Authorization'] = 'Bearer $token';
@@ -353,12 +353,16 @@ class ClockInfo {
 
         dispatchBox.put('first', DispatchData);
         print('SyncDispatch success');
+        return true;
       } else {
         print('404 SyncDispatch error');
+        return false;
       }
     } catch (e) {
+      //rethrow;
       print('SyncDispatch error');
       print(e);
+      return false;
     }
   }
 
@@ -369,7 +373,7 @@ class ClockInfo {
     return dispatchDataMap;
   }
 
-  /// 同步使用者的定保派工單
+  /// 同步使用者的定保派工單 TODO:搬移至cutscene
   SyncWarranty(String token, String enumber) async {
     try {
       dio.options.headers['Authorization'] = 'Bearer $token';
