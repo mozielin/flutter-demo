@@ -142,7 +142,10 @@
       "file": "附檔",
       "count_error": "請先計算工時！",
       "case_no": "Case編號",
-      "case_no_hint": "請選擇Case編號"
+      "case_no_hint": "請選擇Case編號",
+      "img_delete": "刪除",
+      "img_camera": "相機",
+      "img_album": "相簿"
     },
     "sync": {
       "title": "同步失敗",

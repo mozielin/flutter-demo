@@ -71,6 +71,7 @@ class _CreateClockState extends State<CreateClock> {
   late Map userCase = Map();
   var case_number = 'no_case'; //無Case
   Io.File? img;
+  Io.File? tempImg;
   late String sale_type = '';
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
   String img64 = '[]';
@@ -79,6 +80,7 @@ class _CreateClockState extends State<CreateClock> {
   bool rebuild = false; //是否清除子類別key
   @override
   void dispose() {
+    tempImg?.delete();
     // TODO: implement dispose
     super.dispose();
   }
@@ -149,8 +151,6 @@ class _CreateClockState extends State<CreateClock> {
 
       ///將hive的圖片base64取出轉成臨時的File插入
       if (data.images != '[]') {
-        print('data.images');
-        print(data.images);
         writeFile(jsonDecode(data.images), data.id).then((res){
           img = res;
           if (!rebuild) setState(() {});
@@ -180,6 +180,7 @@ class _CreateClockState extends State<CreateClock> {
     final directory = await Io.Directory('${tempDir.path}/editClockTempImg').create(recursive: true);
     img = Io.File('${directory.path}/$id.png');
     img?.writeAsBytesSync(List.from(decodedBytes));
+    tempImg = img;
     return img;
   }
 
@@ -644,6 +645,30 @@ class _CreateClockState extends State<CreateClock> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
+                              ///刪除
+                              TextButton.icon(
+                                onPressed: () async {
+                                  deleteImage(img);
+                                },
+                                icon: Icon(Ionicons.trash_outline,
+                                    color:
+                                    Theme.of(context).colorScheme.primary),
+                                label: Text(
+                                  tr('clock.create.img_delete'),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .apply(
+                                      fontWeightDelta: 2,
+                                      fontSizeDelta: -2),
+                                ),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.red,
+                                ),
+                              ),
+                              ///相機
                               TextButton.icon(
                                 onPressed: () async {
                                   getImage(ImageSource.camera);
@@ -652,7 +677,7 @@ class _CreateClockState extends State<CreateClock> {
                                     color:
                                         Theme.of(context).colorScheme.primary),
                                 label: Text(
-                                  '相機',
+                                  tr('clock.create.img_camera'),
                                   textAlign: TextAlign.center,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context)
@@ -666,6 +691,7 @@ class _CreateClockState extends State<CreateClock> {
                                   foregroundColor: Colors.red,
                                 ),
                               ),
+                              ///相簿
                               TextButton.icon(
                                 onPressed: () async {
                                   getImage(ImageSource.gallery);
@@ -674,7 +700,7 @@ class _CreateClockState extends State<CreateClock> {
                                     color:
                                         Theme.of(context).colorScheme.primary),
                                 label: Text(
-                                  '相簿',
+                                  tr('clock.create.img_album'),
                                   textAlign: TextAlign.center,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context)
@@ -1377,6 +1403,18 @@ class _CreateClockState extends State<CreateClock> {
         case_number = case_no;
       });
 
+  }
+
+  bool deleteImage(image) {
+    try{
+      setState(() {
+        img = null;
+      });
+      image?.delete();
+      return true;
+    }catch(e){
+      return false;
+    }
   }
 }
 

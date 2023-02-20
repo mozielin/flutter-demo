@@ -137,7 +137,10 @@
       "file": "File",
       "count_error": "Please click to calculate working hours",
       "case_no": "Case Number",
-      "case_no_hint": "Select case number"
+      "case_no_hint": "Select case number",
+      "img_delete": "Delete",
+      "img_camera": "Camera",
+      "img_album": "Album"
     },
     "sync": {
       "title": "Sync Error",
