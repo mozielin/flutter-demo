@@ -46,17 +46,18 @@ class _CreateClockState extends State<CreateClock> {
   final _depart = TextEditingController(); //出發時間
   final _start = TextEditingController(); //開始時間
   final _end = TextEditingController(); //結束時間
-  final _departHour = TextEditingController(); //通勤時數
+  final _departHours = TextEditingController(); //通勤時數
   final _totalHours = TextEditingController(); //總時數
   final _worksHours = TextEditingController(); //工作時數
   final _clock_context = TextEditingController(); //工作內容
+  final _internal_order = TextEditingController(); //工作內容
   late Map allType = Map(); //屬性、主、子類別
   var typeBoxVisible = 1.0; //主子類別透明度(無CASE)
   var caseTypeBoxVisible = 0.0; //主子類別透明度(有CASE)
   bool typeBoxSet = true; //主子類別調完透明度調整空間(無CASE)
   bool caseTypeBoxSet = false; //主子類別調完透明度調整空間(有CASE)
-  int attr_id = 6; //預設屬性id
   var parent_id;
+  int attr_id = 6;
   bool type_init_value = true; //是否為主類別init (判斷是否清除主類別)
   var child_id;
   late Map errorText = {
@@ -73,8 +74,9 @@ class _CreateClockState extends State<CreateClock> {
   late String sale_type = '';
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
   String img64 = '[]';
+  bool hideTypeBox = false; //是否隱藏主/子類別
 
-
+  bool rebuild = false; //是否清除子類別key
   @override
   void dispose() {
     // TODO: implement dispose
@@ -84,41 +86,101 @@ class _CreateClockState extends State<CreateClock> {
   ///User Case下拉選單
   @override
   void initState() {
-    Future.delayed(Duration.zero, () {
-      Map arguments = (ModalRoute.of(context)?.settings.arguments ??
-          <String, dynamic>{}) as Map;
-      String type = arguments['type'];
-      int has_case = 2; //無case
-      switch (type) {
-        case 'has_case':
-          has_case = 1;
-          getUserCase().then((val) {
-            setState(() {
-              userCase = val;
-            });
-          });
-          break;
-      }
-
-      initTypeSelection(has_case).then((val) {
-        setState(() {
-          allType = val;
-        });
-      });
-    });
     super.initState();
   }
 
-  Future initTypeSelection(has_case) async {
+  @override
+  didChangeDependencies(){
+    Map arguments = (ModalRoute.of(context)?.settings.arguments ??
+        <String, dynamic>{}) as Map;
+    String type = arguments['type'];
+    if (type == 'has_case') hideTypeBox = true;
+    int has_case = 2; //無case
+    switch (type) {
+      case 'has_case':
+        has_case = 1;
+        var res = getUserCase();
+        setState(() {
+          userCase = res;
+        });
+        break;
+    }
+
+    var res = initTypeSelection(has_case);
+
+    setState(() {
+      allType = res;
+    });
+
+    var data;
+    //int attr_id; //預設屬性id
+
+    ///Edit代入資料
+    if(arguments.containsKey("data")){
+      data = arguments['data'];
+      hideTypeBox = false;
+      _clock_context.text = data.context;
+      _depart.text = data.depart_time;
+      _start.text = data.start_time;
+      _end.text = data.end_time;
+      _totalHours.text = data.total_hours.toString();
+      _worksHours.text = data.worked_hours.toString();
+      _departHours.text = data.traffic_hours.toString();
+      _internal_order.text = data.internal_order;
+      attr_id = int.parse(data.clock_attribute);
+      parent_id = data.clock_type;
+      child_id = data.type == 'null' ? null :data.type;
+      case_number = data.case_no;
+
+      ///無case
+      switch(data.clock_attribute){
+        case '6':
+          _character = SingingCharacter.project;
+          break;
+        case '7':
+          _character = SingingCharacter.office;
+          break;
+        case '8':
+          _character = SingingCharacter.day_off;
+          break;
+      }
+
+      if (data.clock_attribute == '8' && data.case_no == '') hideTypeBox = true;
+
+      ///將hive的圖片base64取出轉成臨時的File插入
+      if (data.images != '[]') {
+        print('data.images');
+        print(data.images);
+        writeFile(jsonDecode(data.images), data.id).then((res){
+          img = res;
+          if (!rebuild) setState(() {});
+          rebuild = true;
+        });
+      }
+    }
+
+    super.didChangeDependencies();
+  }
+
+  initTypeSelection(has_case) {
       var res = BlocProvider.of<ClockCubit>(context).state.toMap();
       Map<String, dynamic> data = res['clockType'];
       return data;
   }
 
-  Future getUserCase() async {
+  getUserCase() {
     var res = BlocProvider.of<ClockCubit>(context).state.toMap();
     Map<String, dynamic> data = res['userCase'];
     return data;
+  }
+
+  writeFile(base64, id) async {
+    final decodedBytes = base64Decode(base64[0]);
+    final tempDir = await getTemporaryDirectory();
+    final directory = await Io.Directory('${tempDir.path}/editClockTempImg').create(recursive: true);
+    img = Io.File('${directory.path}/$id.png');
+    img?.writeAsBytesSync(List.from(decodedBytes));
+    return img;
   }
 
   @override
@@ -128,6 +190,13 @@ class _CreateClockState extends State<CreateClock> {
     final token = BlocProvider.of<UserCubit>(context).state.token;
     //no_case/case/定保/客訴
     final type = arguments['type'];
+    var data;
+    //int attr_id; //預設屬性id
+
+    ///Edit代入資料
+    if(arguments.containsKey("data")){
+      data = arguments['data'];
+    }
 
     String time_picker_placeholder = tr("clock.create.depart_time_labelText");
     return Scaffold(
@@ -169,6 +238,7 @@ class _CreateClockState extends State<CreateClock> {
                                 attr_id = 6;
                                 type_init_value = false;
                                 reset_child = true;
+                                hideTypeBox = false;
                               });
                             },
                           ),
@@ -193,6 +263,7 @@ class _CreateClockState extends State<CreateClock> {
                                 attr_id = 7;
                                 type_init_value = false;
                                 reset_child = true;
+                                hideTypeBox = false;
                               });
                             },
                           ),
@@ -216,6 +287,7 @@ class _CreateClockState extends State<CreateClock> {
                                 type_init_value = false;
                                 attr_id = 8;
                                 reset_child = true;
+                                hideTypeBox = true;
                               });
                             },
                           ),
@@ -226,6 +298,7 @@ class _CreateClockState extends State<CreateClock> {
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: TextFormField(
+                        controller: _internal_order,
                         decoration: InputDecoration(
                           contentPadding:
                           const EdgeInsets.symmetric(horizontal: 15),
@@ -246,12 +319,12 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //主、子類別下拉選單
+                ///主、子類別下拉選單
                 AnimatedOpacity(
-                  opacity: type == 'no_case' ? typeBoxVisible : caseTypeBoxVisible,
+                  opacity: !hideTypeBox ? typeBoxVisible : caseTypeBoxVisible,
                   duration: const Duration(seconds: 1),
                   child: Visibility(
-                    visible: type == 'no_case' ? typeBoxSet : caseTypeBoxSet,
+                    visible: !hideTypeBox ? typeBoxSet : caseTypeBoxSet,
                     child: Column(
                       children: <Widget>[
                         //主類別
@@ -260,14 +333,14 @@ class _CreateClockState extends State<CreateClock> {
                             inputTitle(tr("clock.create.type"), true),
                             Padding(
                               padding: EdgeInsets.only(top: 5),
-                              child: ClockType(
+                              child: allType.isNotEmpty ? ClockType(
                                 allType: allType,
                                 attr_id: attr_id,
                                 callback: callback,
                                 type_init_value: type_init_value,
                                 has_case: type,
                                 parent_id: parent_id,
-                              ),
+                              ):SizedBox()
                             ),
                           ],
                         ),
@@ -299,7 +372,7 @@ class _CreateClockState extends State<CreateClock> {
                     }
                   },
                 ),
-                //出發時間
+                ///出發時間
                 Column(
                   children: [
                     inputTitle(tr("clock.create.depart_time"), false),
@@ -325,7 +398,7 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //開始時間
+                ///開始時間
                 Column(
                   children: [
                     inputTitle(tr("clock.create.start_time"), true),
@@ -347,7 +420,7 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //結束時間
+                ///結束時間
                 Column(
                   children: [
                     inputTitle(tr("clock.create.end_time"), true),
@@ -369,7 +442,7 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //總時數
+                ///總時數
                 Column(
                   children: [
                     inputTitle(tr("clock.create.total_hours"), true),
@@ -380,6 +453,9 @@ class _CreateClockState extends State<CreateClock> {
                             padding: const EdgeInsets.only(top: 5, bottom: 5),
                             child: TextFormField(
                               controller: _totalHours,
+                              onEditingComplete: (){
+
+                              },
                               enabled: false,
                               decoration: InputDecoration(
                                 contentPadding:
@@ -412,7 +488,7 @@ class _CreateClockState extends State<CreateClock> {
                                 ///var user = BlocProvider.of<UserCubit>(context).state;
                                 ///user.networkEnable ? countHoursAPI(token) :countHours(token);
                                 ///穩定先本地計算
-                                countHours(token);
+                                countHours(token, data);
                               },
                               icon: Icon(Ionicons.calculator_outline),
                               color: Theme.of(context).brightness == Brightness.dark
@@ -428,7 +504,7 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //通勤時數
+                ///通勤時數
                 Column(
                   children: [
                     inputTitle(tr("clock.create.traffic_hours"), true),
@@ -438,7 +514,7 @@ class _CreateClockState extends State<CreateClock> {
                           child: Padding(
                             padding: const EdgeInsets.only(top: 5, bottom: 5),
                             child: TextFormField(
-                              controller: _departHour,
+                              controller: _departHours,
                               enabled: false,
                               decoration: InputDecoration(
                                 contentPadding:
@@ -461,7 +537,7 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-                //工作時數
+                ///工作時數
                 Column(
                   children: [
                     inputTitle(tr("clock.create.work_hours"), true),
@@ -494,7 +570,6 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-
                 ///工作內容
                 Column(
                   children: [
@@ -529,6 +604,8 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
+
+                ///File
                 Column(
                   children: [
                     inputTitle(tr("clock.create.file"), false),
@@ -666,7 +743,7 @@ class _CreateClockState extends State<CreateClock> {
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              submitClock(1, token);
+                              submitClock(1, token, data);
                             },
                             icon: Icon(Ionicons.pencil,
                                 color: Theme.of(context).brightness == Brightness.dark
@@ -702,7 +779,7 @@ class _CreateClockState extends State<CreateClock> {
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              submitClock(2, token);
+                              submitClock(2, token, data);
                             },
                             icon: Icon(Ionicons.checkmark_circle,
                                 color: Theme.of(context).brightness == Brightness.dark
@@ -802,7 +879,7 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   ///計算工時
-  countHours(token) async {
+  countHours(token, data) async {
     developer.log("Count and Check Local");
     var res = BlocProvider.of<ClockCubit>(context).state.toMap();
     try {
@@ -825,9 +902,9 @@ class _CreateClockState extends State<CreateClock> {
       DateTime endTime = DateTime.parse(_end.text);
 
       ///TODO:修改工時將ID帶入做判斷
-      ClockInfo().CheckClock('id',departTime, startTime, endTime, res['monthly']).then((res) {
+      ClockInfo().CheckClock(data == null ? 'id' : data.id, departTime, startTime, endTime, res['monthly']).then((res) {
         if(res['success']){
-          _departHour.text = "${startTime.difference(departTime).inMinutes / 60}";
+          _departHours.text = "${startTime.difference(departTime).inMinutes / 60}";
           _worksHours.text = "${endTime.difference(startTime).inMinutes / 60}";
           _totalHours.text = "${endTime.difference(departTime).inMinutes / 60}";
         }else{
@@ -849,7 +926,7 @@ class _CreateClockState extends State<CreateClock> {
   }
 
   ///登錄工時
-  submitClock(draft, token) async {
+  submitClock(draft, token, data) async {
     var res = BlocProvider.of<ClockCubit>(context).state.toMap();
     bool check = true;
     setState(() {
@@ -885,7 +962,8 @@ class _CreateClockState extends State<CreateClock> {
       DateTime endTime = DateTime.parse(_end.text);
 
       ///TODO:修改工時將ID帶入做判斷
-      ClockInfo().CheckClock('id',departTime,startTime, endTime, res['monthly']).then((res) {
+
+      ClockInfo().CheckClock(data == null ? 'id' : data.id,departTime,startTime, endTime, res['monthly']).then((res) {
         if(res['success']){
           if (attr_id == 8) {
             parent_id = 9;
@@ -898,9 +976,9 @@ class _CreateClockState extends State<CreateClock> {
           }
 
           Map clockData = {
-            'id': '',
+            'id': data == null ? '' : data.id,
             'type': child_id,
-            'clock_attribute': '$attr_id',
+            'clock_attribute': attr_id,
             'clocking_no': '',
             'source_no': '',
             'enumber': '',
@@ -910,7 +988,7 @@ class _CreateClockState extends State<CreateClock> {
             'context': _clock_context.text,
             'function_code': '',
             'direct_code': '',
-            'traffic_hours': double.parse(_departHour.text),
+            'traffic_hours': double.parse(_departHours.text),
             'worked_hours': double.parse(_worksHours.text),
             'total_hours': double.parse(_totalHours.text),
             'depart_time': _depart.text == '' ? _start.text : _depart.text,
@@ -925,13 +1003,13 @@ class _CreateClockState extends State<CreateClock> {
             'sales_dept_code': '',
             'sap_wbs': '',
             'order_date': '',
-            'internal_order': '',
+            'internal_order': _internal_order.text,
             'bpm_number': '',
             'case_no': case_number == 'no_case' ? '' : case_number,
             'images': img64,
             'sync_status': '1',
             'clock_type': parent_id,
-            'sale_type': sale_type
+            'sale_type': sale_type,
           };
 
           ClockInfo().InsertClock(clockData).then((res){
@@ -1014,7 +1092,7 @@ class _CreateClockState extends State<CreateClock> {
         },
       ).timeout(const Duration(seconds: 5));
       if (res.statusCode == 200 && res.data != null) {
-        _departHour.text =
+        _departHours.text =
         res.data['data']['trafficHours']; // + tr('clock.create.h')
         _totalHours.text =
         res.data['data']['totalHours'];
@@ -1022,7 +1100,7 @@ class _CreateClockState extends State<CreateClock> {
         res.data['data']['worksHours'];
       }
     } on api.DioError catch (e) {
-      _departHour.text = '';
+      _departHours.text = '';
       _totalHours.text = '';
       _worksHours.text = '';
 
@@ -1288,7 +1366,7 @@ class _CreateClockState extends State<CreateClock> {
 
   checkCaseType(case_no) {
     Map info = userCase[case_no]['info'];
-    initTypeSelection(1).then((val) {
+
       setState(() {
         attr_id = info['sale_type'] == 'pre' ? 1 : 5;
         sale_type = info['sale_type'];
@@ -1298,7 +1376,7 @@ class _CreateClockState extends State<CreateClock> {
         caseTypeBoxVisible = 1.0;
         case_number = case_no;
       });
-    });
+
   }
 }
 
