@@ -170,7 +170,9 @@
       "warning_verify" : "確認是否送出審核?",
       "verify" : "提醒您進入審核階段後，將無法修改資料！",
       "warning_delete" : "確認是否刪除附檔資料?",
-      "file_delete" : "提醒您刪除附檔資料後，將無法復原！"
+      "file_delete" : "提醒您刪除附檔資料後，將無法復原！",
+      "warning_delete_clock" : "確認是否刪除報工資料?",
+      "clock_delete" : "提醒您刪除資料後，將無法復原！"
     }
   },
 
@@ -192,9 +194,12 @@
     "return_login": "返回登入",
     "confirm_error": "發生錯誤！",
     "confirm_success": "送出成功！",
+    "delete_success": "刪除成功！",
+    "list_refresh": "列表資料已更新",
     "confirm_done_info": "資料已更新",
     "confirm_done": "完成",
-    "clock_store_error": "發生錯誤！"
+    "clock_store_error": "發生錯誤！",
+    "something_wrong" : "請重新啟動App再嘗試"
   },
   "button": {
     "back": "返回",
@@ -214,6 +219,8 @@
 
     "sync" : {
       "clock_type": "取得工時類別資料",
+      "clock_file": "取得工時附檔資料",
+      "clock": "取得工時資料",
       "dispatch": "取得CRM派工資料",
       "warranty": "取得CRM定保資料",
       "monthly": "取得月結資料",

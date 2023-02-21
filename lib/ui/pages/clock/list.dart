@@ -12,9 +12,14 @@ import 'package:hws_app/config/theme.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/service/ClockInfo.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uiblock/uiblock.dart';
 import '../../../config/setting.dart';
 import '../../../cubit/user_cubit.dart';
+import '../../widgets/alert/icons/error_icon.dart';
+import '../../widgets/alert/icons/success_icon.dart';
+import '../../widgets/alert/icons/warning_icon.dart';
+import '../../widgets/alert/styles.dart';
 import '../../widgets/clock/card_hole_clipper.dart';
 import '../../widgets/common/status_label.dart';
 import '../../widgets/common/main_appbar.dart';
@@ -150,14 +155,63 @@ class _ClockDemoState extends State<ClockDemo> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ///刪除
-                    FloatingActionButton(
+                    if(data.status == '1')
+                      FloatingActionButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        //Navigator.of(context).pop();
+                        Alert(
+                          context: context,
+                          style: AlertStyles().warningStyle(context),
+                          image: const WarningIcon(),
+                          title: tr('clock.alerts.warning_delete_clock'),
+                          desc: tr('clock.alerts.clock_delete'),
+                          buttons: [
+                            AlertStyles().getCancelButton(context),
+                            DialogButton(
+                              width: 200,
+                              color: Theme.of(context).colorScheme.surface,
+                              child: Text(
+                                tr('alerts.confirm'),
+                                style: Theme.of(context).textTheme.titleLarge!.apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                              ),
+                              onPressed: (){
+                                Navigator.pop(context);
+                                ///刪除報工資料
+                                ClockInfo().deleteClock(data.id).then((res){
+                                  if(res) {
+                                    //Navigator.of(context).pop();
+                                    Alert(
+                                      context: context,
+                                      style: AlertStyles().successStyle(context),
+                                      image: const SuccessIcon(),
+                                      title: tr('alerts.delete_success'),
+                                      desc: tr('alerts.list_refresh'),
+                                      buttons: [
+                                        AlertStyles().getDoneButton(context, '/clock_list'),
+                                      ],
+                                    ).show();
+                                  }else{
+                                    Alert(
+                                      context: context,
+                                      style: AlertStyles().dangerStyle(context),
+                                      image: const ErrorIcon(),
+                                      title: tr('alerts.confirm_error'),
+                                      desc: tr('alerts.something_wrong'),
+                                      buttons: [
+                                        AlertStyles().getCancelButton(context),
+                                      ],
+                                    ).show();
+                                  }
+                                });
+                              },
+                            ),
+                          ],
+                        ).show();
                       },
                       backgroundColor: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).colorScheme.surface
                           : MetronicTheme.light_danger,
-                      child: Icon(
+                      child: const Icon(
                         Ionicons.trash,
                         color:
                             MetronicTheme.danger,
@@ -189,7 +243,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       backgroundColor: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).colorScheme.surface
                           : MetronicTheme.light_success,
-                      child: Icon(
+                      child: const Icon(
                         Ionicons.pencil,
                         color: MetronicTheme.success,
                       ),

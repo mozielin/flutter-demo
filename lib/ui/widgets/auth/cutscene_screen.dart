@@ -71,6 +71,32 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
             String message;
             bool status;
 
+            ///同步工時資料
+            yield await ClockInfo().SyncClock(user.token, user.enumber).then((result){
+              message = tr('cutscene.sync.clock');
+              if(result) {
+                developer.log("syncClock: Done");
+                status = true;
+              } else {
+                developer.log("syncClock: Failed");
+                status = false;
+              }
+              return {'message':message, 'status':status};
+            });
+
+            ///同步工時附檔資料(非同步因為這支會卡太久影響UX)
+            ClockInfo().SyncClockImage(user.token).then((result){
+              message = tr('cutscene.sync.clock_file');
+              if(result) {
+                developer.log("syncClockFile: Done");
+                status = true;
+              } else {
+                developer.log("syncClockFile: Failed");
+                status = false;
+              }
+            });
+
+            ///同步工時類別
             yield await SyncService().initTypeSelection(user.token).then((resultInitType){
               message = tr('cutscene.sync.clock_type');
               if(resultInitType['success'] == false) {
@@ -84,6 +110,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
               return {'message':message, 'status':status};
             });
 
+            ///同步CRM派工資料
             yield await ClockInfo().SyncDispatch(user.token, user.enumber).then((result){
               message = tr('cutscene.sync.dispatch');
               if(result) {
@@ -96,6 +123,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
               return {'message':message, 'status':status};
             });
 
+            ///同步CRM定保資料
             yield await ClockInfo().SyncWarranty(user.token, user.enumber).then((result){
               message = tr('cutscene.sync.warranty');
               if(result) {
@@ -108,6 +136,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
               return {'message':message, 'status':status};
             });
 
+            ///同步工時月結日期
             yield await SyncService().initMonthlyDate(user.token).then((monthly){
               message = tr('cutscene.sync.monthly');
               if(monthly == '') {
@@ -121,6 +150,7 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
               return {'message':message, 'status':status};
             });
 
+            ///同步用戶專案資料
             yield await SyncService().initUserCase(user.token).then((resultUserCase){
               message = tr('clock.sync.case');
               if(resultUserCase['success'] == false) {

@@ -6,7 +6,7 @@ import 'circle_paint.dart';
 class SuccessIcon extends StatefulWidget {
   final double size;
 
-  SuccessIcon({this.size = 80.0});
+  const SuccessIcon({Key? key, this.size = 80.0}) : super(key: key);
 
   @override
   _SuccessIconState createState() => _SuccessIconState();

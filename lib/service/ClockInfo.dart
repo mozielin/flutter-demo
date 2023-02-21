@@ -1,7 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,6 +11,7 @@ import 'package:hws_app/models/supportCase.dart';
 import 'package:hws_app/models/toBeSyncClock.dart';
 import 'package:hws_app/models/warranty.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:developer' as developer;
 
 class ClockInfo {
   final Dio dio = Dio();
@@ -21,7 +21,7 @@ class ClockInfo {
   late final Box dispatchBox = Hive.box('dispatchBox');
   late final Box warrantyBox = Hive.box('warrantyBox');
 
-  /// 同步工時資料 TODO:搬移至cutscene
+  /// 同步工時資料
   SyncClock(String token, String enumber) async {
     try {
       /// API 抓取工時資料
@@ -81,12 +81,15 @@ class ClockInfo {
         }
 
         print('Clock 總共儲存比數：${clockBox.values.length}');
+        return true;
       } else {
         print('404 SyncClock error');
+        return false;
       }
     } catch (e) {
       print('error');
       print(e);
+      return false;
     }
   }
 
@@ -159,7 +162,7 @@ class ClockInfo {
     return {'success':result, 'message':errorMessages};
   }
 
-  /// 同部工時圖片 TODO:搬移至cutscene
+  /// 同部工時圖片
   SyncClockImage(String token) async {
     for (var data in clockBox.values) {
       try {
@@ -220,6 +223,7 @@ class ClockInfo {
       }
     }
     print('Image 總共儲存比數：${clockBox.values.length}');
+    return true;
   }
 
   /// 取得工時資料
@@ -322,6 +326,25 @@ class ClockInfo {
     }
   }
 
+  /// delete 工時資料
+  deleteClock(id) async{
+    try {
+      ToBeSyncClock clockData = toBeSyncClockBox.get(id);
+      ///判斷sync狀態決定真刪除還是改狀態
+      if(clockData.sync_status == '1' && clockData.status == '1'){
+        clockData.delete();
+      }else{
+        clockData.sync_status = '3';
+        clockData.save();
+      }
+      developer.log('Delete Clock Success');
+      return true;
+    } catch (e) {
+      developer.log('Delete Clock Error');
+      return false;
+    }
+  }
+
   /// 取得待同步工時資料
   GetToBeSyncClock() async {
     List ClockList = [];
@@ -342,7 +365,7 @@ class ClockInfo {
         data: {
           'enumber': enumber,
         },
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 3));
 
       if (res.statusCode == 200 && res.data != null) {
         await dispatchBox.clear();
@@ -384,7 +407,7 @@ class ClockInfo {
         data: {
           'enumber': enumber,
         },
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 3));
 
       if (res.statusCode == 200 && res.data != null) {
         await warrantyBox.clear();
