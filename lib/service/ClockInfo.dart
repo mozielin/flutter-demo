@@ -331,7 +331,7 @@ class ClockInfo {
     try {
       ToBeSyncClock clockData = toBeSyncClockBox.get(id);
       ///判斷sync狀態決定真刪除還是改狀態
-      if(clockData.sync_status == '1'){
+      if(clockData.sync_status == '1' && clockData.status == '1'){
         clockData.delete();
       }else{
         clockData.sync_status = '3';
