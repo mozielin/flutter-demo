@@ -207,7 +207,8 @@
 
     "sync" : {
       "clock_type": "取得工時類別資料",
-      "dispatch": "取得定保客訴資料",
+      "dispatch": "取得CRM派工資料",
+      "warranty": "取得CRM定保資料",
       "monthly": "取得月結資料",
       "case": "取得Case資料",
       "success": "完成",

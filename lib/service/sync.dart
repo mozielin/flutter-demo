@@ -21,10 +21,12 @@ class SyncService{
       Response res = await dio.post(
         '${InitSettings.apiUrl}:443/api/getClockTypeAPI',
         data: {},
-      );
+      ).timeout(const Duration(seconds: 3));
       data = res.data['monthly'];
       return data;
     }on DioError catch (e) {
+      return '';
+    }on TimeoutException catch (e) {
       return '';
     }
   }
@@ -36,11 +38,14 @@ class SyncService{
       Response res = await dio.post(
         '${InitSettings.apiUrl}:443/api/getClockTypeAPI',
         data: {},
-      );
+      ).timeout(const Duration(seconds: 3));
       Map<String, dynamic> data = res.data['type'];
       return data;
     }on DioError catch (e) {
       return {"response_code": 400, "success": false, "data": null};
+    }on TimeoutException catch (e) {
+      var errorMsg = tr('auth.connection_error');
+      return {"response_code": 400, "success": false, "data": null, "message": '{"error":"$errorMsg"}'};
     }
   }
 
@@ -51,11 +56,14 @@ class SyncService{
       Response res = await dio.post(
           '${InitSettings.apiUrl}:443/api/getUserCase',
           data: {}
-      );
+      ).timeout(const Duration(seconds: 3));
       Map<String, dynamic> data = res.data;
       return data;
     } on DioError catch (e) {
       return {"response_code": 400, "success": false, "data": null};
+    }on TimeoutException catch (e) {
+      var errorMsg = tr('auth.connection_error');
+      return {"response_code": 400, "success": false, "data": null, "message": '{"error":"$errorMsg"}'};
     }
   }
 

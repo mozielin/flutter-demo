@@ -331,7 +331,7 @@ class ClockInfo {
     return ClockList;
   }
 
-  /// 同步使用者的客訴派工單 TODO:搬移至cutscene
+  /// 同步使用者的客訴派工單
   SyncDispatch(String token, String enumber) async {
     try {
       dio.options.headers['Authorization'] = 'Bearer $token';
@@ -373,7 +373,7 @@ class ClockInfo {
     return dispatchDataMap;
   }
 
-  /// 同步使用者的定保派工單 TODO:搬移至cutscene
+  /// 同步使用者的定保派工單
   SyncWarranty(String token, String enumber) async {
     try {
       dio.options.headers['Authorization'] = 'Bearer $token';
@@ -394,13 +394,16 @@ class ClockInfo {
         );
 
         warrantyBox.put('first', WarrantyData);
+        return true;
         print('SyncWarranty success');
       } else {
         print('404 SyncWarranty error');
+        return false;
       }
     } catch (e) {
       print('SyncWarranty error');
       print(e);
+      return false;
     }
   }
 

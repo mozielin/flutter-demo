@@ -203,7 +203,8 @@
     "apiDisable_text": "切換為離線模式",
     "sync" : {
       "clock_type": "Trying to get Clock type Data",
-      "dispatch": "Trying to get Dispatch Data",
+      "dispatch": "Trying to get CRM Dispatch Data",
+      "warranty": "Trying to get CRM Warranty Data",
       "monthly": "Trying to get Monthly Data",
       "case": "Trying to get User Case",
       "success": "Done",

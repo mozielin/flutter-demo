@@ -96,6 +96,18 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
               return {'message':message, 'status':status};
             });
 
+            yield await ClockInfo().SyncWarranty(user.token, user.enumber).then((result){
+              message = tr('cutscene.sync.warranty');
+              if(result) {
+                developer.log("initWarranty: Done");
+                status = true;
+              } else {
+                developer.log("initWarranty: Failed");
+                status = false;
+              }
+              return {'message':message, 'status':status};
+            });
+
             yield await SyncService().initMonthlyDate(user.token).then((monthly){
               message = tr('cutscene.sync.monthly');
               if(monthly == '') {
