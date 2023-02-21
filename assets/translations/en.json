@@ -158,6 +158,12 @@
       "update_error"  : "Exception report update failed！",
       "future_clock"  : "Do not log into Future Hours！",
       "edit"          : "Please edit the working hours！"
+    },
+    "alerts" : {
+      "warning_verify" : "Please Confirm to submit review stage?",
+      "verify_alert" : "Remind you it will enter the review stage after submit，This working record cannot be edited！",
+      "warning_delete" : "Please Confirm to delete attach file?",
+      "file_delete" : "Remind you it will delete the attach file after submit，This attach file cannot be restore！"
     }
   },
 

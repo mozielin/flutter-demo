@@ -52,48 +52,79 @@ class _ClockDemoState extends State<ClockDemo> {
     switch (status) {
       case '1':
         text = tr('clock.status.draft');
-        textColor = MetronicTheme.success;
-        bgColor = MetronicTheme.light_success;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.success;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_success;
         break;
       case '2':
-        text = tr('clock.status.verify');
-        textColor = MetronicTheme.info;
-        bgColor = MetronicTheme.light_info;
-        break;
       case '3':
-        text = tr("clock.status.verify_owner");
-        textColor = MetronicTheme.info;
-        bgColor = MetronicTheme.light_info;
-        break;
       case '4':
-        text = tr('clock.status.verify_sales');
-        textColor = MetronicTheme.info;
-        bgColor = MetronicTheme.light_info;
+        text = tr('clock.status.verify');
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.info;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_info;
         break;
+      ///通通改為只顯示待審核
+      // case '3':
+      //   text = tr("clock.status.verify_owner");
+      //   textColor = MetronicTheme.info;
+      //   bgColor = MetronicTheme.light_info;
+      //   break;
+      // case '4':
+      //   text = tr('clock.status.verify_sales');
+      //   textColor = MetronicTheme.info;
+      //   bgColor = MetronicTheme.light_info;
+      //   break;
       case '5':
         text = tr('clock.status.done');
-        textColor = MetronicTheme.primary;
-        bgColor = MetronicTheme.light_primary;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.primary;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_primary;
         break;
       case '6':
         text = tr('clock.status.reject');
-        textColor = MetronicTheme.danger;
-        bgColor = MetronicTheme.light_danger;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.danger;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_danger;
         break;
       case '7':
         text = tr('clock.status.not_save_sap');
-        textColor = MetronicTheme.warning;
-        bgColor = MetronicTheme.light_warning;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.warning;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_warning;
         break;
       case '8':
         text = tr('clock.status.not_save_crm');
-        textColor = MetronicTheme.warning;
-        bgColor = MetronicTheme.light_warning;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.warning;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_warning;
         break;
       case '9':
         text = tr('clock.status.not_save_hws');
-        textColor = MetronicTheme.warning;
-        bgColor = MetronicTheme.light_warning;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.warning;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_warning;
         break;
     }
 
@@ -129,7 +160,9 @@ class _ClockDemoState extends State<ClockDemo> {
                       child: Icon(
                         Ionicons.trash,
                         color:
-                            Theme.of(context).brightness == Brightness.dark ? MetronicTheme.dark : MetronicTheme.danger,
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Theme.of(context).colorScheme.primary
+                                : MetronicTheme.danger,
                       ),
                     ),
 
@@ -139,14 +172,16 @@ class _ClockDemoState extends State<ClockDemo> {
                         Navigator.of(context).pop();
                       },
                       backgroundColor: MetronicTheme.light_dark,
-                      child: const Icon(
+                      child: Icon(
                         Ionicons.close_outline,
-                        color: MetronicTheme.dark,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).colorScheme.primary
+                            : MetronicTheme.dark,
                       ),
                     ),
 
                     ///編輯
-                    ///if(data.status == 1)
+                    // if(data.status == '1')
                       FloatingActionButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/create_clock', arguments: {'type': data.case_no == '' ? 'no_case' : 'has_case', 'data': data});
@@ -157,7 +192,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       child: Icon(
                         Ionicons.pencil,
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? MetronicTheme.dark
+                            ? Theme.of(context).colorScheme.primary
                             : MetronicTheme.success,
                       ),
                     ),
@@ -229,10 +264,14 @@ class _ClockDemoState extends State<ClockDemo> {
                     child: Ink(
                       padding: const EdgeInsets.all(10),
                       decoration: const ShapeDecoration(
-                        color: Colors.white,
+                        color: MetronicTheme.light_dark,
                         shape: CircleBorder(),
                       ),
-                      child: Icon(Ionicons.construct, color: Theme.of(context).textTheme.bodySmall!.color),
+                      child: Icon(
+                          Ionicons.construct,
+                          color: Theme.of(context).brightness == Brightness.dark
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).textTheme.bodySmall!.color),
                     ),
                   ),
                   Expanded(

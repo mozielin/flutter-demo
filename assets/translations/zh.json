@@ -91,7 +91,8 @@
   "clock": {
     "appbar": {
       "list": "報工列表",
-      "create": "登錄工時"
+      "create": "登錄工時",
+      "edit": "修改工時"
     },
     "status": {
       "draft": "草稿",
@@ -164,6 +165,12 @@
       "update_error"  : "異常報表更新失敗！",
       "future_clock"  : "請勿登錄未來工時",
       "edit"          : "請重新調整工時登錄時間"
+    },
+    "alerts" : {
+      "warning_verify" : "確認是否送出審核?",
+      "verify" : "提醒您進入審核階段後，將無法修改資料！",
+      "warning_delete" : "確認是否刪除附檔資料?",
+      "file_delete" : "提醒您刪除附檔資料後，將無法復原！"
     }
   },
 

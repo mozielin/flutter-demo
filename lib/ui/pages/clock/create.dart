@@ -202,7 +202,7 @@ class _CreateClockState extends State<CreateClock> {
     String time_picker_placeholder = tr("clock.create.depart_time_labelText");
     return Scaffold(
       appBar: MainAppBar(
-        title: tr("clock.appbar.create"),
+        title: data == null ? tr("clock.appbar.create") : tr("clock.appbar.edit"),
         appBar: AppBar(),
         isPop: false,
       ),
@@ -737,10 +737,7 @@ class _CreateClockState extends State<CreateClock> {
                             },
                             icon: Icon(Ionicons.arrow_back,
                                 color: Theme.of(context).brightness == Brightness.dark
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .color
+                                    ? Theme.of(context).colorScheme.primary
                                     : MetronicTheme.dark),
                             label: Text(
                               tr('button.back'),
@@ -773,10 +770,7 @@ class _CreateClockState extends State<CreateClock> {
                             },
                             icon: Icon(Ionicons.pencil,
                                 color: Theme.of(context).brightness == Brightness.dark
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .color
+                                    ? Theme.of(context).colorScheme.primary
                                     : MetronicTheme.success),
                             label: Text(
                               tr('button.draft'),
@@ -809,10 +803,7 @@ class _CreateClockState extends State<CreateClock> {
                             },
                             icon: Icon(Ionicons.checkmark_circle,
                                 color: Theme.of(context).brightness == Brightness.dark
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .color
+                                    ? Theme.of(context).colorScheme.primary
                                     : MetronicTheme.info),
                             label: Text(
                               tr('button.verify'),
@@ -927,7 +918,6 @@ class _CreateClockState extends State<CreateClock> {
       DateTime startTime = DateTime.parse(_start.text);
       DateTime endTime = DateTime.parse(_end.text);
 
-      ///TODO:修改工時將ID帶入做判斷
       ClockInfo().CheckClock(data == null ? 'id' : data.id, departTime, startTime, endTime, res['monthly']).then((res) {
         if(res['success']){
           _departHours.text = "${startTime.difference(departTime).inMinutes / 60}";
@@ -987,8 +977,6 @@ class _CreateClockState extends State<CreateClock> {
       DateTime startTime = DateTime.parse(_start.text);
       DateTime endTime = DateTime.parse(_end.text);
 
-      ///TODO:修改工時將ID帶入做判斷
-
       ClockInfo().CheckClock(data == null ? 'id' : data.id,departTime,startTime, endTime, res['monthly']).then((res) {
         if(res['success']){
           if (attr_id == 8) {
@@ -1038,22 +1026,64 @@ class _CreateClockState extends State<CreateClock> {
             'sale_type': sale_type,
           };
 
-          ClockInfo().InsertClock(clockData).then((res){
-            if (res) {
-              Alert(
-                context: context,
-                style: AlertStyles().successStyle(context),
-                image: SuccessIcon(),
-                title: tr('alerts.confirm_success'),
-                desc: tr('alerts.confirm_done_info'),
-                buttons: [
-                  AlertStyles().getDoneButton(context, '/clock_list'),
-                ],
-              ).show();
-            }else{
-              errorAlert(tr('alerts.clock_store_error'));
-            }
-          });
+          ///送審時提示訊息
+          if(draft == 2) {
+            Alert(
+              context: context,
+              style: AlertStyles().warningStyle(context),
+              image: const WarningIcon(),
+              title: tr('clock.alerts.warning_verify'),
+              desc: tr('clock.alerts.verify'),
+              buttons: [
+                AlertStyles().getCancelButton(context),
+                DialogButton(
+                  width: 200,
+                  color: Theme.of(context).colorScheme.surface,
+                  child: Text(
+                  tr('alerts.confirm'),
+                  style: Theme.of(context).textTheme.titleLarge!.apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                  ),
+                  onPressed: (){
+                    Navigator.pop(context);
+                    ClockInfo().InsertClock(clockData).then((res){
+                      if (res) {
+                        Alert(
+                          context: context,
+                          style: AlertStyles().successStyle(context),
+                          image: SuccessIcon(),
+                          title: tr('alerts.confirm_success'),
+                          desc: tr('alerts.confirm_done_info'),
+                          buttons: [
+                            AlertStyles().getDoneButton(context, '/clock_list'),
+                          ],
+                        ).show();
+                      }else{
+                        errorAlert(tr('alerts.clock_store_error'));
+                      }
+                    });
+                  },
+                ),
+              ],
+            ).show();
+          }else{
+            ClockInfo().InsertClock(clockData).then((res){
+              if (res) {
+                Alert(
+                  context: context,
+                  style: AlertStyles().successStyle(context),
+                  image: SuccessIcon(),
+                  title: tr('alerts.confirm_success'),
+                  desc: tr('alerts.confirm_done_info'),
+                  buttons: [
+                    AlertStyles().getDoneButton(context, '/clock_list'),
+                  ],
+                ).show();
+              }else{
+                errorAlert(tr('alerts.clock_store_error'));
+              }
+            });
+          }
+
         }else{
           check = false;
           Alert(
@@ -1286,6 +1316,10 @@ class _CreateClockState extends State<CreateClock> {
           currentTime: DateTime.now(),
           locale: LocaleType.zh,
         );
+        /// 清空時間計算欄位
+        _departHours.clear();
+        _worksHours.clear();
+        _totalHours.clear();
       },
       icon: Icon(
         Ionicons.calendar_outline,
@@ -1407,10 +1441,33 @@ class _CreateClockState extends State<CreateClock> {
 
   bool deleteImage(image) {
     try{
-      setState(() {
-        img = null;
-      });
-      image?.delete();
+      if(img != null){
+        Alert(
+          context: context,
+          style: AlertStyles().warningStyle(context),
+          image: const WarningIcon(),
+          title: tr('clock.alerts.warning_delete'),
+          desc: tr('clock.alerts.file_delete'),
+          buttons: [
+            AlertStyles().getCancelButton(context),
+            DialogButton(
+              width: 200,
+              color: Theme.of(context).colorScheme.surface,
+              child: Text(
+                tr('alerts.confirm'),
+                style: Theme.of(context).textTheme.titleLarge!.apply(fontWeightDelta: 2, fontSizeDelta: -2),
+              ),
+              onPressed: (){
+                Navigator.pop(context);
+                image?.delete();
+                setState(() {
+                  img = null;
+                });
+              },
+            ),
+          ],
+        ).show();
+      }
       return true;
     }catch(e){
       return false;
