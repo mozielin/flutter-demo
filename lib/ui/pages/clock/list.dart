@@ -52,54 +52,86 @@ class _ClockDemoState extends State<ClockDemo> {
     switch (status) {
       case '1':
         text = tr('clock.status.draft');
-        textColor = MetronicTheme.success;
-        bgColor = MetronicTheme.light_success;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.success;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_success;
         break;
       case '2':
-        text = tr('clock.status.verify');
-        textColor = MetronicTheme.info;
-        bgColor = MetronicTheme.light_info;
-        break;
       case '3':
-        text = tr("clock.status.verify_owner");
-        textColor = MetronicTheme.info;
-        bgColor = MetronicTheme.light_info;
-        break;
       case '4':
-        text = tr('clock.status.verify_sales');
-        textColor = MetronicTheme.info;
-        bgColor = MetronicTheme.light_info;
+        text = tr('clock.status.verify');
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.info;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_info;
         break;
+      ///通通改為只顯示待審核
+      // case '3':
+      //   text = tr("clock.status.verify_owner");
+      //   textColor = MetronicTheme.info;
+      //   bgColor = MetronicTheme.light_info;
+      //   break;
+      // case '4':
+      //   text = tr('clock.status.verify_sales');
+      //   textColor = MetronicTheme.info;
+      //   bgColor = MetronicTheme.light_info;
+      //   break;
       case '5':
         text = tr('clock.status.done');
-        textColor = MetronicTheme.primary;
-        bgColor = MetronicTheme.light_primary;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.primary;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_primary;
         break;
       case '6':
         text = tr('clock.status.reject');
-        textColor = MetronicTheme.danger;
-        bgColor = MetronicTheme.light_danger;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.danger;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_danger;
         break;
       case '7':
         text = tr('clock.status.not_save_sap');
-        textColor = MetronicTheme.warning;
-        bgColor = MetronicTheme.light_warning;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.warning;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_warning;
         break;
       case '8':
         text = tr('clock.status.not_save_crm');
-        textColor = MetronicTheme.warning;
-        bgColor = MetronicTheme.light_warning;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.warning;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_warning;
         break;
       case '9':
         text = tr('clock.status.not_save_hws');
-        textColor = MetronicTheme.warning;
-        bgColor = MetronicTheme.light_warning;
+        textColor = Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).colorScheme.surface
+                    : MetronicTheme.warning;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+                    ? MetronicTheme.light_dark
+                    : MetronicTheme.light_warning;
         break;
     }
 
     return StatusLabel(title: text, color: textColor, bg_color: bgColor);
   }
 
+  ///Show Card Widget
   clock_dialog(data) {
     return showDialog(
         barrierDismissible: false,
@@ -114,15 +146,55 @@ class _ClockDemoState extends State<ClockDemo> {
                 const Padding(padding: EdgeInsets.all(25)),
                 clock_card(null, data),
                 const Padding(padding: EdgeInsets.all(5)),
-                FloatingActionButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  backgroundColor: MetronicTheme.light_dark,
-                  child: const Icon(
-                    Ionicons.close_outline,
-                    color: MetronicTheme.dark,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ///刪除
+                    FloatingActionButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).colorScheme.surface
+                          : MetronicTheme.light_danger,
+                      child: Icon(
+                        Ionicons.trash,
+                        color:
+                            MetronicTheme.danger,
+                      ),
+                    ),
+
+                    ///返回列表
+                    FloatingActionButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).colorScheme.surface
+                          : MetronicTheme.light_dark,
+                      child: Icon(
+                        Ionicons.close_outline,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).textTheme.titleLarge!.color
+                            : MetronicTheme.dark,
+                      ),
+                    ),
+
+                    ///編輯
+                    if(data.status == '1')
+                      FloatingActionButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/create_clock', arguments: {'type': data.case_no == '' ? 'no_case' : 'has_case', 'data': data});
+                      },
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).colorScheme.surface
+                          : MetronicTheme.light_success,
+                      child: Icon(
+                        Ionicons.pencil,
+                        color: MetronicTheme.success,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -130,11 +202,216 @@ class _ClockDemoState extends State<ClockDemo> {
         });
   }
 
+  ///List Card Widget
+  clock_card(index, data) {
+    var weekday = [
+      " ",
+      tr('week.short.mon'),
+      tr('week.short.tue'),
+      tr('week.short.wed'),
+      tr('week.short.thu'),
+      tr('week.short.fri'),
+      tr('week.short.sat'),
+      tr('week.short.sun')
+    ];
+    // 參數帶入
+    var documentNumber = data.source_no;
+    var caseNo = data.case_no != '' ? data.case_no : tr("clock.card.no_case_number");
+    var status = data.status;
+
+    var departDatetime = DateTime.tryParse(data.depart_time == '' ? data.start_time : data.depart_time)!;
+    var startDatetime = DateTime.tryParse(data.start_time)!;
+    var endDatetime = DateTime.tryParse(data.end_time)!;
+    var traffic_hours = data.traffic_hours;
+    var worked_hours = data.worked_hours;
+    var total_hours = data.total_hours;
+    var createDate = '${DateFormat('M/d').format(departDatetime)}(${weekday[departDatetime.weekday]})';
+    // 時間計算
+    var departTime = DateFormat('HH:mm').format(departDatetime);
+    var startTime = DateFormat('HH:mm').format(startDatetime);
+    var endTime = DateFormat('HH:mm').format(endDatetime);
+    var startDiffHour = traffic_hours ~/ 1;
+    var startDiffMin = (traffic_hours % 1 * 60).toStringAsFixed(0);
+    var endDiffHour = worked_hours ~/ 1;
+    var endDiffMin = (worked_hours % 1 * 60).toStringAsFixed(0);
+    var totalDiffHour = total_hours ~/ 1;
+    var totalDiffMin = (total_hours % 1 * 60).toStringAsFixed(0);
+
+    return ClipPath(
+      clipper: HoleClipper(),
+      child: Card(
+        shadowColor: Theme.of(context).colorScheme.shadow,
+        color: Theme.of(context).colorScheme.surface,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+        child: ListTile(
+          onTap: () {
+            if (index != null) {
+              images = jsonDecode(data.images);
+              clock_dialog(items[index]);
+            }
+          },
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              const Padding(padding: EdgeInsets.all(5)),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Ink(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const ShapeDecoration(
+                        color: MetronicTheme.light_dark,
+                        shape: CircleBorder(),
+                      ),
+                      child: Icon(
+                          Ionicons.construct,
+                          color: Theme.of(context).brightness == Brightness.dark
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).textTheme.bodySmall!.color),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          (documentNumber != '') ? Text('$documentNumber') : Container(),
+                          Text('$caseNo')
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        getStatusLabel(status),
+                        Text(
+                          createDate,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Divider(
+                height: 20,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
+              SizedBox(
+                height: (index == null) ? 500 : 140,
+                child: ListView(
+                  controller: dialogController,
+                  children: [
+                    Text(
+                      '$totalDiffHour h $totalDiffMin m',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[Text(tr("clock.card.depart_time")), Text(departTime)],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text('$startDiffHour h $startDiffMin m'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Icon(
+                                  Ionicons.car,
+                                  color: Theme.of(context).textTheme.bodySmall!.color,
+                                ),
+                                const Text('--------'),
+                                Icon(
+                                  Ionicons.git_commit,
+                                  color: Theme.of(context).textTheme.bodySmall!.color,
+                                ),
+                                const Text('--------'),
+                                Icon(
+                                  Ionicons.location,
+                                  color: Theme.of(context).textTheme.bodySmall!.color,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[Text(tr("clock.card.arrive_time")), Text(startTime)],
+                        ),
+                      ],
+                    ),
+                    const Padding(padding: EdgeInsets.all(5)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[Text(tr("clock.card.start_time")), Text(startTime)],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text('$endDiffHour h $endDiffMin m'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Icon(
+                                  Ionicons.build,
+                                  color: Theme.of(context).textTheme.bodySmall!.color,
+                                ),
+                                const Text('--------'),
+                                Icon(
+                                  Ionicons.git_commit,
+                                  color: Theme.of(context).textTheme.bodySmall!.color,
+                                ),
+                                const Text('--------'),
+                                Icon(
+                                  Ionicons.checkmark_circle,
+                                  color: Theme.of(context).textTheme.bodySmall!.color,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[Text(tr("clock.card.end_time")), Text(endTime)],
+                        ),
+                      ],
+                    ),
+                    const Padding(padding: EdgeInsets.all(5)),
+                    (index == null) ? clock_detail(data) : Container(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ///List Card detail
   clock_detail(data) {
     // 參數帶入
     var clock_context = data.context;
 
-    print(images);
     return Column(
       children: [
         Column(
@@ -180,16 +457,12 @@ class _ClockDemoState extends State<ClockDemo> {
                       return Card(
                         shadowColor: Theme.of(context).colorScheme.shadow,
                         color: Theme.of(context).colorScheme.background,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                         child: InkWell(
                           onTap: () {
                             NavigatorState nav = Navigator.of(context);
-                            GlobalData.of(context)?.photo_file_base64_title =
-                                tr('clock.card.file');
-                            GlobalData.of(context)?.photo_file_base64 =
-                                images[index];
+                            GlobalData.of(context)?.photo_file_base64_title = tr('clock.card.file');
+                            GlobalData.of(context)?.photo_file_base64 = images[index];
                             nav.pushNamed('/photo_detail_base64');
                           },
                           child: Image.memory(
@@ -211,243 +484,6 @@ class _ClockDemoState extends State<ClockDemo> {
           ],
         )
       ],
-    );
-  }
-
-  clock_card(index, data) {
-    var weekday = [
-      " ",
-      tr('week.short.mon'),
-      tr('week.short.tue'),
-      tr('week.short.wed'),
-      tr('week.short.thu'),
-      tr('week.short.fri'),
-      tr('week.short.sat'),
-      tr('week.short.sun')
-    ];
-    // 參數帶入
-    var documentNumber = data.source_no;
-    var caseNo =
-        data.case_no != '' ? data.case_no : tr("clock.card.no_case_number");
-    var status = data.status;
-
-    var departDatetime = DateTime.tryParse(data.depart_time == '' ? data.start_time : data.depart_time)!;
-    var startDatetime = DateTime.tryParse(data.start_time)!;
-    var endDatetime = DateTime.tryParse(data.end_time)!;
-    var traffic_hours = data.traffic_hours;
-    var worked_hours = data.worked_hours;
-    var total_hours = data.total_hours;
-    var createDate =
-        '${DateFormat('M/d').format(departDatetime)}(${weekday[departDatetime.weekday]})';
-    // 時間計算
-    var departTime = DateFormat('HH:mm').format(departDatetime);
-    var startTime = DateFormat('HH:mm').format(startDatetime);
-    var endTime = DateFormat('HH:mm').format(endDatetime);
-    var startDiffHour = traffic_hours ~/ 1;
-    var startDiffMin = (traffic_hours % 1 * 60).toStringAsFixed(0);
-    var endDiffHour = worked_hours ~/ 1;
-    var endDiffMin = (worked_hours % 1 * 60).toStringAsFixed(0);
-    var totalDiffHour = total_hours ~/ 1;
-    var totalDiffMin = (total_hours % 1 * 60).toStringAsFixed(0);
-
-    return ClipPath(
-      clipper: HoleClipper(),
-      child: Card(
-        shadowColor: Theme.of(context).colorScheme.shadow,
-        color: Theme.of(context).colorScheme.surface,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12))),
-        child: ListTile(
-          onTap: () {
-            if (index != null) {
-              images = jsonDecode(data.images);
-              clock_dialog(items[index]);
-            }
-          },
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12))),
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              const Padding(padding: EdgeInsets.all(5)),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: Ink(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const ShapeDecoration(
-                        color: Colors.white,
-                        shape: CircleBorder(),
-                      ),
-                      child: Icon(Ionicons.construct,
-                          color: Theme.of(context).textTheme.bodySmall!.color),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          (documentNumber != '')
-                              ? Text('$documentNumber')
-                              : Container(),
-                          Text('$caseNo')
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        getStatusLabel(status),
-                        Text(
-                          createDate,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Divider(
-                height: 20,
-                color: Theme.of(context).textTheme.bodySmall!.color,
-              ),
-              SizedBox(
-                height: (index == null) ? 500 : 140,
-                child: ListView(
-                  controller: dialogController,
-                  children: [
-                    Text(
-                      '$totalDiffHour h $totalDiffMin m',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text(tr("clock.card.depart_time")),
-                            Text(departTime)
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text('$startDiffHour h $startDiffMin m'),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Icon(
-                                  Ionicons.car,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
-                                ),
-                                const Text('--------'),
-                                Icon(
-                                  Ionicons.git_commit,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
-                                ),
-                                const Text('--------'),
-                                Icon(
-                                  Ionicons.location,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text(tr("clock.card.arrive_time")),
-                            Text(startTime)
-                          ],
-                        ),
-                      ],
-                    ),
-                    const Padding(padding: EdgeInsets.all(5)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text(tr("clock.card.start_time")),
-                            Text(startTime)
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text('$endDiffHour h $endDiffMin m'),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Icon(
-                                  Ionicons.build,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
-                                ),
-                                const Text('--------'),
-                                Icon(
-                                  Ionicons.git_commit,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
-                                ),
-                                const Text('--------'),
-                                Icon(
-                                  Ionicons.checkmark_circle,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text(tr("clock.card.end_time")),
-                            Text(endTime)
-                          ],
-                        ),
-                      ],
-                    ),
-                    const Padding(padding: EdgeInsets.all(5)),
-                    (index == null) ? clock_detail(data) : Container(),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -481,8 +517,7 @@ class _ClockDemoState extends State<ClockDemo> {
           }
 
           if (_searchController.text != '') {
-            filterFuzzySearch =
-                element.case_no.contains(_searchController.text);
+            filterFuzzySearch = element.case_no.contains(_searchController.text);
           }
 
           return filterStatus && filterFuzzySearch;
@@ -604,8 +639,7 @@ class _ClockDemoState extends State<ClockDemo> {
                     child: Card(
                       shadowColor: Theme.of(context).colorScheme.shadow,
                       color: Theme.of(context).colorScheme.surface,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                       child: Column(
                         children: <Widget>[
                           const Padding(padding: EdgeInsets.only(top: 5)),
@@ -615,30 +649,21 @@ class _ClockDemoState extends State<ClockDemo> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color:
-                                  Theme.of(context).textTheme.bodySmall!.color,
+                              color: Theme.of(context).textTheme.bodySmall!.color,
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(10),
                             child: DropdownButtonFormField(
-                              dropdownColor:
-                                  Theme.of(context).colorScheme.surface,
+                              dropdownColor: Theme.of(context).colorScheme.surface,
                               key: _statusKey,
                               icon: Icon(
                                 Ionicons.caret_down_outline,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .color,
+                                color: Theme.of(context).textTheme.bodySmall!.color,
                               ),
                               hint: Text(
                                 tr("search.hint.status"),
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .color),
+                                style: TextStyle(color: Theme.of(context).textTheme.bodySmall!.color),
                               ),
                               onChanged: (value) async {
                                 if (value != null) {
@@ -648,31 +673,21 @@ class _ClockDemoState extends State<ClockDemo> {
                               },
                               value: _status == '' ? null : _status,
                               items: [
-                                DropdownMenuItem(
-                                    value: '1', child: getStatusLabel('1')),
-                                DropdownMenuItem(
-                                    value: '2', child: getStatusLabel('2')),
-                                DropdownMenuItem(
-                                    value: '3', child: getStatusLabel('3')),
-                                DropdownMenuItem(
-                                    value: '4', child: getStatusLabel('4')),
-                                DropdownMenuItem(
-                                    value: '5', child: getStatusLabel('5')),
-                                DropdownMenuItem(
-                                    value: '6', child: getStatusLabel('6')),
-                                DropdownMenuItem(
-                                    value: '7', child: getStatusLabel('7')),
+                                DropdownMenuItem(value: '1', child: getStatusLabel('1')),
+                                DropdownMenuItem(value: '2', child: getStatusLabel('2')),
+                                DropdownMenuItem(value: '3', child: getStatusLabel('3')),
+                                DropdownMenuItem(value: '4', child: getStatusLabel('4')),
+                                DropdownMenuItem(value: '5', child: getStatusLabel('5')),
+                                DropdownMenuItem(value: '6', child: getStatusLabel('6')),
+                                DropdownMenuItem(value: '7', child: getStatusLabel('7')),
                                 // DropdownMenuItem(
                                 //     value: '8', child: getStatusLabel('8')),
-                                DropdownMenuItem(
-                                    value: '9', child: getStatusLabel('9')),
+                                DropdownMenuItem(value: '9', child: getStatusLabel('9')),
                               ],
                               decoration: InputDecoration(
-                                contentPadding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                                 filled: true,
-                                fillColor:
-                                    Theme.of(context).colorScheme.surface,
+                                fillColor: Theme.of(context).colorScheme.surface,
                                 border: const OutlineInputBorder(),
                               ),
                             ),
@@ -689,17 +704,13 @@ class _ClockDemoState extends State<ClockDemo> {
                           child: TextFormField(
                             controller: _searchController,
                             decoration: InputDecoration(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 15),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                               filled: true,
                               fillColor: Theme.of(context).colorScheme.surface,
                               border: const OutlineInputBorder(),
                               labelText: tr("search.search"),
                               labelStyle: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .color,
+                                color: Theme.of(context).textTheme.bodySmall!.color,
                               ),
                               suffixIcon: IconButton(
                                 splashColor: Colors.transparent,
@@ -707,10 +718,7 @@ class _ClockDemoState extends State<ClockDemo> {
                                 onPressed: _searchController.clear,
                                 icon: Icon(
                                   Ionicons.close,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .color,
+                                  color: Theme.of(context).textTheme.bodySmall!.color,
                                 ),
                               ),
                             ),
@@ -719,9 +727,11 @@ class _ClockDemoState extends State<ClockDemo> {
                       ),
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: MetronicTheme.light_danger,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.surface
+                              : MetronicTheme.light_danger,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -739,9 +749,11 @@ class _ClockDemoState extends State<ClockDemo> {
                       ),
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: MetronicTheme.light_success,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.surface
+                              : MetronicTheme.light_success,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -755,22 +767,25 @@ class _ClockDemoState extends State<ClockDemo> {
                       ),
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: MetronicTheme.light_dark,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.surface
+                              :MetronicTheme.light_dark,
                         ),
                         child: IconButton(
                           onPressed: () {
                             setState(
                               () {
-                                hideAdvanceSearch =
-                                    hideAdvanceSearch ? false : true;
+                                hideAdvanceSearch = hideAdvanceSearch ? false : true;
                               },
                             );
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Ionicons.options,
-                            color: MetronicTheme.dark,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Theme.of(context).textTheme.titleLarge!.color
+                                : MetronicTheme.dark,
                           ),
                         ),
                       ),
@@ -794,8 +809,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       : Text(
                           _loading
                               ? tr('list.data_query_plz_wait')
-                              : tr(
-                                  'list.query_failed_contact_system_administrator'),
+                              : tr('list.query_failed_contact_system_administrator'),
                           textAlign: TextAlign.center,
                         )
                 ],

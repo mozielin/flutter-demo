@@ -144,10 +144,7 @@ class AlertStyles {
       color: Theme.of(context).colorScheme.surface,
       child: Text(
         tr('alerts.cancel'),
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+        style: Theme.of(context).textTheme.titleLarge!.apply(fontWeightDelta: 2, fontSizeDelta: -2),
       ),
       onPressed: () => Navigator.pop(context),
     );

@@ -91,11 +91,12 @@
   "clock": {
     "appbar": {
       "list": "報工列表",
-      "create": "登錄工時"
+      "create": "登錄工時",
+      "edit": "修改工時"
     },
     "status": {
       "draft": "草稿",
-      "verify": "待主管審核",
+      "verify": "待審核",
       "verify_owner": "待專案 Owner 審核",
       "verify_sales": "待業務審核",
       "done": "完成",
@@ -142,12 +143,15 @@
       "file": "附檔",
       "count_error": "請先計算工時！",
       "case_no": "Case編號",
-      "case_no_hint": "請選擇Case編號"
+      "case_no_hint": "請選擇Case編號",
+      "img_delete": "刪除",
+      "img_camera": "相機",
+      "img_album": "相簿"
     },
     "sync": {
       "title": "同步失敗",
-      "type": "同步工時類別失敗",
-      "case": "同步Case資料失敗"
+      "type": "同步工時類別",
+      "case": "同步Case資料"
     },
     "error" : {
       "repeat"        : "{startTime} ~ {endTime} 此段時間已重複",
@@ -161,6 +165,12 @@
       "update_error"  : "異常報表更新失敗！",
       "future_clock"  : "請勿登錄未來工時",
       "edit"          : "請重新調整工時登錄時間"
+    },
+    "alerts" : {
+      "warning_verify" : "確認是否送出審核?",
+      "verify" : "提醒您進入審核階段後，將無法修改資料！",
+      "warning_delete" : "確認是否刪除附檔資料?",
+      "file_delete" : "提醒您刪除附檔資料後，將無法復原！"
     }
   },
 
@@ -195,11 +205,22 @@
     "require": "此欄位為必填"
   },
   "cutscene": {
-    "info_default_title": "系統資料抓取中",
+    "info_default_title": "系統資料同步中",
+    "info_authenticate_text": "驗證用戶身分",
     "info_default_text": "開始檢查需要資源",
-    "clock_type_title": "取得工時類別",
-    "clock_type_text": "工時類別解析中",
+    "apiDisable_text": "切換為離線模式",
     "finish_title": "系統準備完成",
-    "finish_text": "好好工作吧!"
+    "finish_text": "好好工作吧!",
+
+    "sync" : {
+      "clock_type": "取得工時類別資料",
+      "dispatch": "取得CRM派工資料",
+      "warranty": "取得CRM定保資料",
+      "monthly": "取得月結資料",
+      "case": "取得Case資料",
+      "success": "完成",
+      "failed": "失敗",
+      "pass": "無法與server連線"
+    }
   }
 }

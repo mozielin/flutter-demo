@@ -295,7 +295,6 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                 ),
                 TextButton.icon(
                   onPressed: () async {
-                    /// TODO-Ryan: clock insert example
                     await ClockInfo().CheckClock('66','2023-02-14 00:30:00', '2023-02-14 00:30:00', '2023-02-14 05:30:00', '2023-01-25');
                   },
                   icon: Icon(Ionicons.server_outline,
