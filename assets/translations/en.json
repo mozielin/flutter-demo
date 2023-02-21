@@ -205,8 +205,8 @@
     "clock_type_text": "Clock Types Analysing...",
     "finish_title": "System Ready",
     "finish_text": "Enjoy your working Day",
-    "info_authenticate_text": "驗證用戶身分",
-    "apiDisable_text": "切換為離線模式",
+    "info_authenticate_text": "Verify User Identities",
+    "apiDisable_text": "Switch to offline mode",
     "sync" : {
       "clock_type": "Trying to get Clock type Data",
       "dispatch": "Trying to get CRM Dispatch Data",

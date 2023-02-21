@@ -96,7 +96,7 @@
     },
     "status": {
       "draft": "草稿",
-      "verify": "待主管審核",
+      "verify": "待審核",
       "verify_owner": "待專案 Owner 審核",
       "verify_sales": "待業務審核",
       "done": "完成",

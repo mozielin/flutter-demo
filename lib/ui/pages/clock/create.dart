@@ -42,7 +42,6 @@ class CreateClock extends StatefulWidget {
 
 class _CreateClockState extends State<CreateClock> {
   final api.Dio dio = api.Dio();
-  SingingCharacter? _character = SingingCharacter.project;
   final _depart = TextEditingController(); //出發時間
   final _start = TextEditingController(); //開始時間
   final _end = TextEditingController(); //結束時間
@@ -50,38 +49,45 @@ class _CreateClockState extends State<CreateClock> {
   final _totalHours = TextEditingController(); //總時數
   final _worksHours = TextEditingController(); //工作時數
   final _clock_context = TextEditingController(); //工作內容
-  final _internal_order = TextEditingController(); //工作內容
+  final _internal_order = TextEditingController(); //internal_order
+
   late Map allType = Map(); //屬性、主、子類別
-  var typeBoxVisible = 1.0; //主子類別透明度(無CASE)
-  var caseTypeBoxVisible = 0.0; //主子類別透明度(有CASE)
-  bool typeBoxSet = true; //主子類別調完透明度調整空間(無CASE)
-  bool caseTypeBoxSet = false; //主子類別調完透明度調整空間(有CASE)
-  var parent_id;
-  int attr_id = 6;
-  bool type_init_value = true; //是否為主類別init (判斷是否清除主類別)
-  var child_id;
+  late Map userCase = Map();
   late Map errorText = {
     'clock_context': null,
     'startTime': null,
     'endTime': null,
     'clock_type': null,
   };
-  bool reset_child = false; //是否清除子類別key
-  var user;
-  late Map userCase = Map();
-  var case_number = 'no_case'; //無Case
-  Io.File? img;
-  Io.File? tempImg;
   late String sale_type = '';
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
-  String img64 = '[]';
-  bool hideTypeBox = false; //是否隱藏主/子類別
 
-  bool rebuild = false; //是否清除子類別key
+  bool typeBoxSet = true; //主子類別調完透明度調整空間(無CASE)
+  bool caseTypeBoxSet = false; //主子類別調完透明度調整空間(有CASE)
+  bool type_init_value = true; //是否為主類別init (判斷是否清除主類別)
+  bool reset_child = false; //是否清除子類別key
+  bool hideTypeBox = false; //是否隱藏主/子類別
+  bool rebuild = false; //判斷是否Rebuild過
+
+  var typeBoxVisible = 1.0; //主子類別透明度(無CASE)
+  var caseTypeBoxVisible = 0.0; //主子類別透明度(有CASE)
+  var parent_id;
+  var child_id;
+  var user;
+  var case_number = 'no_case'; //無Case
+
+  SingingCharacter? _character = SingingCharacter.project;
+  String img64 = '[]';
+  int attr_id = 6;
+  Io.File? img;
+
   @override
   void dispose() {
-    tempImg?.delete();
-    // TODO: implement dispose
+    try{
+      img?.delete();
+    }catch(e){
+      developer.log('$e');
+    }
     super.dispose();
   }
 
@@ -180,7 +186,6 @@ class _CreateClockState extends State<CreateClock> {
     final directory = await Io.Directory('${tempDir.path}/editClockTempImg').create(recursive: true);
     img = Io.File('${directory.path}/$id.png');
     img?.writeAsBytesSync(List.from(decodedBytes));
-    tempImg = img;
     return img;
   }
 

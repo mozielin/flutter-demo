@@ -155,14 +155,12 @@ class _ClockDemoState extends State<ClockDemo> {
                         Navigator.of(context).pop();
                       },
                       backgroundColor: Theme.of(context).brightness == Brightness.dark
-                          ? MetronicTheme.light_dark
+                          ? Theme.of(context).colorScheme.surface
                           : MetronicTheme.light_danger,
                       child: Icon(
                         Ionicons.trash,
                         color:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Theme.of(context).colorScheme.primary
-                                : MetronicTheme.danger,
+                            MetronicTheme.danger,
                       ),
                     ),
 
@@ -171,29 +169,29 @@ class _ClockDemoState extends State<ClockDemo> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      backgroundColor: MetronicTheme.light_dark,
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).colorScheme.surface
+                          : MetronicTheme.light_dark,
                       child: Icon(
                         Ionicons.close_outline,
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Theme.of(context).colorScheme.primary
+                            ? Theme.of(context).textTheme.titleLarge!.color
                             : MetronicTheme.dark,
                       ),
                     ),
 
                     ///編輯
-                    // if(data.status == '1')
+                    if(data.status == '1')
                       FloatingActionButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/create_clock', arguments: {'type': data.case_no == '' ? 'no_case' : 'has_case', 'data': data});
                       },
                       backgroundColor: Theme.of(context).brightness == Brightness.dark
-                          ? MetronicTheme.light_dark
+                          ? Theme.of(context).colorScheme.surface
                           : MetronicTheme.light_success,
                       child: Icon(
                         Ionicons.pencil,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Theme.of(context).colorScheme.primary
-                            : MetronicTheme.success,
+                        color: MetronicTheme.success,
                       ),
                     ),
                   ],
@@ -729,9 +727,11 @@ class _ClockDemoState extends State<ClockDemo> {
                       ),
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: MetronicTheme.light_danger,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.surface
+                              : MetronicTheme.light_danger,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -749,9 +749,11 @@ class _ClockDemoState extends State<ClockDemo> {
                       ),
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: MetronicTheme.light_success,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.surface
+                              : MetronicTheme.light_success,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -765,9 +767,11 @@ class _ClockDemoState extends State<ClockDemo> {
                       ),
                       const Padding(padding: EdgeInsets.only(left: 6)),
                       Ink(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          color: MetronicTheme.light_dark,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Theme.of(context).colorScheme.surface
+                              :MetronicTheme.light_dark,
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -777,9 +781,11 @@ class _ClockDemoState extends State<ClockDemo> {
                               },
                             );
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Ionicons.options,
-                            color: MetronicTheme.dark,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Theme.of(context).textTheme.titleLarge!.color
+                                : MetronicTheme.dark,
                           ),
                         ),
                       ),
