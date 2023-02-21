@@ -211,7 +211,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       backgroundColor: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).colorScheme.surface
                           : MetronicTheme.light_danger,
-                      child: Icon(
+                      child: const Icon(
                         Ionicons.trash,
                         color:
                             MetronicTheme.danger,
@@ -243,7 +243,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       backgroundColor: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).colorScheme.surface
                           : MetronicTheme.light_success,
-                      child: Icon(
+                      child: const Icon(
                         Ionicons.pencil,
                         color: MetronicTheme.success,
                       ),

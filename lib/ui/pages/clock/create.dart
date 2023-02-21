@@ -610,7 +610,6 @@ class _CreateClockState extends State<CreateClock> {
                     ),
                   ],
                 ),
-
                 ///File
                 Column(
                   children: [
@@ -627,7 +626,7 @@ class _CreateClockState extends State<CreateClock> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.surface,
-                                  image: img == null ? DecorationImage(
+                                  image: img == null ? const DecorationImage(
                                     image: AssetImage("assets/img/default_image.png"),
                                     fit: BoxFit.cover,
                                   ) :DecorationImage(
@@ -758,7 +757,7 @@ class _CreateClockState extends State<CreateClock> {
                                   fontWeight: FontWeight.bold),
                             ),
                             style: TextButton.styleFrom(
-                              padding: EdgeInsets.only(
+                              padding: const EdgeInsets.only(
                                   left: 10, right: 15, top: 10, bottom: 10),
                               foregroundColor: Colors.red,
                               backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -1052,6 +1051,7 @@ class _CreateClockState extends State<CreateClock> {
                     Navigator.pop(context);
                     ClockInfo().InsertClock(clockData).then((res){
                       if (res) {
+                        ///TODO:優化-點擊物理返回鍵會回到剛剛報工form，攔截或取消物理返回
                         Alert(
                           context: context,
                           style: AlertStyles().successStyle(context),
