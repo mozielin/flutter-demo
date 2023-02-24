@@ -14,8 +14,10 @@ import 'package:hws_app/service/ClockInfo.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uiblock/uiblock.dart';
+import 'package:uuid/uuid.dart';
 import '../../../config/setting.dart';
 import '../../../cubit/user_cubit.dart';
+import '../../../service/sync.dart';
 import '../../widgets/alert/icons/error_icon.dart';
 import '../../widgets/alert/icons/success_icon.dart';
 import '../../widgets/alert/icons/warning_icon.dart';
@@ -131,6 +133,25 @@ class _ClockDemoState extends State<ClockDemo> {
                     ? MetronicTheme.light_dark
                     : MetronicTheme.light_warning;
         break;
+      case '10':
+        text = tr('clock.status.sync_failed');
+        textColor = Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surface
+            : MetronicTheme.danger;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+            ? MetronicTheme.light_dark
+            : MetronicTheme.light_danger;
+        break;
+
+      case '11':
+        text = tr('clock.status.bpm_failed');
+        textColor = Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surface
+            : MetronicTheme.danger;
+        bgColor = Theme.of(context).brightness == Brightness.dark
+            ? MetronicTheme.light_dark
+            : MetronicTheme.light_danger;
+        break;
     }
 
     return StatusLabel(title: text, color: textColor, bg_color: bgColor);
@@ -155,7 +176,7 @@ class _ClockDemoState extends State<ClockDemo> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ///刪除
-                    if(data.status == '1')
+                    if(data.status == '1' && data.sync_status != '3')
                       FloatingActionButton(
                       onPressed: () {
                         //Navigator.of(context).pop();
@@ -235,7 +256,7 @@ class _ClockDemoState extends State<ClockDemo> {
                     ),
 
                     ///編輯
-                    if(data.status == '1')
+                    if((data.status == '1' || data.status == '6') && data.sync_status != '3')
                       FloatingActionButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/create_clock', arguments: {'type': data.case_no == '' ? 'no_case' : 'has_case', 'data': data});
@@ -315,13 +336,13 @@ class _ClockDemoState extends State<ClockDemo> {
                     flex: 1,
                     child: Ink(
                       padding: const EdgeInsets.all(10),
-                      decoration: const ShapeDecoration(
+                      decoration: ShapeDecoration(
                         color: MetronicTheme.light_dark,
                         shape: CircleBorder(),
                       ),
                       child: Icon(
-                          Ionicons.construct,
-                          color: Theme.of(context).brightness == Brightness.dark
+                          data.sync_status == '2' ? Ionicons.cloud_done : Ionicons.cloud_offline
+                          ,color: Theme.of(context).brightness == Brightness.dark
                                 ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).textTheme.bodySmall!.color),
                     ),
@@ -343,8 +364,8 @@ class _ClockDemoState extends State<ClockDemo> {
                     flex: 2,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        getStatusLabel(status),
+                      children:[
+                        data.is_verify == '-1' ? getStatusLabel('11') : data.sync_failed == '' ? getStatusLabel(status) : getStatusLabel('10'),
                         Text(
                           createDate,
                           style: const TextStyle(
@@ -468,6 +489,8 @@ class _ClockDemoState extends State<ClockDemo> {
 
     return Column(
       children: [
+        if(data.sync_failed != '')
+          getSyncFailed(data.sync_failed),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -574,6 +597,9 @@ class _ClockDemoState extends State<ClockDemo> {
             filterFuzzySearch = element.case_no.contains(_searchController.text);
           }
 
+          ///排除已刪除資料
+          filterStatus = (element.sync_status != '3');
+
           return filterStatus && filterFuzzySearch;
         }).toList();
 
@@ -618,9 +644,42 @@ class _ClockDemoState extends State<ClockDemo> {
 
   Future<void> _pullToRefresh() async {
     setState(() {
-      getClocks(true);
+      var user = BlocProvider.of<UserCubit>(context).state;
+      SyncService().uploadClockData(user.token).then((result){
+        ClockInfo().SyncClock(user.token, user.enumber).then((result){
+          getClocks(true);
+        });
+      });
     });
     return;
+  }
+
+  getSyncFailed(sync_failed){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          tr('clock.card.sync_failed_title'),
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodySmall!.color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Divider(
+          height: 20,
+          color: Theme.of(context).textTheme.bodySmall!.color,
+        ),
+        Text(
+          sync_failed,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodySmall!.color,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 20),
+        ),
+      ],
+    );
   }
 
   @override
@@ -874,4 +933,5 @@ class _ClockDemoState extends State<ClockDemo> {
       ),
     );
   }
+
 }

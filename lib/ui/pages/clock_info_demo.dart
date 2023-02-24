@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hws_app/cubit/bottom_nav_cubit.dart';
 import 'package:hws_app/cubit/user_cubit.dart';
 import 'package:hws_app/service/ClockInfo.dart';
+import 'package:hws_app/service/sync.dart';
 import 'package:ionicons/ionicons.dart';
 
 import '../../models/user.dart';
@@ -301,6 +302,26 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                       color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     'CheckClock',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .apply(fontWeightDelta: 2, fontSizeDelta: -2),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () async {
+                    await SyncService().uploadClockData('2484|i1FfZqDPBK8qtcp7QXAaK0G539eGLjKC8hXsWuIq');
+                    print('QQ');
+                  },
+                  icon: Icon(Ionicons.phone_portrait_outline,
+                      color: Theme.of(context).colorScheme.primary),
+                  label: Text(
+                    'UploadClock',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context)

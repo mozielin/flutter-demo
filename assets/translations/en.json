@@ -99,14 +99,19 @@
       "reject": "Reject",
       "not_save_sap": "Not save SAP",
       "not_save_crm": "Not save CRM",
-      "not_save_hws": "Not save HWS"
+      "not_save_hws": "Not save HWS",
+      "sync_failed": "Sync Failed",
+      "bpm_failed": "BPM Failed"
     },
     "card": {
       "no_case_number": "No case number",
       "depart_time": "Depart",
       "arrive_time": "Arrive",
       "start_time": "Start",
-      "end_time": "End"
+      "end_time": "End",
+      "context": "Working context",
+      "file": "Attach Files",
+      "sync_failed_title": "Upload failed reason"
     },
     "create_type": {
       "no_case_title": "No Case",
@@ -214,6 +219,8 @@
     "apiDisable_text": "Switch to offline mode",
     "sync" : {
       "clock_type": "Trying to get Clock type Data",
+      "clock_file": "Trying to get Clock attach files",
+      "clock_upload": "Uploading Local Clock Data",
       "dispatch": "Trying to get CRM Dispatch Data",
       "warranty": "Trying to get CRM Warranty Data",
       "monthly": "Trying to get Monthly Data",

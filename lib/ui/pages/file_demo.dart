@@ -135,7 +135,7 @@ class _FileDemoState extends State<FileDemo> {
     } on api.DioError catch (e) {
       debugPrint('Dio Error => $e');
       setState(() {
-        msg = e.message;
+        msg = e.message!;
         _load = false;
       });
       rethrow;

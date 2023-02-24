@@ -13,7 +13,7 @@ part 'user_state.dart';
 
 class UserCubit extends HydratedCubit<UserState> {
   UserCubit()
-      : super(UserState(name: 'default', email: 'default', enumber: 'default', avatar: 'default', token: 'default', networkEnable: false));
+      : super(UserState(name: 'Stranger', email: '', enumber: '', avatar: '', token: '', networkEnable: false));
 
   final Dio dio = Dio();
   @override

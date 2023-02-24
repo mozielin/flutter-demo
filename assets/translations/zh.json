@@ -103,7 +103,9 @@
       "reject": "駁回",
       "not_save_sap": "轉入 SAP 失敗",
       "not_save_crm": "轉入 CRM 失敗",
-      "not_save_hws": "轉入 HWS 失敗"
+      "not_save_hws": "轉入 HWS 失敗",
+      "sync_failed": "上傳失敗",
+      "bpm_failed": "送審失敗"
     },
     "card": {
       "no_case_number": "無 Case 報工",
@@ -112,7 +114,8 @@
       "start_time": "開始時間",
       "end_time": "結束時間",
       "context": "報工內容",
-      "file": "附件檔案"
+      "file": "附件檔案",
+      "sync_failed_title": "上傳失敗原因"
     },
     "create_type": {
       "no_case_title": "無 Case",
@@ -220,6 +223,7 @@
     "sync" : {
       "clock_type": "取得工時類別資料",
       "clock_file": "取得工時附檔資料",
+      "clock_upload": "上傳手機工時紀錄",
       "clock": "取得工時資料",
       "dispatch": "取得CRM派工資料",
       "warranty": "取得CRM定保資料",
