@@ -48,13 +48,18 @@ class ClockAdapter extends TypeAdapter<Clock> {
       bpm_number: fields[28] == null ? '' : fields[28] as String,
       case_no: fields[29] == null ? '' : fields[29] as String,
       images: fields[30] == null ? '' : fields[30] as String,
+      sync_status: fields[31] == null ? '' : fields[31] as String,
+      clock_type: fields[32] == null ? '' : fields[32] as String,
+      sale_type: fields[33] == null ? '' : fields[33] as String,
+      sync_failed: fields[34] == null ? '' : fields[34] as String,
+      is_verify: fields[35] == null ? '' : fields[35] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Clock obj) {
     writer
-      ..writeByte(31)
+      ..writeByte(36)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -116,7 +121,17 @@ class ClockAdapter extends TypeAdapter<Clock> {
       ..writeByte(29)
       ..write(obj.case_no)
       ..writeByte(30)
-      ..write(obj.images);
+      ..write(obj.images)
+      ..writeByte(31)
+      ..write(obj.sync_status)
+      ..writeByte(32)
+      ..write(obj.clock_type)
+      ..writeByte(33)
+      ..write(obj.sale_type)
+      ..writeByte(34)
+      ..write(obj.sync_failed)
+      ..writeByte(35)
+      ..write(obj.is_verify);
   }
 
   @override

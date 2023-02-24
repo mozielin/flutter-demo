@@ -58,6 +58,7 @@ class _CreateClockState extends State<CreateClock> {
     'startTime': null,
     'endTime': null,
     'clock_type': null,
+    'parent_id': null,
   };
   late String sale_type = '';
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
@@ -137,7 +138,7 @@ class _CreateClockState extends State<CreateClock> {
       _internal_order.text = data.internal_order;
       attr_id = int.parse(data.clock_attribute);
       parent_id = data.clock_type;
-      child_id = data.type == 'null' ? null :data.type;
+      child_id = data.type == '' ? null :data.type;
       case_number = data.case_no;
 
       ///無case
@@ -949,10 +950,20 @@ class _CreateClockState extends State<CreateClock> {
   submitClock(draft, token, data) async {
     var res = BlocProvider.of<ClockCubit>(context).state.toMap();
     bool check = true;
+    ///類型為請假時 parent_id = 9
+    if (attr_id == 8) {
+      parent_id = 9;
+    }
     setState(() {
       errorText.forEach((k, v) {
         errorText[k] = null;
       });
+
+      if (parent_id == null) {
+        errorAlert("請選擇主類別！");
+        // errorText['clock_type'] = tr('validation.require');
+        check = false;
+      }
 
       if (_clock_context.text.isEmpty) {
         errorText['clock_context'] = tr('validation.require');
@@ -983,9 +994,6 @@ class _CreateClockState extends State<CreateClock> {
 
       ClockInfo().CheckClock(data == null ? 'id' : data.id,departTime,startTime, endTime, res['monthly']).then((res) {
         if(res['success']){
-          if (attr_id == 8) {
-            parent_id = 9;
-          }
 
           ///圖片轉為base64在array裡轉成Json儲存
           if(img != null){
@@ -1028,6 +1036,7 @@ class _CreateClockState extends State<CreateClock> {
             'sync_status': '1',
             'clock_type': parent_id,
             'sale_type': sale_type,
+            'is_verify': '0'
           };
 
           ///送審時提示訊息
@@ -1251,7 +1260,7 @@ class _CreateClockState extends State<CreateClock> {
           // 'draft': draft,
         });
         api.Response res = await dio.post(
-            '${InitSettings.apiUrl}:443/api/storeClockAPI',data: formData
+            '${InitSettings.apiUrl}:443/api/clock',data: formData
         );
 
         if (res.data != null) {

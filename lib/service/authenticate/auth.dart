@@ -90,7 +90,6 @@ class AuthService{
       if (response.statusCode == 200 && response.data != null) {
         String token = response.data['token'];
         developer.log('User-token: $token');
-        ///TODO:成功刷新token觸發同步事件並上傳工時
         return {'success':true, 'token':token};
       } else {
         return json.decode(response.data);

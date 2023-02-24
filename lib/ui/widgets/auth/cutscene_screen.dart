@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart' as api;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:hws_app/config/theme.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../../cubit/clock_cubit.dart';
 import '../../../cubit/user_cubit.dart';
+import '../../../models/toBeSyncClock.dart';
 import '../../../service/ClockInfo.dart';
 import '../../../service/authenticate/auth.dart';
 import '../../../service/sync.dart';
@@ -70,6 +74,27 @@ class _CutsceneScreenState extends State<CutsceneScreen> {
             var user = BlocProvider.of<UserCubit>(context).state;
             String message;
             bool status;
+
+            ///上傳工時
+            yield await SyncService().uploadClockData(user.token).then((result){
+              message = tr('cutscene.sync.clock_upload');
+              try{
+                if(result){
+                  developer.log("uploadClockData: Done");
+                  status = true;
+                }else{
+                  developer.log("uploadClockData: Failed");
+                  status = false;
+                }
+              }catch(e){
+                print(e);
+                developer.log("uploadClockData: Failed");
+                status = false;
+              }
+
+              return {'message':message, 'status':status};
+
+            });
 
             ///同步工時資料
             yield await ClockInfo().SyncClock(user.token, user.enumber).then((result){

@@ -27,23 +27,36 @@ class ClockInfo {
       /// API 抓取工時資料
       dio.options.headers['Authorization'] = 'Bearer $token';
       Response res = await dio.post(
-        '${InitSettings.apiUrl}:443/api/getClocks', // TODO: URL 放至 env 相關設定
+        '${InitSettings.apiUrl}:443/api/getClocks',
         data: {
           'enumber': enumber,
           'skip': 0,
           'take': 1000,
           'isNotMonthly': true
         },
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 3));
 
       if (res.statusCode == 200 && res.data != null) {
         /// 清除所有工時資料
         await clockBox.clear();
 
         for (var data in res.data['clocks']) {
+          ///判斷售前售後
+          var sale_type = '';
+          ///其中一個欄位有值就是有Case
+          if (data['project_id'] != null || data['project_header_id'] != null){
+             ///子Case有值就是售後
+            if (data['project_id'] != null){
+              ///售後
+              sale_type = 'post';
+            }else{
+              ///售前
+              sale_type = 'pre';
+            }
+          }
           Clock ClockData = Clock(
             id: data['id'].toString(),
-            type: data['type'].toString(),
+            type: data['type'] == null ? '' :data['type'].toString(),
             clock_attribute: data['clock_attribute'].toString(),
             clocking_no: data['clocking_no'],
             source_no: data['source_no'] ?? '',
@@ -74,6 +87,11 @@ class ClockInfo {
             case_no:
                 (data['project'] != null) ? data['project']['case_no'] : '',
             images: '[]',
+            sync_status : '2',//預設web同步狀態為2
+            clock_type : data['clock_type'].toString(),
+            sale_type : sale_type,
+            sync_failed : '',
+            is_verify : data['is_verify'].toString(),
           );
 
           /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
@@ -87,7 +105,7 @@ class ClockInfo {
         return false;
       }
     } catch (e) {
-      print('error');
+      print('SyncClock error');
       print(e);
       return false;
     }
@@ -96,8 +114,13 @@ class ClockInfo {
   ///檢查工時資料正確
   CheckClock(id, departTime, startTime, endTime, monthly) async {
     bool result = true;
-    List hiveClocks = await ClockInfo().GetClock();
+    List getHiveClocks = await ClockInfo().GetClock();
     List errorMessages = [];
+
+    ///排除已未上傳刪除資料
+    List hiveClocks = getHiveClocks.where((element) {
+      return element.sync_status != '3';
+    }).toList();
 
     /// print("輸入ID:$id");
     /// print("輸入開始:$startTime");
@@ -178,47 +201,15 @@ class ClockInfo {
             images.add(each['base64_path'].split('base64,')[1]);
           }
 
-          Clock ClockData = Clock(
-            id: data.id,
-            type: data.type,
-            clock_attribute: data.clock_attribute,
-            clocking_no: data.clocking_no,
-            source_no: data.source_no,
-            enumber: data.enumber,
-            bu_code: data.bu_code,
-            dept_code: data.dept_code,
-            project_id: data.project_id,
-            context: data.context,
-            function_code: data.function_code,
-            direct_code: data.direct_code,
-            traffic_hours: data.traffic_hours,
-            worked_hours: data.worked_hours,
-            total_hours: data.total_hours,
-            depart_time: data.depart_time,
-            start_time: data.start_time,
-            end_time: data.end_time,
-            status: data.status,
-            created_at: data.created_at,
-            updated_at: data.updated_at,
-            deleted_at: data.deleted_at,
-            sales_enumber: data.sales_enumber,
-            sales_bu_code: data.sales_bu_code,
-            sales_dept_code: data.sales_dept_code,
-            sap_wbs: data.sap_wbs,
-            order_date: data.order_date,
-            internal_order: data.internal_order,
-            bpm_number: data.bpm_number,
-            case_no: data.case_no,
-            images: json.encode(images),
-          );
-
+          Clock ClockData = clockBox.get(data.id);
+          ClockData.images = json.encode(images);
+          ClockData.save();
           /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
-          clockBox.put(data.id, ClockData);
         } else {
           print('404 SyncClockImage error');
         }
       } catch (e) {
-        print('error');
+        print('SyncClockImage error');
         print(e);
       }
     }
@@ -229,8 +220,12 @@ class ClockInfo {
   /// 取得工時資料
   GetClock() async {
     List ClockList = [];
-    for (var data in toBeSyncClockBox.values) {
-      ClockList.add(data);
+    //for (var data in clockBox.values) {
+    for (var clockBoxData in clockBox.values) {
+      ClockList.add(clockBoxData);
+    }
+    for (var toBeSyncClockBoxData in toBeSyncClockBox.values) {
+      ClockList.add(toBeSyncClockBoxData);
     }
     return ClockList;
   }
@@ -272,50 +267,100 @@ class ClockInfo {
 
   /// insert 工時資料
   InsertClock(Map data) async {
-    /// TODO-Ryan:若同步 toBeSyncClock hive 資料至 Web 時，用 id find clock data，若有 find 到則 updata，若無 find 到則 create
     try {
+      Future res;
       /// 使用 uuid 作為 hive 中的 key
       if (data['id'] == '') data['id'] = const Uuid().v1();
 
-      ToBeSyncClock ClockData = ToBeSyncClock(
-        id: data['id'].toString(),
-        type: data['type'].toString(),
-        clock_attribute: data['clock_attribute'].toString(),
-        clocking_no: data['clocking_no'],
-        source_no: data['source_no'] ?? '',
-        enumber: data['enumber'],
-        bu_code: data['bu_code'],
-        dept_code: data['dept_code'],
-        project_id: data['project_id'] ?? '',
-        context: data['context'],
-        function_code: data['function_code'],
-        direct_code: data['direct_code'],
-        traffic_hours: data['traffic_hours'].toDouble(),
-        worked_hours: data['worked_hours'].toDouble(),
-        total_hours: data['total_hours'].toDouble(),
-        depart_time: data['depart_time'],
-        start_time: data['start_time'],
-        end_time: data['end_time'],
-        status: data['status'].toString(),
-        created_at: data['created_at'],
-        updated_at: data['updated_at'],
-        deleted_at: data['deleted_at'] ?? '',
-        sales_enumber: data['sales_enumber'],
-        sales_bu_code: data['sales_bu_code'],
-        sales_dept_code: data['sales_dept_code'],
-        sap_wbs: data['sap_wbs'] ?? '',
-        order_date: data['order_date'] ?? '',
-        internal_order: data['internal_order'] ?? '',
-        bpm_number: data['bpm_number'] ?? '',
-        case_no: data['case_no'] ?? '',
-        images: data['images'] ?? '[]',
-        sync_status: '1',
-        clock_type: data['clock_type'].toString() ?? '',
-        sale_type: data['sale_type'].toString() ?? '',
-      );
+      if (Uuid.isValidUUID(fromString: data['id'])){
 
-      /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
-      var res = toBeSyncClockBox.put(data['id'].toString(), ClockData);
+        ToBeSyncClock ClockData = ToBeSyncClock(
+          id: data['id'].toString(),
+          type: data['type'] == null ? '' : data['type'].toString(),
+          clock_type: data['clock_type'] == null ? '' : data['clock_type'].toString(),
+          clock_attribute: data['clock_attribute'].toString(),
+          clocking_no: data['clocking_no'],
+          source_no: data['source_no'] ?? '',
+          enumber: data['enumber'],
+          bu_code: data['bu_code'],
+          dept_code: data['dept_code'],
+          project_id: data['project_id'] ?? '',
+          context: data['context'],
+          function_code: data['function_code'],
+          direct_code: data['direct_code'],
+          traffic_hours: data['traffic_hours'].toDouble(),
+          worked_hours: data['worked_hours'].toDouble(),
+          total_hours: data['total_hours'].toDouble(),
+          depart_time: data['depart_time'],
+          start_time: data['start_time'],
+          end_time: data['end_time'],
+          status: data['status'].toString(),
+          created_at: data['created_at'],
+          updated_at: data['updated_at'],
+          deleted_at: data['deleted_at'] ?? '',
+          sales_enumber: data['sales_enumber'],
+          sales_bu_code: data['sales_bu_code'],
+          sales_dept_code: data['sales_dept_code'],
+          sap_wbs: data['sap_wbs'] ?? '',
+          order_date: data['order_date'] ?? '',
+          internal_order: data['internal_order'] ?? '',
+          bpm_number: data['bpm_number'] ?? '',
+          case_no: data['case_no'] ?? '',
+          images: data['images'] ?? '[]',
+          sync_status: '1',
+          sale_type: data['sale_type'].toString() ?? '',
+          sync_failed: '',
+          is_verify: '',
+        );
+
+        /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
+        res = toBeSyncClockBox.put(data['id'].toString(), ClockData);
+      }else{
+
+        Clock ClockData = Clock(
+          id: data['id'].toString(),
+          type: data['type'] == null ? '' :data['type'].toString(),
+          clock_type: data['clock_type'] == null ? '' : data['clock_type'].toString(),
+          clock_attribute: data['clock_attribute'].toString(),
+          clocking_no: data['clocking_no'],
+          source_no: data['source_no'] ?? '',
+          enumber: data['enumber'],
+          bu_code: data['bu_code'],
+          dept_code: data['dept_code'],
+          project_id: data['project_id'] ?? '',
+          context: data['context'],
+          function_code: data['function_code'],
+          direct_code: data['direct_code'],
+          traffic_hours: data['traffic_hours'].toDouble(),
+          worked_hours: data['worked_hours'].toDouble(),
+          total_hours: data['total_hours'].toDouble(),
+          depart_time: data['depart_time'],
+          start_time: data['start_time'],
+          end_time: data['end_time'],
+          status: data['status'].toString(),
+          created_at: data['created_at'],
+          updated_at: data['updated_at'],
+          deleted_at: data['deleted_at'] ?? '',
+          sales_enumber: data['sales_enumber'],
+          sales_bu_code: data['sales_bu_code'],
+          sales_dept_code: data['sales_dept_code'],
+          sap_wbs: data['sap_wbs'] ?? '',
+          order_date: data['order_date'] ?? '',
+          internal_order: data['internal_order'] ?? '',
+          bpm_number: data['bpm_number'] ?? '',
+          case_no:
+          (data['project'] != null) ? data['project']['case_no'] : '',
+          images: data['images'] != '[]' ? data['images'] : '[]',
+          sync_status : '1',//預設web同步狀態為2
+          sale_type : data['sale_type'],
+          sync_failed : '',
+          is_verify : data['is_verify'].toString(),
+        );
+
+        /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
+        res = clockBox.put(data['id'].toString(), ClockData);
+      }
+
       print(res);
       print('InsertClock success');
       return true;
@@ -329,14 +374,16 @@ class ClockInfo {
   /// delete 工時資料
   deleteClock(id) async{
     try {
-      ToBeSyncClock clockData = toBeSyncClockBox.get(id);
-      ///判斷sync狀態決定真刪除還是改狀態
-      if(clockData.sync_status == '1' && clockData.status == '1'){
+      ///驗證UUID-判斷clock是web還是local決定真刪除還是改狀態
+      if(Uuid.isValidUUID(fromString: id)){//local
+        ToBeSyncClock clockData = toBeSyncClockBox.get(id);
         clockData.delete();
-      }else{
-        clockData.sync_status = '3';
-        clockData.save();
+      }else{//web
+        Clock webClockData = clockBox.get(id);
+        webClockData.sync_status = '3';
+        webClockData.save();
       }
+
       developer.log('Delete Clock Success');
       return true;
     } catch (e) {
