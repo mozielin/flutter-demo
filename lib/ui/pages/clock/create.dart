@@ -734,8 +734,9 @@ class _CreateClockState extends State<CreateClock> {
                     Padding(
                       padding: const EdgeInsets.only(top: 20),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
+                          ///返回
                           TextButton.icon(
                             onPressed: () {
                               Navigator.of(context).pop();
@@ -769,39 +770,42 @@ class _CreateClockState extends State<CreateClock> {
                                       BorderRadius.all(Radius.circular(5))),
                             ),
                           ),
-                          TextButton.icon(
-                            onPressed: () {
-                              submitClock(1, token, data);
-                            },
-                            icon: Icon(Ionicons.pencil,
-                                color: Theme.of(context).brightness == Brightness.dark
-                                    ? Theme.of(context).colorScheme.primary
-                                    : MetronicTheme.success),
-                            label: Text(
-                              tr('button.draft'),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                          if(data == null || data.status != '6')
+                            ///草稿
+                            TextButton.icon(
+                              onPressed: () {
+                                submitClock(1, token, data);
+                              },
+                              icon: Icon(Ionicons.pencil,
                                   color: Theme.of(context).brightness == Brightness.dark
-                                      ? Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!
-                                          .color
-                                      : MetronicTheme.success,
-                                  fontWeight: FontWeight.bold),
+                                      ? Theme.of(context).colorScheme.primary
+                                      : MetronicTheme.success),
+                              label: Text(
+                                tr('button.draft'),
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .color
+                                        : MetronicTheme.success,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.only(
+                                    left: 10, right: 15, top: 10, bottom: 10),
+                                foregroundColor: Colors.red,
+                                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                    ? Theme.of(context).colorScheme.surface
+                                    : MetronicTheme.light_success,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(5))),
+                              ),
                             ),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.only(
-                                  left: 10, right: 15, top: 10, bottom: 10),
-                              foregroundColor: Colors.red,
-                              backgroundColor: Theme.of(context).brightness == Brightness.dark
-                                  ? Theme.of(context).colorScheme.surface
-                                  : MetronicTheme.light_success,
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5))),
-                            ),
-                          ),
+                          ///送審
                           TextButton.icon(
                             onPressed: () {
                               submitClock(2, token, data);

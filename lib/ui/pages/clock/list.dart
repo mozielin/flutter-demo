@@ -256,7 +256,7 @@ class _ClockDemoState extends State<ClockDemo> {
                     ),
 
                     ///編輯
-                    if(data.status == '1' && data.sync_status != '3')
+                    if((data.status == '1' || data.status == '6') && data.sync_status != '3')
                       FloatingActionButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/create_clock', arguments: {'type': data.case_no == '' ? 'no_case' : 'has_case', 'data': data});
