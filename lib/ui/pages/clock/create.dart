@@ -586,25 +586,39 @@ class _CreateClockState extends State<CreateClock> {
                         Flexible(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: TextFormField(
-                              controller: _clock_context,
-                              maxLines: 5,
-                              decoration: InputDecoration(
-                                contentPadding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                filled: true,
-                                fillColor:
-                                    Theme.of(context).colorScheme.surface,
-                                border: const OutlineInputBorder(),
-                                hintText: tr("clock.create.context_labelText"),
-                                hintStyle: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .color),
-                                errorText: errorText['clock_context'] ?? null,
-                              ),
-                            ),
+                            child: GestureDetector(
+                                      onTap: () {
+                                        FocusScope.of(context).requestFocus(FocusNode());
+                                      },
+                                      child: Container(
+                                        color: Colors.white,
+                                        child: Column(
+                                          mainAxisAlignment:  MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            TextFormField(
+                                              controller: _clock_context,
+                                              maxLines: 5,
+                                              decoration: InputDecoration(
+                                                contentPadding:
+                                                const EdgeInsets.symmetric(horizontal: 15),
+                                                filled: true,
+                                                fillColor:
+                                                Theme.of(context).colorScheme.surface,
+                                                border: const OutlineInputBorder(),
+                                                hintText: tr("clock.create.context_labelText"),
+                                                hintStyle: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall!
+                                                        .color),
+                                                errorText: errorText['clock_context'] ?? null,
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      )
+                                    )
                           ),
                         ),
                       ],

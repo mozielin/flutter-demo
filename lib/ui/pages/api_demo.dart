@@ -39,7 +39,7 @@ class _ApiDemoState extends State<ApiDemo> {
     } on DioError catch (e) {
       debugPrint('Dio Error => $e');
       setState(() {
-        msg = e.message;
+        msg = e.message!;
         _load = false;
       });
       rethrow;
@@ -76,7 +76,7 @@ class _ApiDemoState extends State<ApiDemo> {
     } on DioError catch (e) {
       debugPrint('Dio Error => $e');
       setState(() {
-        msg = e.message;
+        msg = e.message!;
         _load = false;
       });
       rethrow;
@@ -114,7 +114,7 @@ class _ApiDemoState extends State<ApiDemo> {
     } on DioError catch (e) {
       debugPrint('Dio Error => $e');
       setState(() {
-        msg = e.message;
+        msg = e.message!!;
         _load = false;
       });
       rethrow;
@@ -152,7 +152,7 @@ class _ApiDemoState extends State<ApiDemo> {
     } on DioError catch (e) {
       debugPrint('Dio Error => $e');
       setState(() {
-        msg = e.message;
+        msg = e.message!!;
         _load = false;
       });
       rethrow;

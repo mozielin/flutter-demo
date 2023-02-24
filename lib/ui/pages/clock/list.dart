@@ -336,12 +336,12 @@ class _ClockDemoState extends State<ClockDemo> {
                     flex: 1,
                     child: Ink(
                       padding: const EdgeInsets.all(10),
-                      decoration: const ShapeDecoration(
+                      decoration: ShapeDecoration(
                         color: MetronicTheme.light_dark,
                         shape: CircleBorder(),
                       ),
                       child: Icon(
-                          data.sync_status == '2' ? Ionicons.hammer : Ionicons.build
+                          data.sync_status == '2' ? Ionicons.cloud_done : Ionicons.cloud_offline
                           ,color: Theme.of(context).brightness == Brightness.dark
                                 ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).textTheme.bodySmall!.color),
@@ -644,7 +644,12 @@ class _ClockDemoState extends State<ClockDemo> {
 
   Future<void> _pullToRefresh() async {
     setState(() {
-      getClocks(true);
+      var user = BlocProvider.of<UserCubit>(context).state;
+      SyncService().uploadClockData(user.token).then((result){
+        ClockInfo().SyncClock(user.token, user.enumber).then((result){
+          getClocks(true);
+        });
+      });
     });
     return;
   }
@@ -830,35 +835,6 @@ class _ClockDemoState extends State<ClockDemo> {
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                      const Padding(padding: EdgeInsets.only(left: 6)),
-                      Ink(
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(Radius.circular(5)),
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Theme.of(context).colorScheme.surface
-                              : Theme.of(context).colorScheme.onPrimary,
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            _searchController.clear();
-                            _status = '';
-                            _statusKey.currentState!.reset();
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            var user = BlocProvider.of<UserCubit>(context).state;
-
-                            SyncService().uploadClockData(user.token).then((result){
-                              ClockInfo().SyncClock(user.token, user.enumber).then((result){
-                                getClocks(true);
-                              });
-                            });
-                          },
-                          icon: Icon(
-                              Ionicons.sync,
-                              //color: MetronicTheme.danger,
-                              color: Theme.of(context).colorScheme.primary
                           ),
                         ),
                       ),
