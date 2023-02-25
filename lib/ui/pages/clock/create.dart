@@ -220,6 +220,7 @@ class _CreateClockState extends State<CreateClock> {
             padding: const EdgeInsets.all(25),
             child: ListView(
               children: <Widget>[
+                ///Case選擇 or 無Case attribute選擇
                 type == 'has_case' ? caseBox(userCase) : Column(
                   children: [
                     inputTitle(tr("clock.create.attr"), true),

@@ -293,7 +293,6 @@ class _ClockDemoState extends State<ClockDemo> {
     var documentNumber = data.source_no;
     var caseNo = data.case_no != '' ? data.case_no : tr("clock.card.no_case_number");
     var status = data.status;
-
     var departDatetime = DateTime.tryParse(data.depart_time == '' ? data.start_time : data.depart_time)!;
     var startDatetime = DateTime.tryParse(data.start_time)!;
     var endDatetime = DateTime.tryParse(data.end_time)!;
@@ -357,7 +356,7 @@ class _ClockDemoState extends State<ClockDemo> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           (documentNumber != '') ? Text('$documentNumber') : Container(),
-                          Text('$caseNo')
+                          Text('$caseNo'),
                         ],
                       ),
                     ),
@@ -657,6 +656,7 @@ class _ClockDemoState extends State<ClockDemo> {
     return;
   }
 
+  ///上傳失敗原因文字
   getSyncFailed(sync_failed){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

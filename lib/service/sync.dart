@@ -29,21 +29,21 @@ class SyncService{
         }
       }
 
-      print("Web Upload count: ${uploadList.length}");
+      developer.log('Web Clock Count: ${uploadList.length}');
 
-      print("Upload sort check before: ${uploadList}");
+      //print("Upload sort check before: ${uploadList}");
 
       ///排序刪除在前
       uploadList.sort((b, a) => a['sync_status'].compareTo(b['sync_status']));
 
-      print("Upload sort check after: ${uploadList}");
+      //print("Upload sort check after: ${uploadList}");
 
       ///塞入local資料
       for (var data in toBeSyncClockBox.values) {
         uploadList.add(data.toUploadMap());
       }
 
-      print("Total Upload count: ${uploadList.length}");
+      developer.log('Total Upload Count: ${uploadList.length}');
 
       dio.options.headers['Authorization'] = 'Bearer $token';
       Response res = await dio.post(

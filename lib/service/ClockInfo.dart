@@ -54,6 +54,15 @@ class ClockInfo {
               sale_type = 'pre';
             }
           }
+
+          var project;
+          ///判斷子母case
+          if(data['project_id'] != null ){
+            project = data['project'];
+          }else if(data['project_header_id'] != null ){
+            project = data['project_header'];
+          }
+
           Clock ClockData = Clock(
             id: data['id'].toString(),
             type: data['type'] == null ? '' :data['type'].toString(),
@@ -84,8 +93,7 @@ class ClockInfo {
             order_date: data['order_date'] ?? '',
             internal_order: data['internal_order'] ?? '',
             bpm_number: data['bpm_number'] ?? '',
-            case_no:
-                (data['project'] != null) ? data['project']['case_no'] : '',
+            case_no: project != null ? project['case_no'] : '',
             images: '[]',
             sync_status : '2',//預設web同步狀態為2
             clock_type : data['clock_type'].toString(),
@@ -105,9 +113,7 @@ class ClockInfo {
         return false;
       }
     } catch (e) {
-      print('SyncClock error');
-      print(e);
-      return false;
+      rethrow;
     }
   }
 
@@ -312,11 +318,9 @@ class ClockInfo {
           sync_failed: '',
           is_verify: '',
         );
-
         /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
         res = toBeSyncClockBox.put(data['id'].toString(), ClockData);
       }else{
-
         Clock ClockData = Clock(
           id: data['id'].toString(),
           type: data['type'] == null ? '' :data['type'].toString(),
@@ -348,8 +352,7 @@ class ClockInfo {
           order_date: data['order_date'] ?? '',
           internal_order: data['internal_order'] ?? '',
           bpm_number: data['bpm_number'] ?? '',
-          case_no:
-          (data['project'] != null) ? data['project']['case_no'] : '',
+          case_no: data['case_no'],
           images: data['images'] != '[]' ? data['images'] : '[]',
           sync_status : '1',//預設web同步狀態為2
           sale_type : data['sale_type'],
@@ -366,8 +369,7 @@ class ClockInfo {
       return true;
     } catch (e) {
       print('InsertClock error');
-      print(e);
-      return false;
+      rethrow;
     }
   }
 
@@ -412,7 +414,7 @@ class ClockInfo {
         data: {
           'enumber': enumber,
         },
-      ).timeout(const Duration(seconds: 3));
+      ).timeout(const Duration(seconds: 1));
 
       if (res.statusCode == 200 && res.data != null) {
         await dispatchBox.clear();
@@ -454,7 +456,7 @@ class ClockInfo {
         data: {
           'enumber': enumber,
         },
-      ).timeout(const Duration(seconds: 3));
+      ).timeout(const Duration(seconds: 1));
 
       if (res.statusCode == 200 && res.data != null) {
         await warrantyBox.clear();
