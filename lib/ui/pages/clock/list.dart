@@ -332,6 +332,7 @@ class _ClockDemoState extends State<ClockDemo> {
               const Padding(padding: EdgeInsets.all(5)),
               Row(
                 children: <Widget>[
+                  ///小卡左小圓圖
                   Expanded(
                     flex: 1,
                     child: Ink(
@@ -361,6 +362,7 @@ class _ClockDemoState extends State<ClockDemo> {
                       ),
                     ),
                   ),
+                  ///最右側status label 跟時間
                   Expanded(
                     flex: 2,
                     child: Column(
