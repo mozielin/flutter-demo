@@ -157,8 +157,10 @@ class _CreateClockState extends State<CreateClock> {
 
       if (data.clock_attribute == '8' && data.case_no == '') hideTypeBox = true;
 
+      ///TODO:檔案結構更改
       ///將hive的圖片base64取出轉成臨時的File插入
       if (data.images != '[]') {
+        ///TODO:檔案結構更改
         writeFile(jsonDecode(data.images), data.id).then((res){
           img = res;
           if (!rebuild) setState(() {});
@@ -182,6 +184,7 @@ class _CreateClockState extends State<CreateClock> {
     return data;
   }
 
+  ///TODO:檔案結構更改
   writeFile(base64, id) async {
     final decodedBytes = base64Decode(base64[0]);
     final tempDir = await getTemporaryDirectory();
@@ -628,6 +631,7 @@ class _CreateClockState extends State<CreateClock> {
                   ],
                 ),
                 ///File
+                ///TODO:檔案結構更改
                 Column(
                   children: [
                     inputTitle(tr("clock.create.file"), false),

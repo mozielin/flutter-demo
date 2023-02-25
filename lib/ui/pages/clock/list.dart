@@ -12,6 +12,7 @@ import 'package:hws_app/config/theme.dart';
 import 'package:hws_app/global_data.dart';
 import 'package:hws_app/service/ClockInfo.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uiblock/uiblock.dart';
 import 'package:uuid/uuid.dart';
@@ -50,6 +51,7 @@ class _ClockDemoState extends State<ClockDemo> {
   int take = 20;
   List items = [];
   List images = [];
+  String filesPath = '';
 
   getStatusLabel(status) {
     var text = '';
@@ -320,8 +322,9 @@ class _ClockDemoState extends State<ClockDemo> {
         child: ListTile(
           onTap: () {
             if (index != null) {
-              images = jsonDecode(data.images);
-              clock_dialog(items[index]);
+              ///TODO:顯示圖片
+               images = jsonDecode(data.images);
+               clock_dialog(items[index]);
             }
           },
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
@@ -491,7 +494,8 @@ class _ClockDemoState extends State<ClockDemo> {
   clock_detail(data) {
     // 參數帶入
     var clock_context = data.context;
-
+    // print(images);
+    // print(images.length);
     return Column(
       children: [
         if(data.sync_failed != '')
@@ -530,38 +534,69 @@ class _ClockDemoState extends State<ClockDemo> {
               height: 20,
               color: Theme.of(context).textTheme.bodySmall!.color,
             ),
-            (images.isNotEmpty)
-                ? ListView.builder(
-                    physics: const ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: images.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        shadowColor: Theme.of(context).colorScheme.shadow,
-                        color: Theme.of(context).colorScheme.background,
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                        child: InkWell(
-                          onTap: () {
-                            NavigatorState nav = Navigator.of(context);
-                            GlobalData.of(context)?.photo_file_base64_title = tr('clock.card.file');
-                            GlobalData.of(context)?.photo_file_base64 = images[index];
-                            nav.pushNamed('/photo_detail_base64');
-                          },
-                          child: Image.memory(
-                            base64Decode(images[index]),
-                            height: 250,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                : Text(
-                    tr('alert.no_data'),
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodySmall!.color,
-                    ),
-                  ),
+            ///TODO:顯示圖片
+            ListView.builder(
+                physics: const ScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: images.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var path = jsonDecode(images[index])[1];
+                  return Card(
+                          shadowColor: Theme.of(context).colorScheme.shadow,
+                          color: Theme.of(context).colorScheme.background,
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                          child: InkWell(
+                            onTap: () {
+                              // NavigatorState nav = Navigator.of(context);
+                              // GlobalData.of(context)?.photo_file_base64_title = tr('clock.card.file');
+                              // GlobalData.of(context)?.photo_file_base64 = images[index];
+                              // nav.pushNamed('/photo_detail_base64');
+                            },
+                            // child: Text(
+                            //           tr('alert.no_data'),
+                            //           style: TextStyle(
+                            //             color: Theme.of(context).textTheme.bodySmall!.color,
+                            //           ),
+                            //         ),
+                            child: Image(image: FileImage(File("$filesPath$path"))),
+                            ),
+                          );
+                }
+            ),
+
+            ///Base64轉出
+            // (images.isNotEmpty)
+            //     ? ListView.builder(
+            //         physics: const ScrollPhysics(),
+            //         shrinkWrap: true,
+            //         itemCount: images.length,
+            //         itemBuilder: (BuildContext context, int index) {
+            //           return Card(
+            //             shadowColor: Theme.of(context).colorScheme.shadow,
+            //             color: Theme.of(context).colorScheme.background,
+            //             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+            //             child: InkWell(
+            //               onTap: () {
+            //                 // NavigatorState nav = Navigator.of(context);
+            //                 // GlobalData.of(context)?.photo_file_base64_title = tr('clock.card.file');
+            //                 // GlobalData.of(context)?.photo_file_base64 = images[index];
+            //                 // nav.pushNamed('/photo_detail_base64');
+            //               },
+            //               child: Image.memory(
+            //                 base64Decode(images[index]),
+            //                 height: 250,
+            //                 fit: BoxFit.cover,
+            //               ),
+            //             ),
+            //           );
+            //         },
+            //       )
+            //     :Text(
+            //         tr('alert.no_data'),
+            //         style: TextStyle(
+            //           color: Theme.of(context).textTheme.bodySmall!.color,
+            //         ),
+            //       ),
             const Padding(padding: EdgeInsets.all(5)),
           ],
         )
@@ -690,6 +725,8 @@ class _ClockDemoState extends State<ClockDemo> {
 
   @override
   void initState() {
+    //優先取得檔案目錄rebuild UI
+    getDir();
     scrollController.addListener(() {
       double showOffset = 10.0;
 
@@ -712,9 +749,16 @@ class _ClockDemoState extends State<ClockDemo> {
         });
       }
     });
-
     getClocks(true);
     super.initState();
+  }
+
+  Future getDir() async {
+    final tempDir = await getTemporaryDirectory();
+    final directory = await Directory(tempDir.path).create(recursive: true);
+    setState(() {
+      filesPath = directory.path;
+    });
   }
 
   @override

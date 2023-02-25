@@ -1,8 +1,10 @@
 // ignore_for_file: non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hws_app/config/setting.dart';
 import 'package:hws_app/models/clock.dart';
@@ -10,12 +12,16 @@ import 'package:hws_app/models/dispatch.dart';
 import 'package:hws_app/models/supportCase.dart';
 import 'package:hws_app/models/toBeSyncClock.dart';
 import 'package:hws_app/models/warranty.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:developer' as developer;
+
+import '../models/files.dart';
 
 class ClockInfo {
   final Dio dio = Dio();
   late final Box clockBox = Hive.box('clockBox');
+  late final Box filesBox = Hive.box('filesBox');
   late final Box supportCaseBox = Hive.box('supportCaseBox');
   late final Box toBeSyncClockBox = Hive.box('toBeSyncClockBox');
   late final Box dispatchBox = Hive.box('dispatchBox');
@@ -40,7 +46,14 @@ class ClockInfo {
         /// 清除所有工時資料
         await clockBox.clear();
 
+        ///
         for (var data in res.data['clocks']) {
+          ///附檔json打包存起來
+          List<String> files = [];
+          for (var file in data['clock_files']) {
+            files.add(json.encode(file));
+          }
+
           ///判斷售前售後
           var sale_type = '';
           ///其中一個欄位有值就是有Case
@@ -94,7 +107,7 @@ class ClockInfo {
             internal_order: data['internal_order'] ?? '',
             bpm_number: data['bpm_number'] ?? '',
             case_no: project != null ? project['case_no'] : '',
-            images: '[]',
+            images: json.encode(files),
             sync_status : '2',//預設web同步狀態為2
             clock_type : data['clock_type'].toString(),
             sale_type : sale_type,
@@ -113,6 +126,7 @@ class ClockInfo {
         return false;
       }
     } catch (e) {
+      //return false;
       rethrow;
     }
   }
@@ -193,33 +207,47 @@ class ClockInfo {
 
   /// 同部工時圖片
   SyncClockImage(String token) async {
+    final tempDir = await getTemporaryDirectory();
+    final directory = await Directory('${tempDir.path}').create(recursive: true);
+    int progress = 0;
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    dio.options.headers['Connection'] = 'keep-alive';
+
     for (var data in clockBox.values) {
-      try {
-        List<String> images = [];
-        dio.options.headers['Authorization'] = 'Bearer $token';
-        Response res = await dio.post(
-          '${InitSettings.apiUrl}:443/api/getClockImages',
-          data: {'clock_id': data.id},
-        ).timeout(const Duration(seconds: 5));
-
-        if (res.statusCode == 200 && res.data != null) {
-          for (var each in res.data['images']) {
-            images.add(each['base64_path'].split('base64,')[1]);
+      if(data.images != '[]'){
+        for (var file in jsonDecode(data.images)) {
+          var fileData = jsonDecode(file);
+          var checkFile = filesBox.get(fileData[0].toString());
+          print('Check Clock [${data.id}] has file [${fileData[0]}]');
+          if(checkFile == null){
+            try{
+              Response res = await dio.download(
+                '${InitSettings.apiUrl}:443/api/getClockImages/${fileData[0]}',
+                "${directory.path}/${fileData[1]}",
+                deleteOnError: false,
+              );
+              if(res.statusCode == 200) {
+                Files FileData = Files(
+                    id: fileData[0].toString(),
+                    clockId: data.id.toString(),
+                    path: fileData[1]
+                );
+                filesBox.put(fileData[0].toString(), FileData);
+                progress++;
+              }
+            }on DioError catch (es){
+              print(es);
+            }catch(e){
+              //print(e);
+            }
+          }else{
+            print('File [${fileData[0]}] already exists...pass');
           }
-
-          Clock ClockData = clockBox.get(data.id);
-          ClockData.images = json.encode(images);
-          ClockData.save();
-          /// 儲存工時資料至 hive 中，使用 auto id 作為 hive 中的 key
-        } else {
-          print('404 SyncClockImage error');
         }
-      } catch (e) {
-        print('SyncClockImage error');
-        print(e);
       }
     }
-    print('Image 總共儲存比數：${clockBox.values.length}');
+    print('Image 總共儲存比數：${filesBox.values.length}');
+    print('Image 本次儲存比數：$progress');
     return true;
   }
 
@@ -486,3 +514,4 @@ class ClockInfo {
     return warrantyDataMap;
   }
 }
+

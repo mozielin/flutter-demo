@@ -52,8 +52,8 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                   ),
                 ),
                 TextButton.icon(
-                  onPressed: () async {
-                    await ClockInfo().SyncClockImage(
+                  onPressed: () {
+                    ClockInfo().SyncClockImage(
                         BlocProvider.of<UserCubit>(context).state.token);
                   },
                   icon: Icon(Ionicons.server_outline,
@@ -75,8 +75,18 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                   onPressed: () async {
                     List clocks = await ClockInfo().GetClock();
                     for (var data in clocks) {
-                      print(data.clocking_no);
-                      print(data.images);
+                      if(data.images != '[]'){
+                        print(data.images);
+                        for (var file in jsonDecode(data.images)) {
+                            var tt = jsonDecode(file);
+                            print(tt[0]);
+                            print(tt[1]);
+                          }
+                        //print(data.images);
+                      }else{
+                        print('QQ');
+                      }
+
                     }
                   },
                   icon: Icon(Ionicons.server_outline,
@@ -315,7 +325,7 @@ class _ClockInfoDemoState extends State<ClockInfoDemo> {
                 ),
                 TextButton.icon(
                   onPressed: () async {
-                    await SyncService().uploadClockData('2484|i1FfZqDPBK8qtcp7QXAaK0G539eGLjKC8hXsWuIq');
+                    await SyncService().uploadClockData('2823|HuGgFivxKXN9a2bSwOYoLMkHgtJGbSFBiQq5Wa0n');
                     print('QQ');
                   },
                   icon: Icon(Ionicons.phone_portrait_outline,
