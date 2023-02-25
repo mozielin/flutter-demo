@@ -357,6 +357,9 @@ class _ClockDemoState extends State<ClockDemo> {
                         children: <Widget>[
                           (documentNumber != '') ? Text('$documentNumber') : Container(),
                           Text('$caseNo'),
+                          Text('Verify: ${data.is_verify}'),
+                          Text('ID: ${data.id}'),
+                          Text('sale_Type: ${data.sale_type}'),
                         ],
                       ),
                     ),

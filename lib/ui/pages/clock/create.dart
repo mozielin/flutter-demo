@@ -140,6 +140,7 @@ class _CreateClockState extends State<CreateClock> {
       parent_id = data.clock_type;
       child_id = data.type == '' ? null :data.type;
       case_number = data.case_no;
+      sale_type = data.sale_type;
 
       ///無case
       switch(data.clock_attribute){
