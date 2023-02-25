@@ -149,7 +149,8 @@
       "case_no_hint": "請選擇Case編號",
       "img_delete": "刪除",
       "img_camera": "相機",
-      "img_album": "相簿"
+      "img_album": "相簿",
+      "img_add": "新增附檔"
     },
     "sync": {
       "title": "同步失敗",

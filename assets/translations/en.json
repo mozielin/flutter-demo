@@ -145,7 +145,8 @@
       "case_no_hint": "Select case number",
       "img_delete": "Delete",
       "img_camera": "Camera",
-      "img_album": "Album"
+      "img_album": "Album",
+      "img_add": "Add File"
     },
     "sync": {
       "title": "Sync Error",

@@ -10,6 +10,7 @@ import 'package:hws_app/router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'cubit/clock_cubit.dart';
 import 'cubit/user_cubit.dart';
+import 'models/files.dart';
 import 'models/user.dart';
 
 import 'dart:io';
@@ -22,8 +23,11 @@ import 'package:path_provider/path_provider.dart';
 
 import 'config/theme.dart';
 import 'cubit/theme_cubit.dart';
-
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 void main() async {
+  ///TODO:優化-進入APP的LOGO顯示
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   /// Initialize packages
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -41,6 +45,8 @@ void main() async {
   await Hive.openBox('userBox');
   Hive.registerAdapter(ClockAdapter());
   await Hive.openBox('clockBox');
+  Hive.registerAdapter(FilesAdapter());
+  await Hive.openBox('filesBox');
   Hive.registerAdapter(SupportCaseAdapter());
   await Hive.openBox('supportCaseBox');
   Hive.registerAdapter(ToBeSyncClockAdapter());
@@ -49,6 +55,9 @@ void main() async {
   await Hive.openBox('dispatchBox');
   Hive.registerAdapter(WarrantyAdapter());
   await Hive.openBox('warrantyBox');
+
+  ///TODO:優化-進入APP的LOGO顯示/關閉
+  FlutterNativeSplash.remove();
 
   HydratedBlocOverrides.runZoned(
         () => runApp(

@@ -634,7 +634,35 @@ class _CreateClockState extends State<CreateClock> {
                 ///TODO:檔案結構更改
                 Column(
                   children: [
-                    inputTitle(tr("clock.create.file"), false),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        inputTitle(tr("clock.create.file"), false),
+                        ///新增附檔
+                        TextButton.icon(
+                          onPressed: () async {
+                            ///TODO:彈出視窗新增圖片
+                            //deleteImage(img);
+                          },
+                          icon: Icon(Ionicons.add,
+                              color: Theme.of(context).colorScheme.primary),
+                          label: Text(
+                            tr('clock.create.img_add'),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .apply(
+                                fontWeightDelta: 2,
+                                fontSizeDelta: -2),
+                          ),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
                     Material(
                       color: Theme.of(context).colorScheme.background,
                       child: Column(
